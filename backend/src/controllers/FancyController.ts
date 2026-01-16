@@ -19,7 +19,7 @@ import { RoleType } from "../models/Role";
 import { Market } from "../models/Market";
 import { CasCasino } from "../models/CasCasino";
 import { ledger } from "../models/allledager";
-import  Matkabet  from "../models/Matkabet";
+import Matkabet from "../models/Matkabet";
 import { cp } from "node:fs";
 import { BetStake } from "../models/BetStake";
 import Matka from "../models/Matka";
@@ -96,26 +96,26 @@ export class FancyController extends ApiController {
   //     return this.fail(res, e);
   //   }
   // };
-  
 
-// Matka code start from here 
 
-placeMatkabet = async (req: Request, res: Response): Promise<Response> => {
+  // Matka code start from here 
+
+  placeMatkabet = async (req: Request, res: Response): Promise<Response> => {
 
     try {
-     const data = req.body;
-     const {_id,usernname}:any = req.user;
-     if(! data){
-      return this.fail(res, "Invalid data")
-     }
+      const data = req.body;
+      const { _id, usernname }: any = req.user;
+      if (!data) {
+        return this.fail(res, "Invalid data")
+      }
 
-    
-     
-     const matkaexposer = await Matkabet.find({userId: _id, status:"pending"}).select({betamount:1});
-     const balanceData = await Balance.findOne({userId: _id});
-     const userData = await User.findById(_id);
+
+
+      const matkaexposer = await Matkabet.find({ userId: _id, status: "pending" }).select({ betamount: 1 });
+      const balanceData = await Balance.findOne({ userId: _id });
+      const userData = await User.findById(_id);
       let totalexposer = 0;
-      matkaexposer.forEach((element:any) => {
+      matkaexposer.forEach((element: any) => {
 
         totalexposer += element.betamount;
 
@@ -126,10 +126,10 @@ placeMatkabet = async (req: Request, res: Response): Promise<Response> => {
       const newBet = new Matkabet({
         gamename: data.matchName,
         id: data.marketId,
-    
+
         Date: data.Date,
         result: "pending",
-        
+
         roundid: data.matchId,
         odds: data.odds,
         betamount: data.stack,
@@ -142,7 +142,7 @@ placeMatkabet = async (req: Request, res: Response): Promise<Response> => {
       })
       await newBet.save();
 
-      await balanceData!.updateOne({matkaexposer:totalexposer + data.betamount})
+      await balanceData!.updateOne({ matkaexposer: totalexposer + data.betamount })
       return this.success(res, newBet, "Bet placed successfully");
 
 
@@ -153,11 +153,20 @@ placeMatkabet = async (req: Request, res: Response): Promise<Response> => {
     }
 
 
-}
+  }
 
 
 
 
+  matkaList = async (req: Request, res: Response) => {
+    try {
+      const matkaList = await Matka.find({ isActive: true }).lean();
+
+      return this.success(res, matkaList);
+    } catch (e: any) {
+      return this.fail(res, e);
+    }
+  }
 
 
   activeFancies = async (req: Request, res: Response): Promise<Response> => {
@@ -415,7 +424,7 @@ placeMatkabet = async (req: Request, res: Response): Promise<Response> => {
       );
       const unique = [...new Set(userIdList)];
 
-       const processLedgers = async () => {
+      const processLedgers = async () => {
         const promises = userbet.flatMap((betGroup) =>
           betGroup.allBets.map(async (singleBet) => {
             const result = await ledger.deleteMany({ betId: singleBet._id });
@@ -874,8 +883,8 @@ placeMatkabet = async (req: Request, res: Response): Promise<Response> => {
               selectionId: ItemBetList.selectionId,
               sportId: ItemBetList.sportId,
             });
-            if(result != -1){
-            await this.cal9xbro(Item._id, profitLossAmt, narration, matchId, ItemBetList._id, BetOn.FANCY)
+            if (result != -1) {
+              await this.cal9xbro(Item._id, profitLossAmt, narration, matchId, ItemBetList._id, BetOn.FANCY)
             }
             if (indexBetList == 0) {
               ItemBetList.ratioStr.allRatio.map((ItemParentStr: any) => {
@@ -1295,7 +1304,7 @@ placeMatkabet = async (req: Request, res: Response): Promise<Response> => {
           if (bets.length > 0) {
             const totalProfitLoss = await bets.reduce((sum, bet) => sum + bet.profitLoss, 0);
 
-            await this.cal9xbro(userId, totalProfitLoss, bets?.[0]?.marketId.toString()+ bets?.[0]?.marketName, matchId, bets[0]?._id, BetOn.MATCH_ODDS);
+            await this.cal9xbro(userId, totalProfitLoss, bets?.[0]?.marketId.toString() + bets?.[0]?.marketName, matchId, bets[0]?._id, BetOn.MATCH_ODDS);
           }
         }));
 
@@ -1433,8 +1442,8 @@ placeMatkabet = async (req: Request, res: Response): Promise<Response> => {
           //   userId,
           //   totalProfitLoss
           // };
-          if(bets.length > 0){
-          await this.cal9xbro(userId, totalProfitLoss, bets?.[0]?.marketId + bets?.[0]?.marketName, matchId, bets[0]._id, BetOn.MATCH_ODDS);
+          if (bets.length > 0) {
+            await this.cal9xbro(userId, totalProfitLoss, bets?.[0]?.marketId + bets?.[0]?.marketName, matchId, bets[0]._id, BetOn.MATCH_ODDS);
           }
         }));
 
@@ -1451,7 +1460,7 @@ placeMatkabet = async (req: Request, res: Response): Promise<Response> => {
         { $set: { result_delare: true, result: selectionId } }
       );
       await Market.updateOne(
-        { marketId: marketId , matchId:parseInt(matchId)},
+        { marketId: marketId, matchId: parseInt(matchId) },
         { $set: { resultDelcare: "yes", result: selectionId } }
       );
       return this.success(res, userbet, "");
@@ -1580,8 +1589,8 @@ placeMatkabet = async (req: Request, res: Response): Promise<Response> => {
           //   userId,
           //   totalProfitLoss
           // };
-          if(bets.length > 0){
-          await this.cal9xbro(userId, totalProfitLoss, bets?.[0]?.marketId + bets?.[0]?.marketName, matchId, bets[0]?._id, BetOn.MATCH_ODDS);
+          if (bets.length > 0) {
+            await this.cal9xbro(userId, totalProfitLoss, bets?.[0]?.marketId + bets?.[0]?.marketName, matchId, bets[0]?._id, BetOn.MATCH_ODDS);
           }
         }));
 
@@ -1703,7 +1712,7 @@ placeMatkabet = async (req: Request, res: Response): Promise<Response> => {
             await AccoutStatement.deleteMany({
               betId: ObjectId(ItemBetList._id),
             });
-            await AccoutStatement.deleteMany({userId:ItemBetList.userId,matchId,iscom:true})
+            await AccoutStatement.deleteMany({ userId: ItemBetList.userId, matchId, iscom: true })
             if (indexBetList == 0) {
               ItemBetList.ratioStr.allRatio.map((ItemParentStr: any) => {
                 parentIdList.push(ItemParentStr.parent);
@@ -2428,7 +2437,7 @@ placeMatkabet = async (req: Request, res: Response): Promise<Response> => {
 
   ) {
     try {
-      console.log(userId,profit_loss,narration,matchId,bet_on,"details inside cal9xbro")
+      console.log(userId, profit_loss, narration, matchId, bet_on, "details inside cal9xbro")
       let betdata = { bet_on }
       let betstatus = bet_on == "FANCY" ? true : false;
       let commission_value;
@@ -2456,9 +2465,9 @@ placeMatkabet = async (req: Request, res: Response): Promise<Response> => {
           const ledgerData: any = await ledger.findOne({ ChildId: userId });
           const userData = await User.findOne({ _id: userId });
           let p1info = await User.findOne({ _id: userData.parentId });
-          console.log(p1info,"FGH")
+          console.log(p1info, "FGH")
           if (p1info?.parentId) {
-            console.log(p1info,"FGHkjjjj")
+            console.log(p1info, "FGHkjjjj")
             let partnresip = p1info?.partnership;
             let p2infoj = await User.findOne({ _id: p1info?.parentId });
             mainledgerBalance = -profit_loss;
@@ -2495,8 +2504,8 @@ placeMatkabet = async (req: Request, res: Response): Promise<Response> => {
               calvalue * (p1info?.share / 100) +
               commissionlegaf -
               commissiondegaf;
-            console.log(profit ,"profit is here")
-          const xyz =  await ledger.create({
+            console.log(profit, "profit is here")
+            const xyz = await ledger.create({
               ParentId: userData?._id,
               money: -profit_loss,
               umoney: -profit_loss,
@@ -2513,30 +2522,30 @@ placeMatkabet = async (req: Request, res: Response): Promise<Response> => {
               cname: userData?.code,
               pname: p1info?.code,
               matchId
-            },{new:true,upset:true});
-            console.log(xyz,"xyz")
+            }, { new: true, upset: true });
+            console.log(xyz, "xyz")
             // commission  entry in account statementes 
             if (bet_on != "FANCY" && commissiondegaf > 0) {
-            const getAccStmt = await AccoutStatement.findOne({ userId: userId })
-              .sort({ createdAt: -1 })
-              .lean();
-            const getOpenBal = getAccStmt?.closeBal ? getAccStmt.closeBal : 0;
+              const getAccStmt = await AccoutStatement.findOne({ userId: userId })
+                .sort({ createdAt: -1 })
+                .lean();
+              const getOpenBal = getAccStmt?.closeBal ? getAccStmt.closeBal : 0;
 
-            const userAccountData: IAccoutStatement = {
-              userId,
-              narration: "commission",
-              amount: commissiondegaf,
-              type: ChipsType.pnl,
-              txnType: commissiondegaf > 0 ? TxnType.cr : TxnType.dr,
-              openBal: getOpenBal,
-              closeBal: getOpenBal + +commissiondegaf,
-              matchId: matchId,
-              // betId: bet_id,
-              iscom: true,
-              // selectionId,
-              // sportId,
-            };
-            
+              const userAccountData: IAccoutStatement = {
+                userId,
+                narration: "commission",
+                amount: commissiondegaf,
+                type: ChipsType.pnl,
+                txnType: commissiondegaf > 0 ? TxnType.cr : TxnType.dr,
+                openBal: getOpenBal,
+                closeBal: getOpenBal + +commissiondegaf,
+                matchId: matchId,
+                // betId: bet_id,
+                iscom: true,
+                // selectionId,
+                // sportId,
+              };
+
               const newUserAccStmt = new AccoutStatement(userAccountData);
               await newUserAccStmt.save();
             }
@@ -2922,12 +2931,12 @@ placeMatkabet = async (req: Request, res: Response): Promise<Response> => {
       sportId == 5000
         ? user_parent?.partnership?.[4]?.allRatio
         : user_parent?.partnership?.[sportsType]?.allRatio;
-       let scommision =0;
-        const betdata = await Bet.findOne({ _id: bet_id });
-        if (betdata && betdata.bet_on == "FANCY") {
-          const userdata = await User.findOne({ _id: userId });
-          scommision = betdata.stack * (userdata.scom / 100);
-        }
+    let scommision = 0;
+    const betdata = await Bet.findOne({ _id: bet_id });
+    if (betdata && betdata.bet_on == "FANCY") {
+      const userdata = await User.findOne({ _id: userId });
+      scommision = betdata.stack * (userdata.scom / 100);
+    }
     const reference_id = await this.sendcreditdebit(
       userId,
       narration,
@@ -2970,14 +2979,14 @@ placeMatkabet = async (req: Request, res: Response): Promise<Response> => {
     betId: ObjectId,
     selectionId: number,
     sportId: number,
-    scommision:any,
+    scommision: any,
   ): Promise<any> => {
     const getAccStmt = await AccoutStatement.findOne({ userId: userId })
       .sort({ createdAt: -1 })
       .lean();
     // let scommision = 0;
     const getOpenBal = getAccStmt?.closeBal ? getAccStmt.closeBal : 0;
-   
+
 
     const userAccountData: IAccoutStatement = {
       userId,

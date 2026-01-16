@@ -54,6 +54,8 @@ router.get('/api/result-market-fancy-auto', new FancyController().setT10FancyRes
 router.get('/api/get-business-fancy-list', new BetController().fancybetListSelection)
 router.post('/api/update-fancy-result', new FancyController().updatefancyresultapi)
 
+router.get('/api/matka-list', new FancyController().matkaList)
+
 router.get('/api/resync_bookmaker_id', new SportsController().saveMatchResyncCron)
 router.use('/api', new T10ResultRoutes().router)
 router.use('/api', new SportRoutes().router)
