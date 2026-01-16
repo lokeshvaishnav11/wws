@@ -50,6 +50,8 @@ export interface IUser {
   mcom?:number
   scom?:number
 
+  matcom?:number
+
   code?:string
 
 }
@@ -91,6 +93,7 @@ export const userSchema: Schema = new Schema(
     mcom:Number,
     scom:Number,
     code:String,
+    matcom:{type:Number,default:0},
   },
   {
     timestamps: true,

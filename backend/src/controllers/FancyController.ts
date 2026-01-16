@@ -23,6 +23,7 @@ import Matkabet from "../models/Matkabet";
 import { cp } from "node:fs";
 import { BetStake } from "../models/BetStake";
 import Matka from "../models/Matka";
+import Matkagames from "../models/Matkagames";
 
 var ObjectId = require("mongoose").Types.ObjectId;
 
@@ -168,7 +169,154 @@ export class FancyController extends ApiController {
     }
   }
 
+  // Matka Profit Loss result
+  Matkacal = async (roundid, result) => {
+    try {
+      const single = result;
+      const andar = result / 10;
+      const bahar = result % 10;
+      const matkaBets = await Matkabet.find({ roundid: roundid, status: "pending" });
+      let userIdList: any = [];
+      const parentIdList: any = [];
+      const declare_result = matkaBets.map(async (ItemBetList: any, indexBetList: number) => {
+        let profitLossAmt: number = 0;
+        if (ItemBetList.bettype === "andar") {
+          profitLossAmt = ItemBetList.selectionId === andar ? ItemBetList.betamount * ItemBetList.odds - ItemBetList.betamount : -ItemBetList.betamount;
+        }
+        if (ItemBetList.bettype === "bahar") {
+          profitLossAmt = ItemBetList.selectionId === bahar ? ItemBetList.betamount * ItemBetList.odds - ItemBetList.betamount : -ItemBetList.betamount;
+        }
+        if (ItemBetList.bettype === "single") {
+          profitLossAmt = ItemBetList.selectionId == single ? ItemBetList.betamount * ItemBetList.odds - ItemBetList.betamount : -ItemBetList.betamount;
+        }
+        await this.addprofitlosstouser({
+          userId: ObjectId(ItemBetList.userId),
 
+          bet_id: ObjectId(ItemBetList._id),
+          profit_loss: profitLossAmt,
+          matchId: ItemBetList.roundid,
+
+          narration: `Matka Bet Result for ${ItemBetList.gamename} - ${ItemBetList.roundid}`,
+          sportsType: 900,
+          selectionId: ItemBetList.selectionId,
+          sportId: 900,
+        });
+
+        // await this.cal9xbro(ItemBetList._id, profitLossAmt, `Matka Bet Result for ${ItemBetList.gamename} - ${ItemBetList.roundid}`, ItemBetList.roundid, ItemBetList._id, "MATKA")
+
+        userIdList.push(ObjectId(ItemBetList.userId));
+        await Matkabet.updateOne({ _id: ItemBetList._id }, { $set: { status: "completed" } });
+      });
+      await Promise.all(declare_result);
+      const unique = [...new Set(userIdList)];
+      if (unique.length > 0) {
+        await this.updateUserAccountStatement(unique, parentIdList);
+
+
+
+      }
+    } catch (error) {
+      console.log("Matka calculation error:", error);
+      return false;
+    }
+  }
+
+
+  matkaResultapi = async (req: Request, res: Response): Promise<Response>  => {
+    const data = req.body;
+    try {
+      if (data.result != "" && data.message == "ok" && data.roundid) {
+
+        // const findMatka: any = await Matkagames.findOne({ roundid: data.roundid });
+        const result = await this.Matkacal(data.roundid, data.result);
+           await Matkagames.updateOne(
+          { roundid: data.roundid },
+          { $set: { result: data.result, isActive: false } }
+           );
+
+          return this.success(res, { message: "Matka result processed successfully" });
+      
+      }
+
+    }
+    catch (e: any) { 
+      console.log(e);
+      return this.fail(res, e);
+    }
+  }
+
+  rollbackMatkaResult = async (req: Request, res: Response): Promise<Response> => {
+    try{
+      const { roundid }: any = req.query;
+      const userbet: any = await Matkabet.aggregate([
+        {
+          $match: {
+
+            status: "completed",
+            roundid: roundid,
+
+          },
+        },
+        {
+          $group: {
+            _id: "$userId",
+            allBets: { $push: "$$ROOT" },
+
+          },
+        },
+      ]);
+      let userIdList: any = [];
+      const parentIdList: any = [];
+      const declare_result = userbet.map(async (Item: any) => {
+        let allbets: any = Item.allBets;
+        const settle_single = allbets.map(
+          async (ItemBetList: any, indexBetList: number) => {
+            // UserSocket.onRollbackPlaceBet(ItemBetList);
+            await AccoutStatement.deleteMany({
+
+              betId: ObjectId(ItemBetList._id),
+
+            });
+
+            if (indexBetList == 0) {
+
+              ItemBetList.ratioStr.allRatio.map((ItemParentStr: any) => {
+
+                parentIdList.push(ItemParentStr.parent);
+                userIdList.push(ObjectId(ItemParentStr.parent));
+              });
+            }
+          }
+        );
+        Promise.all(settle_single);
+        userIdList.push(ObjectId(Item._id));
+      });
+      await Promise.all(declare_result);
+      await Matkabet.updateMany(
+        {
+          userId: { $in: userIdList },
+          roundid: roundid,
+          status: "completed",
+        },
+        { $set: { status: "pending" } }
+      );
+         await Matkagames.updateOne(
+          { roundid: roundid },
+          { $set: { result:'pending', isActive: false } }
+           );
+      const unique = [...new Set(userIdList)];
+      if (unique.length > 0) {
+
+        await this.updateUserAccountStatement(unique, parentIdList);
+      }
+
+      return this.success(res, userbet, "");
+    } catch (e: any) {
+
+      return this.fail(res, e);
+
+    }
+  }
   activeFancies = async (req: Request, res: Response): Promise<Response> => {
     try {
       const { matchId, gtype }: any = req.query;
@@ -630,6 +778,7 @@ export class FancyController extends ApiController {
         let exposer: number = 0;
         let cexposer: number = 0;
         let balancePnl: number = 0;
+        let matkaexposer: number = 0;
         const blanceData = await this.updateUserBal(ItemUserId, parentIdList);
         // if (parentIdList.indexOf(ItemUserId) == -1) {
         //   exposer = await betController.getexposerfunction(
@@ -653,6 +802,24 @@ export class FancyController extends ApiController {
             false,
             json
           );
+          const pendingBetSum = await Matkabet.aggregate([
+            {
+              $match: {
+                userId: ItemUserId,
+                status: "pending",
+              },
+            },
+            {
+              $group: {
+                _id: null,
+                totalPendingBetAmount: { $sum: "$betamount" },
+              },
+            },
+          ]);
+
+          matkaexposer =
+            pendingBetSum.length > 0 ? pendingBetSum[0].totalPendingBetAmount : 0;
+
           const result = await ledger.aggregate([
             { $match: { ChildId: ItemUserId } },
             {
@@ -677,6 +844,7 @@ export class FancyController extends ApiController {
           {
             balance: blancedata,
             exposer: exposer,
+            matkaexposer: matkaexposer,
             profitLoss: balancePnl,
             commision: totalCommissionLega,
           },
@@ -689,6 +857,7 @@ export class FancyController extends ApiController {
           exposer: exposer,
           userId: ItemUserId,
           commision: totalCommissionLega,
+          matkaexposer: matkaexposer,
         });
       });
       await Promise.all(promiseStatment);
@@ -2932,11 +3101,16 @@ export class FancyController extends ApiController {
         ? user_parent?.partnership?.[4]?.allRatio
         : user_parent?.partnership?.[sportsType]?.allRatio;
     let scommision = 0;
+    let mtcommission = 0;
     const betdata = await Bet.findOne({ _id: bet_id });
     if (betdata && betdata.bet_on == "FANCY") {
       const userdata = await User.findOne({ _id: userId });
       scommision = betdata.stack * (userdata.scom / 100);
     }
+    if (sportId == 900) {
+      mtcommission = betdata.stack * (user?.matcom / 100);
+    }
+
     const reference_id = await this.sendcreditdebit(
       userId,
       narration,
@@ -2946,6 +3120,7 @@ export class FancyController extends ApiController {
       selectionId,
       sportId,
       scommision,
+      mtcommission,
     );
     const updateplToBet = await Bet.updateOne(
       { _id: bet_id },
@@ -2964,6 +3139,7 @@ export class FancyController extends ApiController {
           bet_id,
           selectionId,
           sportId,
+          0,
           0
         );
       });
@@ -2980,6 +3156,7 @@ export class FancyController extends ApiController {
     selectionId: number,
     sportId: number,
     scommision: any,
+    mtcommission: any
   ): Promise<any> => {
     const getAccStmt = await AccoutStatement.findOne({ userId: userId })
       .sort({ createdAt: -1 })
@@ -2991,11 +3168,11 @@ export class FancyController extends ApiController {
     const userAccountData: IAccoutStatement = {
       userId,
       narration: narration,
-      amount: profit_loss + scommision,
+      amount: profit_loss + scommision + mtcommission,
       type: ChipsType.pnl,
-      txnType: profit_loss + scommision > 0 ? TxnType.cr : TxnType.dr,
+      txnType: profit_loss + scommision + mtcommission > 0 ? TxnType.cr : TxnType.dr,
       openBal: getOpenBal,
-      closeBal: getOpenBal + +profit_loss + scommision,
+      closeBal: getOpenBal + +profit_loss + scommision + mtcommission,
       matchId: matchId,
       betId: betId,
       selectionId,

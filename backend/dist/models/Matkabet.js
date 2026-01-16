@@ -25,7 +25,7 @@ var __importStar = (this && this.__importStar) || function (mod) {
 Object.defineProperty(exports, "__esModule", { value: true });
 const mongoose_1 = __importStar(require("mongoose"));
 // Define the Mongoose schema
-const MatkagameSchema = new mongoose_1.Schema({
+const MatkabetSchema = new mongoose_1.Schema({
     gamename: {
         type: String,
     },
@@ -48,13 +48,36 @@ const MatkagameSchema = new mongoose_1.Schema({
     roundid: {
         type: String,
     },
-    isActive: {
-        type: Boolean,
-        default: true
+    odds: {
+        type: Number,
+    },
+    betamount: {
+        type: Number,
+    },
+    bettype: {
+        type: String,
+    },
+    userId: {
+        type: mongoose_1.Schema.Types.ObjectId,
+        ref: "User",
+    },
+    parentstr: {
+        type: [String],
+    },
+    parentId: {
+        type: mongoose_1.Schema.Types.ObjectId,
+        ref: "User",
+    },
+    bet_on: {
+        type: String,
+    },
+    status: {
+        type: String,
+        default: "pending"
     },
 }, {
     timestamps: true, // Automatically adds createdAt and updatedAt fields
 });
 // Export the model
-exports.default = mongoose_1.default.model("Matka", MatkagameSchema);
+exports.default = mongoose_1.default.model("Matkabet", MatkabetSchema);
 //# sourceMappingURL=Matkabet.js.map

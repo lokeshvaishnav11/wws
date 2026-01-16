@@ -10,6 +10,7 @@ const BalanceSchema = new mongoose_1.Schema({
     casinoexposer: { type: Number, default: 0 },
     mainBalance: { type: Number, default: 0 },
     commision: { type: Number, default: 0 },
+    matkaexposer: { type: Number, default: 0 },
     // free_chip: Double,
     // pnl: Double,
     // settlement: Double,

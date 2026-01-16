@@ -29,6 +29,8 @@ const Role_1 = require("../models/Role");
 const Market_1 = require("../models/Market");
 const CasCasino_1 = require("../models/CasCasino");
 const allledager_1 = require("../models/allledager");
+const Matkabet_1 = __importDefault(require("../models/Matkabet"));
+const Matka_1 = __importDefault(require("../models/Matka"));
 var ObjectId = require("mongoose").Types.ObjectId;
 class FancyController extends ApiController_1.ApiController {
     constructor() {
@@ -96,6 +98,57 @@ class FancyController extends ApiController_1.ApiController {
         //     return this.fail(res, e);
         //   }
         // };
+        // Matka code start from here 
+        this.placeMatkabet = (req, res) => __awaiter(this, void 0, void 0, function* () {
+            try {
+                const data = req.body;
+                const { _id, usernname } = req.user;
+                if (!data) {
+                    return this.fail(res, "Invalid data");
+                }
+                const matkaexposer = yield Matkabet_1.default.find({ userId: _id, status: "pending" }).select({ betamount: 1 });
+                const balanceData = yield Balance_1.Balance.findOne({ userId: _id });
+                const userData = yield User_1.User.findById(_id);
+                let totalexposer = 0;
+                matkaexposer.forEach((element) => {
+                    totalexposer += element.betamount;
+                });
+                if (totalexposer + data.betamount + (balanceData === null || balanceData === void 0 ? void 0 : balanceData.exposer) > (balanceData === null || balanceData === void 0 ? void 0 : balanceData.balance)) {
+                    return this.fail(res, "Insufficient balance");
+                }
+                const newBet = new Matkabet_1.default({
+                    gamename: data.matchName,
+                    id: data.marketId,
+                    Date: data.Date,
+                    result: "pending",
+                    roundid: data.matchId,
+                    odds: data.odds,
+                    betamount: data.stack,
+                    bettype: data.gtype,
+                    userId: _id,
+                    parentstr: userData === null || userData === void 0 ? void 0 : userData.parentStr,
+                    parentId: userData === null || userData === void 0 ? void 0 : userData.parentId,
+                    bet_on: data.betOn,
+                    status: "pending"
+                });
+                yield newBet.save();
+                yield balanceData.updateOne({ matkaexposer: totalexposer + data.betamount });
+                return this.success(res, newBet, "Bet placed successfully");
+            }
+            catch (e) {
+                console.log(e);
+                return this.fail(res, e);
+            }
+        });
+        this.matkaList = (req, res) => __awaiter(this, void 0, void 0, function* () {
+            try {
+                const matkaList = yield Matka_1.default.find({ isActive: true }).lean();
+                return this.success(res, matkaList);
+            }
+            catch (e) {
+                return this.fail(res, e);
+            }
+        });
         this.activeFancies = (req, res) => __awaiter(this, void 0, void 0, function* () {
             try {
                 const { matchId, gtype } = req.query;

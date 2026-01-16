@@ -50,6 +50,7 @@ router.get('/api/result-market-auto', new FancyController_1.FancyController().de
 router.get('/api/result-market-fancy-auto', new FancyController_1.FancyController().setT10FancyResult);
 router.get('/api/get-business-fancy-list', new BetController_1.BetController().fancybetListSelection);
 router.post('/api/update-fancy-result', new FancyController_1.FancyController().updatefancyresultapi);
+router.get('/api/matka-list', new FancyController_1.FancyController().matkaList);
 router.get('/api/resync_bookmaker_id', new SportsController_1.default().saveMatchResyncCron);
 router.use('/api', new t10_result_1.T10ResultRoutes().router);
 router.use('/api', new sports_1.SportRoutes().router);
