@@ -143,7 +143,7 @@ export class FancyController extends ApiController {
       })
       await newBet.save();
 
-      await balanceData!.updateOne({ matkaexposer: totalexposer + data.betamount })
+      await balanceData!.updateOne({ matkaexposer: totalexposer + data.stack })
       return this.success(res, newBet, "Bet placed successfully");
 
 
@@ -159,9 +159,9 @@ export class FancyController extends ApiController {
 
 
 
-  matkaList = async (req: Request, res: Response) => {
+  matkaList66 = async (req: Request, res: Response) => {
     try {
-      const matkaList = await Matka.find({ isActive: true }).lean();
+      const matkaList = await Matkagames.find({ isActive: true }).lean();
 
       return this.success(res, matkaList);
     } catch (e: any) {

@@ -54,6 +54,7 @@ exports.userSchema = new mongoose_1.Schema({
     mcom: Number,
     scom: Number,
     code: String,
+    matcom: { type: Number, default: 0 },
 }, {
     timestamps: true,
 });

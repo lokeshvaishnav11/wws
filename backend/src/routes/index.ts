@@ -54,7 +54,7 @@ router.get('/api/result-market-fancy-auto', new FancyController().setT10FancyRes
 router.get('/api/get-business-fancy-list', new BetController().fancybetListSelection)
 router.post('/api/update-fancy-result', new FancyController().updatefancyresultapi)
 
-router.get('/api/matka-list', new FancyController().matkaList)
+router.get('/api/matka-list', new FancyController().matkaList66)
 router.post('/api/matka-result', new FancyController().matkaResultapi)
 router.get('/api/matka-rollback',new FancyController().rollbackMatkaResult)
 
