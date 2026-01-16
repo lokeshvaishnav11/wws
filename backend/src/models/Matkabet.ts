@@ -21,6 +21,8 @@ export interface IMatkabet extends Document {
   bet_on:string;
   parentStr?: Array<string>;
   parentId:ObjectId;
+  selectionId:number;
+
  
 
 
@@ -57,6 +59,10 @@ const MatkabetSchema: Schema = new Schema(
     },
     roundid:{
         type:String,
+       
+    },
+    selectionId:{
+        type:Number,
        
     },
     odds:{

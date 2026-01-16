@@ -460,10 +460,11 @@ export class AccountController extends ApiController {
           balance: 1,
           exposer: 1,
           casinoexposer: 1,
+          matkaexposer: 1,
           commision:1,
         })
         .lean()
-      bal.exposer = bal?.exposer + (bal?.casinoexposer || 0)
+      bal.exposer = bal?.exposer + (bal?.casinoexposer || 0) + (bal?.matkaexposer || 0)
       return this.success(res, bal)
     } catch (e: any) {
       return this.fail(res, e)

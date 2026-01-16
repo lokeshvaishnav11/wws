@@ -83,10 +83,11 @@ class AccountController extends ApiController_1.ApiController {
                     balance: 1,
                     exposer: 1,
                     casinoexposer: 1,
+                    matkaexposer: 1,
                     commision: 1,
                 })
                     .lean();
-                bal.exposer = (bal === null || bal === void 0 ? void 0 : bal.exposer) + ((bal === null || bal === void 0 ? void 0 : bal.casinoexposer) || 0);
+                bal.exposer = (bal === null || bal === void 0 ? void 0 : bal.exposer) + ((bal === null || bal === void 0 ? void 0 : bal.casinoexposer) || 0) + ((bal === null || bal === void 0 ? void 0 : bal.matkaexposer) || 0);
                 return this.success(res, bal);
             }
             catch (e) {

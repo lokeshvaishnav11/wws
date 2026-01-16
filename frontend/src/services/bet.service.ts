@@ -50,6 +50,12 @@ class BetService {
     return api.post("c-reset", name)
   }
 
+
+  matkaresult(data:any){
+    return api.post("matka-result", data)
+  }
+
+
   oneledger() {
     return api.get("all-client-ledger/one");
   }

@@ -130,6 +130,7 @@ export class FancyController extends ApiController {
 
         Date: data.Date,
         result: "pending",
+        selectionId: data.selectionId,
 
         roundid: data.matchId,
         odds: data.odds,
@@ -172,12 +173,15 @@ export class FancyController extends ApiController {
   // Matka Profit Loss result
   Matkacal = async (roundid, result) => {
     try {
-      const single = result;
-      const andar = result / 10;
-      const bahar = result % 10;
+      const single = parseInt(result);
+
+      const andar = parseInt(result) / 10;
+      const bahar = parseInt(result) % 10;
+      console.log(roundid, result,  single , andar , bahar, "matka result cal");
       const matkaBets = await Matkabet.find({ roundid: roundid, status: "pending" });
       let userIdList: any = [];
       const parentIdList: any = [];
+      console.log(matkaBets, "matka bets to settle");
       const declare_result = matkaBets.map(async (ItemBetList: any, indexBetList: number) => {
         let profitLossAmt: number = 0;
         if (ItemBetList.bettype === "andar") {
@@ -194,13 +198,16 @@ export class FancyController extends ApiController {
 
           bet_id: ObjectId(ItemBetList._id),
           profit_loss: profitLossAmt,
-          matchId: ItemBetList.roundid,
+          matchId: 900,
 
           narration: `Matka Bet Result for ${ItemBetList.gamename} - ${ItemBetList.roundid}`,
           sportsType: 900,
           selectionId: ItemBetList.selectionId,
           sportId: 900,
         });
+
+        console.log(profitLossAmt, "matka profit loss amt");
+        
 
         // await this.cal9xbro(ItemBetList._id, profitLossAmt, `Matka Bet Result for ${ItemBetList.gamename} - ${ItemBetList.roundid}`, ItemBetList.roundid, ItemBetList._id, "MATKA")
 
@@ -223,18 +230,29 @@ export class FancyController extends ApiController {
 
 
   matkaResultapi = async (req: Request, res: Response): Promise<Response>  => {
+    
     const data = req.body;
+    console.log(data, "matka result api body")
     try {
-      if (data.result != "" && data.message == "ok" && data.roundid) {
+      if (data.result != ""  && data.roundid) {
 
+
+        console.log("Matka result api hit" ,data);
+        
         // const findMatka: any = await Matkagames.findOne({ roundid: data.roundid });
         const result = await this.Matkacal(data.roundid, data.result);
+        console.log(result ,
+          "sdfsresutl"
+        );
+        
            await Matkagames.updateOne(
           { roundid: data.roundid },
           { $set: { result: data.result, isActive: false } }
            );
 
-          return this.success(res, { message: "Matka result processed successfully" });
+           
+
+          return res.json( { result , message: "Matka result processed successfully" });
       
       }
 
@@ -3108,7 +3126,8 @@ export class FancyController extends ApiController {
       scommision = betdata.stack * (userdata.scom / 100);
     }
     if (sportId == 900) {
-      mtcommission = betdata.stack * (user?.matcom / 100);
+      const betdata2 =  await Matkabet.findOne({ _id: bet_id });
+      mtcommission = betdata2.betamount * (user?.matcom / 100);
     }
 
     const reference_id = await this.sendcreditdebit(

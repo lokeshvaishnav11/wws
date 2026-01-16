@@ -1,5 +1,6 @@
 import React, { useState } from "react";
 import accountService from "../../../services/account.service";
+import betService from "../../../services/bet.service";
 
 // ✅ DUMMY MATKA LIST
 
@@ -48,7 +49,7 @@ export default function MatkaResult() {
     const payload = {
       matchId: selectedGame.id,
       name: selectedGame.gamename,
-      roundId:selectedGame.roundid,
+      roundid:selectedGame.roundid,
       result,
       date,
     };
@@ -56,7 +57,7 @@ export default function MatkaResult() {
     console.log(payload,"bv")
 
     try {
-      const res = await betserver.matkaResult(payload);
+      const res = await betService.matkaresult(payload);
   
       // success ke baad hi UI update
       setRows((prev: any) => [...prev, payload]);

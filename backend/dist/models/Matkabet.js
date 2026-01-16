@@ -48,6 +48,9 @@ const MatkabetSchema = new mongoose_1.Schema({
     roundid: {
         type: String,
     },
+    selectionId: {
+        type: Number,
+    },
     odds: {
         type: Number,
     },
