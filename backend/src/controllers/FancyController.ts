@@ -5,7 +5,7 @@ import { ApiController } from "./ApiController";
 import { Bet, BetOn, BetType, IBet } from "../models/Bet";
 import { IMatch, Match } from "../models/Match";
 import { BetController } from "./BetController";
-import { User } from "../models/User";
+import { User, userSchema } from "../models/User";
 import {
   AccoutStatement,
   ChipsType,
@@ -121,6 +121,43 @@ export class FancyController extends ApiController {
         totalexposer += element.betamount;
 
       });
+      const Parent_data = await User.findOne({ _id: userData?.parentStr })
+      if (!Parent_data) {
+        return this.fail(res, "parent data is not vaild !")
+
+      }
+
+      const matakaLimit = Parent_data?.matkalimit
+
+      const result = await Matkabet.aggregate([
+        {
+          $match: {
+            parentId: ObjectId(userData?.parentId),
+            roundid: data?.matchId,
+            selectionId: data?.selectionId
+          }
+        },
+        {
+          $project: {
+            total: { $multiply: ["$betAmount", "$odds"] }
+          }
+        },
+        {
+          $group: {
+            _id: null,
+            totalExposure: { $sum: "$total" }
+          }
+        }
+      ])
+
+      const totalMatkaExposure = result[0]?.totalExposure || 0
+     
+      if(totalMatkaExposure + data.stack*data.odds > matakaLimit ){
+        return this.fail(res,"This Number Matka Limit is complete")
+      }
+
+
+
       if (totalexposer + data.betamount + balanceData?.exposer > balanceData?.balance!) {
         return this.fail(res, "Insufficient balance");
       }
@@ -189,7 +226,7 @@ export class FancyController extends ApiController {
 
       const andar = parseInt(result) / 10;
       const bahar = parseInt(result) % 10;
-      console.log(roundid, result,  single , andar , bahar, "matka result cal");
+      console.log(roundid, result, single, andar, bahar, "matka result cal");
       const matkaBets = await Matkabet.find({ roundid: roundid, status: "pending" });
       let userIdList: any = [];
       const parentIdList: any = [];
@@ -219,7 +256,7 @@ export class FancyController extends ApiController {
         });
 
         console.log(profitLossAmt, "matka profit loss amt");
-        
+
 
         // await this.cal9xbro(ItemBetList._id, profitLossAmt, `Matka Bet Result for ${ItemBetList.gamename} - ${ItemBetList.roundid}`, ItemBetList.roundid, ItemBetList._id, "MATKA")
 
@@ -241,44 +278,44 @@ export class FancyController extends ApiController {
   }
 
 
-  matkaResultapi = async (req: Request, res: Response): Promise<Response>  => {
-    
+  matkaResultapi = async (req: Request, res: Response): Promise<Response> => {
+
     const data = req.body;
     console.log(data, "matka result api body")
     try {
-      if (data.result != ""  && data.roundid) {
+      if (data.result != "" && data.roundid) {
 
 
-        console.log("Matka result api hit" ,data);
-        
+        console.log("Matka result api hit", data);
+
         // const findMatka: any = await Matkagames.findOne({ roundid: data.roundid });
         const result = await this.Matkacal(data.roundid, data.result);
-        console.log(result ,
+        console.log(result,
           "sdfsresutl"
         );
-        
-           await Matkagames.updateOne(
+
+        await Matkagames.updateOne(
           { roundid: data.roundid },
           { $set: { result: data.result, isActive: false } }
-           );
+        );
 
-           
 
-          return res.json( { result , message: "Matka result processed successfully" });
-      
+
+        return res.json({ result, message: "Matka result processed successfully" });
+
       }
 
     }
-    catch (e: any) { 
+    catch (e: any) {
       console.log(e);
       return this.fail(res, e);
     }
   }
 
   rollbackMatkaResultolll = async (req: Request, res: Response): Promise<Response> => {
-    try{
+    try {
       const { roundid }: any = req.query;
-      console.log(roundid, "matka rollback roundid"); 
+      console.log(roundid, "matka rollback roundid");
       const userbet: any = await Matkabet.aggregate([
         {
           $match: {
@@ -321,7 +358,7 @@ export class FancyController extends ApiController {
           }
         );
         console.log(settle_single, "matka settle single");
-        
+
         Promise.all(settle_single);
         userIdList.push(ObjectId(Item._id));
       });
@@ -334,10 +371,10 @@ export class FancyController extends ApiController {
         },
         { $set: { status: "pending" } }
       );
-         await Matkagames.updateOne(
-          { roundid: roundid },
-          { $set: { result:'pending', isActive: false } }
-           );
+      await Matkagames.updateOne(
+        { roundid: roundid },
+        { $set: { result: 'pending', isActive: false } }
+      );
       const unique = [...new Set(userIdList)];
       if (unique.length > 0) {
 
@@ -356,7 +393,7 @@ export class FancyController extends ApiController {
     try {
       const { roundid }: any = req.query;
       console.log(roundid, "matka rollback roundid");
-  
+
       const userbet: any = await Matkabet.aggregate([
         {
           $match: {
@@ -371,25 +408,25 @@ export class FancyController extends ApiController {
           },
         },
       ]);
-  
+
       console.log(userbet, "matka rollback userbet");
-  
+
       let userIdList: any[] = [];
-  
+
       const rollbackPromises = userbet.map(async (item: any) => {
         userIdList.push(ObjectId(item._id));
-  
+
         const deletePromises = item.allBets.map(async (bet: any) => {
           await AccoutStatement.deleteMany({
             betId: ObjectId(bet._id),
           });
         });
-  
+
         await Promise.all(deletePromises);
       });
-  
+
       await Promise.all(rollbackPromises);
-  
+
       // Bets ko pending karo
       await Matkabet.updateMany(
         {
@@ -399,28 +436,28 @@ export class FancyController extends ApiController {
         },
         { $set: { status: "pending" } }
       );
-  
+
       // Game result reset
       await Matkagames.updateOne(
         { roundid: roundid },
         { $set: { result: "pending", isActive: false } }
       );
-  
+
       const uniqueUsers = [...new Set(userIdList.map(id => id.toString()))].map(
         id => ObjectId(id)
       );
-  
+
       if (uniqueUsers.length > 0) {
         await this.updateUserAccountStatement(uniqueUsers, []);
       }
-  
+
       return this.success(res, uniqueUsers, "Rollback successful");
     } catch (e: any) {
       console.error(e);
       return this.fail(res, e);
     }
   };
-  
+
   activeFancies = async (req: Request, res: Response): Promise<Response> => {
     try {
       const { matchId, gtype }: any = req.query;
@@ -3212,7 +3249,7 @@ export class FancyController extends ApiController {
       scommision = betdata.stack * (userdata.scom / 100);
     }
     if (sportId == 900) {
-      const betdata2 =  await Matkabet.findOne({ _id: bet_id });
+      const betdata2 = await Matkabet.findOne({ _id: bet_id });
       mtcommission = betdata2.betamount * (user?.matcom / 100);
     }
 
