@@ -186,158 +186,159 @@ class AccountController extends ApiController_1.ApiController {
                 pnlData,
             };
         });
-        this.getAccountStmtList = (req, res) => __awaiter(this, void 0, void 0, function* () {
-            var _a;
-            try {
-                const { page } = req.query;
-                const { startDate, endDate, reportType, userId } = req.body;
-                console.log(req.user, "statemt");
-                const user = req.user;
-                const options = {
-                    page: page ? page : 1,
-                    limit: 20,
-                };
-                const userid = userId ? mongoose_1.Types.ObjectId(userId) : mongoose_1.Types.ObjectId(user._id);
-                var filter = {
-                    userId: userid,
-                    createdAt: {
-                        $gte: new Date(`${startDate} 00:00:00`),
-                        $lte: new Date(`${endDate} 23:59:59`),
-                    },
-                };
-                if (reportType == 'game') {
-                    filter = Object.assign(Object.assign({}, filter), { betId: { $ne: null } });
-                }
-                if (reportType == 'chip') {
-                    filter = Object.assign(Object.assign({}, filter), { betId: null });
-                }
-                const matchfilter = {
-                    $match: filter,
-                };
-                const aggregateFilter = [
-                    {
-                        $addFields: {
-                            convertedId: {
-                                $toObjectId: '$betId',
-                            },
-                        },
-                    },
-                    {
-                        $lookup: {
-                            from: 'bets',
-                            localField: 'convertedId',
-                            foreignField: '_id',
-                            as: 'result',
-                        },
-                    },
-                    {
-                        $lookup: {
-                            from: 'balances',
-                            localField: 'userId',
-                            foreignField: 'userId',
-                            as: 'balanceData',
-                        },
-                    },
-                    {
-                        $unwind: {
-                            path: '$balanceData',
-                            preserveNullAndEmptyArrays: true,
-                        },
-                    },
-                    matchfilter,
-                    {
-                        $facet: {
-                            nonNullSelections: [
-                                {
-                                    $match: {
-                                        convertedId: { $ne: null },
-                                    },
-                                },
-                                {
-                                    $group: {
-                                        _id: {
-                                            matchId: '$matchId',
-                                            marketId: '$result.marketId',
-                                        },
-                                        userId: { $first: '$userId' },
-                                        selectionId: { $first: '$selectionId' },
-                                        matchId: { $first: '$matchId' },
-                                        amount: { $sum: '$amount' },
-                                        txnType: { $first: '$txnType' },
-                                        txnBy: { $first: '$txnBy' },
-                                        openBal: { $first: '$openBal' },
-                                        narration: { $first: '$narration' },
-                                        createdAt: { $first: '$createdAt' },
-                                        type: { $first: '$type' },
-                                        balance: { $first: '$balanceData.balance' },
-                                        allBets: { $push: '$$ROOT' },
-                                    },
-                                },
-                            ],
-                            nullSelections: [
-                                {
-                                    $match: {
-                                        convertedId: null,
-                                    },
-                                },
-                                {
-                                    $addFields: {
-                                        balance: '$balanceData.balance', // include balance
-                                    },
-                                },
-                            ],
-                        },
-                    },
-                    {
-                        $sort: { createdAt: 1 },
-                    },
-                    {
-                        $project: {
-                            data: {
-                                $concatArrays: ['$nonNullSelections', '$nullSelections'],
-                            },
-                        },
-                    },
-                    {
-                        $unwind: '$data',
-                    },
-                    {
-                        $replaceRoot: {
-                            newRoot: '$data',
-                        },
-                    },
-                    {
-                        $sort: {
-                            createdAt: 1,
-                        },
-                    },
-                ];
-                const pageNo = page ? page : '1';
-                var accountStatement = yield AccountStatement_1.AccoutStatement.aggregate(aggregateFilter);
-                const datasort = accountStatement === null || accountStatement === void 0 ? void 0 : accountStatement.sort((a, b) => a.createdAt - b.createdAt);
-                var accountStatementNew = { items: datasort };
-                const openingBalance = yield AccountStatement_1.AccoutStatement.aggregate([
-                    {
-                        $match: {
-                            userId: userid,
-                            createdAt: {
-                                $lte: new Date(`${startDate} 00:00:00`),
-                            },
-                        },
-                    },
-                    {
-                        $group: {
-                            _id: null,
-                            total: { $sum: '$amount' },
-                        },
-                    },
-                ]);
-                return this.success(res, Object.assign(Object.assign({}, accountStatementNew), { openingBalance: ((_a = openingBalance === null || openingBalance === void 0 ? void 0 : openingBalance[0]) === null || _a === void 0 ? void 0 : _a.total) || 0 }));
-            }
-            catch (e) {
-                return this.fail(res, e);
-            }
-        });
+        // getAccountStmtList = async (req: Request, res: Response) => {
+        //   try {
+        //     const { page }: any = req.query
+        //     const { startDate, endDate, reportType, userId }: any = req.body
+        //     console.log(req.user, "statemt")
+        //     const user: any = req.user
+        //     const options = {
+        //       page: page ? page : 1,
+        //       limit: 20,
+        //     }
+        //     const userid = userId ? Types.ObjectId(userId) : Types.ObjectId(user._id)
+        //     var filter: any = {
+        //       userId: userid,
+        //       createdAt: {
+        //         $gte: new Date(`${startDate} 00:00:00`),
+        //         $lte: new Date(`${endDate} 23:59:59`),
+        //       },
+        //     }
+        //     if (reportType == 'game') {
+        //       filter = { ...filter, ...{ betId: { $ne: null } } }
+        //     }
+        //     if (reportType == 'chip') {
+        //       filter = { ...filter, ...{ betId: null } }
+        //     }
+        //     const matchfilter = {
+        //       $match: filter,
+        //     }
+        //     const aggregateFilter = [
+        //       {
+        //         $addFields: {
+        //           convertedId: {
+        //             $toObjectId: '$betId',
+        //           },
+        //         },
+        //       },
+        //       {
+        //         $lookup: {
+        //           from: 'bets',
+        //           localField: 'convertedId',
+        //           foreignField: '_id',
+        //           as: 'result',
+        //         },
+        //       },
+        //       {
+        //         $lookup: {
+        //           from: 'balances',
+        //           localField: 'userId',
+        //           foreignField: 'userId',
+        //           as: 'balanceData',
+        //         },
+        //       },
+        //       {
+        //         $unwind: {
+        //           path: '$balanceData',
+        //           preserveNullAndEmptyArrays: true,
+        //         },
+        //       },
+        //       matchfilter,
+        //       {
+        //         $facet: {
+        //           nonNullSelections: [
+        //             {
+        //               $match: {
+        //                 convertedId: { $ne: null },
+        //               },
+        //             },
+        //             {
+        //               $group: {
+        //                 _id: {
+        //                   matchId: '$matchId',
+        //                   marketId: '$result.marketId',
+        //                 },
+        //                 userId: { $first: '$userId' },
+        //                 selectionId: { $first: '$selectionId' },
+        //                 matchId: { $first: '$matchId' },
+        //                 amount: { $sum: '$amount' },
+        //                 txnType: { $first: '$txnType' },
+        //                 txnBy: { $first: '$txnBy' },
+        //                 openBal: { $first: '$openBal' },
+        //                 narration: { $first: '$narration' },
+        //                 createdAt: { $first: '$createdAt' },
+        //                 type: { $first: '$type' },
+        //                 balance: { $first: '$balanceData.balance' }, // include balance
+        //                 allBets: { $push: '$$ROOT' },
+        //               },
+        //             },
+        //           ],
+        //           nullSelections: [
+        //             {
+        //               $match: {
+        //                 convertedId: null,
+        //               },
+        //             },
+        //             {
+        //               $addFields: {
+        //                 balance: '$balanceData.balance', // include balance
+        //               },
+        //             },
+        //           ],
+        //         },
+        //       },
+        //       {
+        //         $sort: { createdAt: 1 },
+        //       },
+        //       {
+        //         $project: {
+        //           data: {
+        //             $concatArrays: ['$nonNullSelections', '$nullSelections'],
+        //           },
+        //         },
+        //       },
+        //       {
+        //         $unwind: '$data',
+        //       },
+        //       {
+        //         $replaceRoot: {
+        //           newRoot: '$data',
+        //         },
+        //       },
+        //       {
+        //         $sort: {
+        //           createdAt: 1,
+        //         },
+        //       },
+        //     ]
+        //     const pageNo = page ? (page as string) : '1'
+        //     var accountStatement = await AccoutStatement.aggregate(aggregateFilter)
+        //     const datasort = accountStatement?.sort((a: any, b: any) => a.createdAt - b.createdAt)
+        //     var accountStatementNew = { items: datasort }
+        //     const openingBalance = await AccoutStatement.aggregate([
+        //       {
+        //         $match: {
+        //           userId: userid,
+        //           createdAt: {
+        //             $lte: new Date(`${startDate} 00:00:00`),
+        //           },
+        //         },
+        //       },
+        //       {
+        //         $group: {
+        //           _id: null,
+        //           total: { $sum: '$amount' },
+        //         },
+        //       },
+        //     ])
+        //     return this.success(res, {
+        //       ...accountStatementNew,
+        //       openingBalance: openingBalance?.[0]?.total || 0,
+        //     })
+        //   } catch (e: any) {
+        //     return this.fail(res, e)
+        //   }
+        // }
         // getAccountStmtList = async (req: Request, res: Response) => {
         //   try {
         //     const { page }: any = req.query;
@@ -535,6 +536,206 @@ class AccountController extends ApiController_1.ApiController {
         //     return this.fail(res, e);
         //   }
         // };
+        this.getAccountStmtList = (req, res) => __awaiter(this, void 0, void 0, function* () {
+            var _a;
+            try {
+                const { page } = req.query;
+                const { startDate, endDate, reportType, userId } = req.body;
+                const user = req.user;
+                const userid = userId
+                    ? mongoose_1.Types.ObjectId(userId)
+                    : mongoose_1.Types.ObjectId(user._id);
+                let filter = {
+                    userId: userid,
+                    createdAt: {
+                        $gte: new Date(`${startDate} 00:00:00`),
+                        $lte: new Date(`${endDate} 23:59:59`),
+                    },
+                };
+                if (reportType === 'game') {
+                    filter.betId = { $ne: null };
+                }
+                if (reportType === 'chip') {
+                    filter.betId = null;
+                }
+                const aggregateFilter = [
+                    { $match: filter },
+                    // betId → ObjectId
+                    {
+                        $addFields: {
+                            convertedId: {
+                                $cond: [
+                                    { $and: [{ $ne: ['$betId', null] }, { $ne: ['$betId', ''] }] },
+                                    { $toObjectId: '$betId' },
+                                    null,
+                                ],
+                            },
+                        },
+                    },
+                    // 🔹 NORMAL BETS (sportId != 900)
+                    {
+                        $lookup: {
+                            from: 'bets',
+                            let: { betId: '$convertedId', sportId: '$sportId' },
+                            pipeline: [
+                                {
+                                    $match: {
+                                        $expr: {
+                                            $and: [
+                                                { $eq: ['$_id', '$$betId'] },
+                                                { $ne: ['$$sportId', 900] },
+                                            ],
+                                        },
+                                    },
+                                },
+                            ],
+                            as: 'normalBet',
+                        },
+                    },
+                    // 🔹 MATKA BETS (sportId = 900)
+                    {
+                        $lookup: {
+                            from: 'matkabets',
+                            let: { betId: '$convertedId', sportId: '$sportId' },
+                            pipeline: [
+                                {
+                                    $match: {
+                                        $expr: {
+                                            $and: [
+                                                { $eq: ['$_id', '$$betId'] },
+                                                { $eq: ['$$sportId', 900] },
+                                            ],
+                                        },
+                                    },
+                                },
+                            ],
+                            as: 'matkaBet',
+                        },
+                    },
+                    // 🔹 Select correct bet
+                    {
+                        $addFields: {
+                            result: {
+                                $cond: [
+                                    { $eq: ['$sportId', 900] },
+                                    { $arrayElemAt: ['$matkaBet', 0] },
+                                    { $arrayElemAt: ['$normalBet', 0] },
+                                ],
+                            },
+                        },
+                    },
+                    // 🔹 roundid for Matka
+                    {
+                        $addFields: {
+                            roundKey: {
+                                $cond: [
+                                    { $eq: ['$sportId', 900] },
+                                    '$result.roundid',
+                                    null,
+                                ],
+                            },
+                        },
+                    },
+                    // 🔹 BALANCE
+                    {
+                        $lookup: {
+                            from: 'balances',
+                            localField: 'userId',
+                            foreignField: 'userId',
+                            as: 'balanceData',
+                        },
+                    },
+                    {
+                        $unwind: {
+                            path: '$balanceData',
+                            preserveNullAndEmptyArrays: true,
+                        },
+                    },
+                    // 🔹 FACET
+                    {
+                        $facet: {
+                            nonNullSelections: [
+                                { $match: { convertedId: { $ne: null } } },
+                                {
+                                    $group: {
+                                        _id: {
+                                            $cond: [
+                                                // ✅ MATKA → roundid wise
+                                                { $eq: ['$sportId', 900] },
+                                                { roundId: '$roundKey' },
+                                                // ✅ NORMAL → match + market
+                                                {
+                                                    matchId: '$matchId',
+                                                    marketId: {
+                                                        $ifNull: ['$result.marketId', '$result.marketid'],
+                                                    },
+                                                },
+                                            ],
+                                        },
+                                        userId: { $first: '$userId' },
+                                        sportId: { $first: '$sportId' },
+                                        roundId: { $first: '$roundKey' },
+                                        matchId: { $first: '$matchId' },
+                                        amount: { $sum: '$amount' },
+                                        txnType: { $first: '$txnType' },
+                                        txnBy: { $first: '$txnBy' },
+                                        openBal: { $first: '$openBal' },
+                                        narration: { $first: '$narration' },
+                                        createdAt: { $first: '$createdAt' },
+                                        type: { $first: '$type' },
+                                        balance: { $first: '$balanceData.balance' },
+                                        allBets: { $push: '$$ROOT' },
+                                    },
+                                },
+                            ],
+                            nullSelections: [
+                                { $match: { convertedId: null } },
+                                {
+                                    $addFields: {
+                                        balance: '$balanceData.balance',
+                                    },
+                                },
+                            ],
+                        },
+                    },
+                    {
+                        $project: {
+                            data: {
+                                $concatArrays: ['$nonNullSelections', '$nullSelections'],
+                            },
+                        },
+                    },
+                    { $unwind: '$data' },
+                    { $replaceRoot: { newRoot: '$data' } },
+                    { $sort: { createdAt: 1 } },
+                ];
+                const accountStatement = yield AccountStatement_1.AccoutStatement.aggregate(aggregateFilter);
+                // 🔹 OPENING BALANCE
+                const openingBalance = yield AccountStatement_1.AccoutStatement.aggregate([
+                    {
+                        $match: {
+                            userId: userid,
+                            createdAt: {
+                                $lte: new Date(`${startDate} 00:00:00`),
+                            },
+                        },
+                    },
+                    {
+                        $group: {
+                            _id: null,
+                            total: { $sum: '$amount' },
+                        },
+                    },
+                ]);
+                return this.success(res, {
+                    items: accountStatement,
+                    openingBalance: ((_a = openingBalance === null || openingBalance === void 0 ? void 0 : openingBalance[0]) === null || _a === void 0 ? void 0 : _a.total) || 0,
+                });
+            }
+            catch (e) {
+                return this.fail(res, e);
+            }
+        });
         this.getAccountStmtList22 = (req, res) => __awaiter(this, void 0, void 0, function* () {
             try {
                 const { _id } = req.user;
