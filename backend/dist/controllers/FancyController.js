@@ -99,77 +99,294 @@ class FancyController extends ApiController_1.ApiController {
         //   }
         // };
         // Matka code start from here 
+        // placeMatkabet = async (req: Request, res: Response): Promise<Response> => {
+        //   try {
+        //     const data = req.body;
+        //     const { _id, usernname }: any = req.user;
+        //     if (!data) {
+        //       return this.fail(res, "Invalid data")
+        //     }
+        //     const matkaexposer = await Matkabet.find({ userId: _id, status: "pending" }).select({ betamount: 1 });
+        //     const balanceData = await Balance.findOne({ userId: _id });
+        //     const userData = await User.findById(_id);
+        //     let totalexposer = 0;
+        //     matkaexposer.forEach((element: any) => {
+        //       totalexposer += element.betamount;
+        //     });
+        //     const Parent_data = await User.findOne({ _id: userData?.parentId })
+        //     if (!Parent_data) {
+        //       return this.fail(res, "parent data is not vaild !")
+        //     }
+        //     const matakaLimit = Parent_data?.matkalimit
+        //     const result = await Matkabet.aggregate([
+        //       {
+        //         $match: {
+        //           parentId: ObjectId(userData?.parentId),
+        //           roundid: data?.matchId,
+        //           // selectionId: data?.selectionId
+        //         }
+        //       },
+        //       {
+        //         $project: {
+        //           total: { $multiply: ["$betamount", "$odds"] }
+        //         }
+        //       },
+        //       {
+        //         $group: {
+        //           _id: null,
+        //           totalExposure: { $sum: "$total" }
+        //         }
+        //       }
+        //     ])
+        //     const totalMatkaExposure = result[0]?.totalExposure || 0
+        //     console.log(totalMatkaExposure + data.stack*data.odds,"makkttt", matakaLimit,data.stack*data.odds)
+        //     if(totalMatkaExposure + data.stack*data.odds > matakaLimit ){
+        //       return this.fail(res,"This Number Matka Limit is complete")
+        //     }
+        //     if (totalexposer + data.betamount + balanceData?.exposer > balanceData?.balance!) {
+        //       return this.fail(res, "Insufficient balance");
+        //     }
+        //     const newBet = new Matkabet({
+        //       gamename: data.matchName,
+        //       id: data.marketId,
+        //       Date: data.Date,
+        //       result: "pending",
+        //       selectionId: data.selectionId,
+        //       roundid: data.matchId,
+        //       odds: data.odds,
+        //       betamount: data.stack,
+        //       bettype: data.gtype,
+        //       userId: _id,
+        //       parentstr: userData?.parentStr,
+        //       parentId: userData?.parentId,
+        //       bet_on: data.betOn,
+        //       status: "pending"
+        //     })
+        //     await newBet.save();
+        //     await balanceData!.updateOne({ matkaexposer: totalexposer + data.stack })
+        //     return this.success(res, newBet, "Bet placed successfully");
+        //   }
+        //   catch (e: any) {
+        //     console.log(e);
+        //     return this.fail(res, e);
+        //   }
+        // }
+        // placeMatkabet = async (req: Request, res: Response): Promise<Response> => {
+        //   const getAndar = (num: number) => Math.floor(num / 10);
+        //   const getBahar = (num: number) => num % 10;
+        //   try {
+        //     const data = req.body;
+        //     const { _id }: any = req.user;
+        //     if (!data) return this.fail(res, "Invalid data");
+        //     const userData = await User.findById(_id);
+        //     const balanceData = await Balance.findOne({ userId: _id });
+        //     const parentData = await User.findById(userData?.parentId);
+        //     if (!userData || !balanceData || !parentData)
+        //       return this.fail(res, "Invalid user data");
+        //     const matkaLimit = parentData.matkalimit;
+        //     // 🔹 USER TOTAL EXPOSURE
+        //     const pendingBets = await Matkabet.find({
+        //       userId: _id,
+        //       status: "pending",
+        //     }).select({ betamount: 1 });
+        //     const userExposure = pendingBets.reduce(
+        //       (sum: number, b: any) => sum + b.betamount,
+        //       0
+        //     );
+        //     // 🔹 CURRENT BET DETAILS
+        //     const betType = data.gtype; // single | andar | bahar
+        //     const selection = Number(data.selectionId);
+        //     const andar = getAndar(selection);
+        //     const bahar = getBahar(selection);
+        //     // 🔹 FETCH RELATED BETS (NO REGEX)
+        //     const relatedBets = await Matkabet.find({
+        //       parentId: ObjectId(userData.parentId),
+        //       roundid: data.matchId,
+        //       status: "pending",
+        //     });
+        //     let existingExposure = 0;
+        //     for (const bet of relatedBets) {
+        //       const betSel = Number(bet.selectionId);
+        //       const betAndar = getAndar(betSel);
+        //       const betBahar = getBahar(betSel);
+        //       let count = false;
+        //       if (betType === "single") {
+        //         if (
+        //           bet.bettype === "single" && betSel === selection ||
+        //           bet.bettype === "andar" && betSel === andar ||
+        //           bet.bettype === "bahar" && betSel === bahar
+        //         ) {
+        //           count = true;
+        //         }
+        //       }
+        //       if (betType === "andar") {
+        //         if (
+        //           bet.bettype === "andar" && betSel === selection ||
+        //           bet.bettype === "single" && getAndar(betSel) === selection
+        //         ) {
+        //           count = true;
+        //         }
+        //       }
+        //       if (betType === "bahar") {
+        //         if (
+        //           bet.bettype === "bahar" && betSel === selection ||
+        //           bet.bettype === "single" && getBahar(betSel) === selection
+        //         ) {
+        //           count = true;
+        //         }
+        //       }
+        //       if (count) {
+        //         existingExposure += bet.betamount * bet.odds;
+        //       }
+        //     }
+        //     const newExposure = data.stack * data.odds;
+        //     console.log("EXISTING:", existingExposure, "NEW:", newExposure);
+        //     if (existingExposure + newExposure > matkaLimit) {
+        //       return this.fail(res, "Matka limit exceeded for this number");
+        //     }
+        //     // 🔹 BALANCE CHECK
+        //     if (
+        //       userExposure + data.stack + balanceData.exposer >
+        //       balanceData.balance
+        //     ) {
+        //       return this.fail(res, "Insufficient balance");
+        //     }
+        //     // 🔹 SAVE BET
+        //     const newBet = new Matkabet({
+        //       gamename: data.matchName,
+        //       id: data.marketId,
+        //       result: "pending",
+        //       selectionId: selection,
+        //       roundid: data.matchId,
+        //       odds: data.odds,
+        //       betamount: data.stack,
+        //       bettype: betType,
+        //       userId: _id,
+        //       parentstr: userData.parentStr,
+        //       parentId: userData.parentId,
+        //       bet_on: betType,
+        //       status: "pending",
+        //     });
+        //     await newBet.save();
+        //     await balanceData.updateOne({
+        //       matkaexposer: userExposure + data.stack,
+        //     });
+        //     return this.success(res, newBet, "Bet placed successfully");
+        //   } catch (e: any) {
+        //     console.error(e);
+        //     return this.fail(res, e.message || "Something went wrong");
+        //   }
+        // };
         this.placeMatkabet = (req, res) => __awaiter(this, void 0, void 0, function* () {
-            var _a;
+            // ================= HELPERS =================
+            const getPossibleResults = (bettype, selection) => {
+                const results = [];
+                // Single → sirf wahi number
+                if (bettype === "single") {
+                    results.push(selection);
+                }
+                // Andar → 20–29 type
+                if (bettype === "andar") {
+                    const start = selection * 10;
+                    for (let i = start; i <= start + 9; i++) {
+                        results.push(i);
+                    }
+                }
+                // Bahar → 02,12,22...
+                if (bettype === "bahar") {
+                    for (let i = 0; i <= 9; i++) {
+                        results.push(i * 10 + selection);
+                    }
+                }
+                return results;
+            };
             try {
                 const data = req.body;
-                const { _id, usernname } = req.user;
-                if (!data) {
+                const { _id } = req.user;
+                if (!data)
                     return this.fail(res, "Invalid data");
-                }
-                const matkaexposer = yield Matkabet_1.default.find({ userId: _id, status: "pending" }).select({ betamount: 1 });
-                const balanceData = yield Balance_1.Balance.findOne({ userId: _id });
+                // ================= USER / BALANCE =================
                 const userData = yield User_1.User.findById(_id);
-                let totalexposer = 0;
-                matkaexposer.forEach((element) => {
-                    totalexposer += element.betamount;
+                const balanceData = yield Balance_1.Balance.findOne({ userId: _id });
+                const parentData = yield User_1.User.findById(userData === null || userData === void 0 ? void 0 : userData.parentId);
+                if (!userData || !balanceData || !parentData) {
+                    return this.fail(res, "Invalid user data");
+                }
+                const matkaLimit = parentData.matkalimit; // 👈 agent limit
+                // ================= USER TOTAL EXPOSURE =================
+                const pendingUserBets = yield Matkabet_1.default.find({
+                    userId: _id,
+                    status: "pending",
+                }).select({ betamount: 1 });
+                const userExposure = pendingUserBets.reduce((sum, b) => sum + b.betamount, 0);
+                // ================= CURRENT BET =================
+                const betType = data.gtype;
+                const selection = Number(data.selectionId);
+                const newWinAmount = data.stack * data.odds;
+                // ================= FETCH ALL PARENT BETS =================
+                const relatedBets = yield Matkabet_1.default.find({
+                    parentId: ObjectId(userData.parentId),
+                    roundid: data.matchId,
+                    status: "pending",
                 });
-                const Parent_data = yield User_1.User.findOne({ _id: userData === null || userData === void 0 ? void 0 : userData.parentId });
-                if (!Parent_data) {
-                    return this.fail(res, "parent data is not vaild !");
-                }
-                const matakaLimit = Parent_data === null || Parent_data === void 0 ? void 0 : Parent_data.matkalimit;
-                const result = yield Matkabet_1.default.aggregate([
-                    {
-                        $match: {
-                            parentId: ObjectId(userData === null || userData === void 0 ? void 0 : userData.parentId),
-                            roundid: data === null || data === void 0 ? void 0 : data.matchId,
-                            // selectionId: data?.selectionId
-                        }
-                    },
-                    {
-                        $project: {
-                            total: { $multiply: ["$betamount", "$odds"] }
-                        }
-                    },
-                    {
-                        $group: {
-                            _id: null,
-                            totalExposure: { $sum: "$total" }
-                        }
+                // ================= RESULT-WISE EXPOSURE MAP =================
+                // { 23: 1800, 33: 900, ... }
+                const exposureMap = {};
+                for (const bet of relatedBets) {
+                    const betResults = getPossibleResults(bet.bettype, Number(bet.selectionId));
+                    for (const result of betResults) {
+                        exposureMap[result] =
+                            (exposureMap[result] || 0) + bet.betamount * bet.odds;
                     }
-                ]);
-                const totalMatkaExposure = ((_a = result[0]) === null || _a === void 0 ? void 0 : _a.totalExposure) || 0;
-                console.log(totalMatkaExposure + data.stack * data.odds, "makkttt", matakaLimit, data.stack * data.odds);
-                if (totalMatkaExposure + data.stack * data.odds > matakaLimit) {
-                    return this.fail(res, "This Number Matka Limit is complete");
                 }
-                if (totalexposer + data.betamount + (balanceData === null || balanceData === void 0 ? void 0 : balanceData.exposer) > (balanceData === null || balanceData === void 0 ? void 0 : balanceData.balance)) {
+                // ================= FINAL LIMIT LOGIC =================
+                // Sirf max-loss wale result ko check karna
+                const newBetResults = getPossibleResults(betType, selection);
+                let maxLossAfterBet = 0;
+                for (let result = 0; result <= 99; result++) {
+                    const existingLoss = exposureMap[result] || 0;
+                    const newLoss = newBetResults.includes(result)
+                        ? newWinAmount
+                        : 0;
+                    const totalLoss = existingLoss + newLoss;
+                    if (totalLoss > maxLossAfterBet) {
+                        maxLossAfterBet = totalLoss;
+                    }
+                }
+                if (maxLossAfterBet > matkaLimit) {
+                    return this.fail(res, "Matka limit exceeded for this number");
+                }
+                // ================= BALANCE CHECK =================
+                if (userExposure + data.stack + balanceData.exposer >
+                    balanceData.balance) {
                     return this.fail(res, "Insufficient balance");
                 }
+                // ================= SAVE BET =================
                 const newBet = new Matkabet_1.default({
                     gamename: data.matchName,
                     id: data.marketId,
-                    Date: data.Date,
                     result: "pending",
-                    selectionId: data.selectionId,
+                    selectionId: selection,
                     roundid: data.matchId,
                     odds: data.odds,
                     betamount: data.stack,
-                    bettype: data.gtype,
+                    bettype: betType,
                     userId: _id,
-                    parentstr: userData === null || userData === void 0 ? void 0 : userData.parentStr,
-                    parentId: userData === null || userData === void 0 ? void 0 : userData.parentId,
-                    bet_on: data.betOn,
-                    status: "pending"
+                    parentstr: userData.parentStr,
+                    parentId: userData.parentId,
+                    bet_on: "MATKA",
+                    status: "pending",
                 });
                 yield newBet.save();
-                yield balanceData.updateOne({ matkaexposer: totalexposer + data.stack });
+                // ================= UPDATE USER EXPOSURE =================
+                yield balanceData.updateOne({
+                    matkaexposer: userExposure + data.stack,
+                });
                 return this.success(res, newBet, "Bet placed successfully");
             }
             catch (e) {
-                console.log(e);
-                return this.fail(res, e);
+                console.error(e);
+                return this.fail(res, e.message || "Something went wrong");
             }
         });
         this.matkaList66 = (req, res) => __awaiter(this, void 0, void 0, function* () {
@@ -784,7 +1001,7 @@ class FancyController extends ApiController_1.ApiController {
                 const betController = new BetController_1.BetController();
                 const json = {};
                 const promiseStatment = userIds.map((ItemUserId) => __awaiter(this, void 0, void 0, function* () {
-                    var _b;
+                    var _a;
                     let exposer = 0;
                     let cexposer = 0;
                     let balancePnl = 0;
@@ -828,7 +1045,7 @@ class FancyController extends ApiController_1.ApiController {
                                 },
                             },
                         ]);
-                        var totalCommissionLega = ((_b = result[0]) === null || _b === void 0 ? void 0 : _b.totalCommissionLega) || 0;
+                        var totalCommissionLega = ((_a = result[0]) === null || _a === void 0 ? void 0 : _a.totalCommissionLega) || 0;
                         balancePnl = blanceData.pnl_;
                         var blancedata = blanceData.Balance_ + 0;
                         console.log("balance Pnl", blancedata, blanceData.Balance_);
@@ -864,7 +1081,7 @@ class FancyController extends ApiController_1.ApiController {
                 const betController = new BetController_1.BetController();
                 const json = {};
                 const promiseStatment = userIds.map((ItemUserId) => __awaiter(this, void 0, void 0, function* () {
-                    var _c;
+                    var _b;
                     let exposer = 0;
                     let mexposer = 0;
                     let balancePnl = 0;
@@ -882,7 +1099,7 @@ class FancyController extends ApiController_1.ApiController {
                                 },
                             },
                         ]);
-                        var totalCommissionLega = ((_c = result[0]) === null || _c === void 0 ? void 0 : _c.totalCommissionLega) || 0;
+                        var totalCommissionLega = ((_b = result[0]) === null || _b === void 0 ? void 0 : _b.totalCommissionLega) || 0;
                         balancePnl = blanceData.pnl_;
                         blancedata = blanceData.Balance_ + 0;
                         var totalexpr = blancedata - exposer - mexposer;
@@ -1370,7 +1587,7 @@ class FancyController extends ApiController_1.ApiController {
                 if (unique.length > 0) {
                     // const ObjectId = require("mongoose").Types.ObjectId;
                     const userProfits = yield Promise.all(unique.map((userId) => __awaiter(this, void 0, void 0, function* () {
-                        var _d, _e, _f;
+                        var _c, _d, _e;
                         const bets = yield Bet_1.Bet.find({
                             userId: ObjectId(userId),
                             status: "completed",
@@ -1383,7 +1600,7 @@ class FancyController extends ApiController_1.ApiController {
                         // };
                         if (bets.length > 0) {
                             const totalProfitLoss = yield bets.reduce((sum, bet) => sum + bet.profitLoss, 0);
-                            yield this.cal9xbro(userId, totalProfitLoss, ((_d = bets === null || bets === void 0 ? void 0 : bets[0]) === null || _d === void 0 ? void 0 : _d.marketId.toString()) + ((_e = bets === null || bets === void 0 ? void 0 : bets[0]) === null || _e === void 0 ? void 0 : _e.marketName), matchId, (_f = bets[0]) === null || _f === void 0 ? void 0 : _f._id, Bet_1.BetOn.MATCH_ODDS);
+                            yield this.cal9xbro(userId, totalProfitLoss, ((_c = bets === null || bets === void 0 ? void 0 : bets[0]) === null || _c === void 0 ? void 0 : _c.marketId.toString()) + ((_d = bets === null || bets === void 0 ? void 0 : bets[0]) === null || _d === void 0 ? void 0 : _d.marketName), matchId, (_e = bets[0]) === null || _e === void 0 ? void 0 : _e._id, Bet_1.BetOn.MATCH_ODDS);
                         }
                     })));
                     // Optional: log or use the result
@@ -1493,7 +1710,7 @@ class FancyController extends ApiController_1.ApiController {
                 if (unique.length > 0) {
                     // const ObjectId = require("mongoose").Types.ObjectId;
                     const userProfits = yield Promise.all(unique.map((userId) => __awaiter(this, void 0, void 0, function* () {
-                        var _g, _h;
+                        var _f, _g;
                         const bets = yield Bet_1.Bet.find({
                             userId: ObjectId(userId),
                             status: "completed",
@@ -1506,7 +1723,7 @@ class FancyController extends ApiController_1.ApiController {
                         //   totalProfitLoss
                         // };
                         if (bets.length > 0) {
-                            yield this.cal9xbro(userId, totalProfitLoss, ((_g = bets === null || bets === void 0 ? void 0 : bets[0]) === null || _g === void 0 ? void 0 : _g.marketId) + ((_h = bets === null || bets === void 0 ? void 0 : bets[0]) === null || _h === void 0 ? void 0 : _h.marketName), matchId, bets[0]._id, Bet_1.BetOn.MATCH_ODDS);
+                            yield this.cal9xbro(userId, totalProfitLoss, ((_f = bets === null || bets === void 0 ? void 0 : bets[0]) === null || _f === void 0 ? void 0 : _f.marketId) + ((_g = bets === null || bets === void 0 ? void 0 : bets[0]) === null || _g === void 0 ? void 0 : _g.marketName), matchId, bets[0]._id, Bet_1.BetOn.MATCH_ODDS);
                         }
                     })));
                     // Optional: log or use the result
@@ -1620,7 +1837,7 @@ class FancyController extends ApiController_1.ApiController {
                 if (unique.length > 0) {
                     // const ObjectId = require("mongoose").Types.ObjectId;
                     const userProfits = yield Promise.all(unique.map((userId) => __awaiter(this, void 0, void 0, function* () {
-                        var _j, _k, _l;
+                        var _h, _j, _k;
                         const bets = yield Bet_1.Bet.find({
                             userId: ObjectId(userId),
                             status: "completed",
@@ -1633,7 +1850,7 @@ class FancyController extends ApiController_1.ApiController {
                         //   totalProfitLoss
                         // };
                         if (bets.length > 0) {
-                            yield this.cal9xbro(userId, totalProfitLoss, ((_j = bets === null || bets === void 0 ? void 0 : bets[0]) === null || _j === void 0 ? void 0 : _j.marketId) + ((_k = bets === null || bets === void 0 ? void 0 : bets[0]) === null || _k === void 0 ? void 0 : _k.marketName), matchId, (_l = bets[0]) === null || _l === void 0 ? void 0 : _l._id, Bet_1.BetOn.MATCH_ODDS);
+                            yield this.cal9xbro(userId, totalProfitLoss, ((_h = bets === null || bets === void 0 ? void 0 : bets[0]) === null || _h === void 0 ? void 0 : _h.marketId) + ((_j = bets === null || bets === void 0 ? void 0 : bets[0]) === null || _j === void 0 ? void 0 : _j.marketName), matchId, (_k = bets[0]) === null || _k === void 0 ? void 0 : _k._id, Bet_1.BetOn.MATCH_ODDS);
                         }
                     })));
                     // Optional: log or use the result
@@ -1766,12 +1983,12 @@ class FancyController extends ApiController_1.ApiController {
             }
         });
         this.addprofitlosstouser = ({ userId, bet_id, profit_loss, matchId, narration, sportsType, selectionId, sportId, }) => __awaiter(this, void 0, void 0, function* () {
-            var _m, _o, _p, _q;
+            var _l, _m, _o, _p;
             const user = yield User_1.User.findOne({ _id: userId });
             const user_parent = yield User_1.User.findOne({ _id: user === null || user === void 0 ? void 0 : user.parentId });
             const parent_ratio = sportId == 5000
-                ? (_o = (_m = user_parent === null || user_parent === void 0 ? void 0 : user_parent.partnership) === null || _m === void 0 ? void 0 : _m[4]) === null || _o === void 0 ? void 0 : _o.allRatio
-                : (_q = (_p = user_parent === null || user_parent === void 0 ? void 0 : user_parent.partnership) === null || _p === void 0 ? void 0 : _p[sportsType]) === null || _q === void 0 ? void 0 : _q.allRatio;
+                ? (_m = (_l = user_parent === null || user_parent === void 0 ? void 0 : user_parent.partnership) === null || _l === void 0 ? void 0 : _l[4]) === null || _m === void 0 ? void 0 : _m.allRatio
+                : (_p = (_o = user_parent === null || user_parent === void 0 ? void 0 : user_parent.partnership) === null || _o === void 0 ? void 0 : _o[sportsType]) === null || _p === void 0 ? void 0 : _p.allRatio;
             let scommision = 0;
             let mtcommission = 0;
             const betdata = yield Bet_1.Bet.findOne({ _id: bet_id });

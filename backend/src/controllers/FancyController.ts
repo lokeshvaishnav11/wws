@@ -101,104 +101,390 @@ export class FancyController extends ApiController {
 
   // Matka code start from here 
 
-  placeMatkabet = async (req: Request, res: Response): Promise<Response> => {
+  // placeMatkabet = async (req: Request, res: Response): Promise<Response> => {
 
-    try {
-      const data = req.body;
-      const { _id, usernname }: any = req.user;
-      if (!data) {
-        return this.fail(res, "Invalid data")
-      }
-
-
-
-      const matkaexposer = await Matkabet.find({ userId: _id, status: "pending" }).select({ betamount: 1 });
-      const balanceData = await Balance.findOne({ userId: _id });
-      const userData = await User.findById(_id);
-      let totalexposer = 0;
-      matkaexposer.forEach((element: any) => {
-
-        totalexposer += element.betamount;
-
-      });
-      const Parent_data = await User.findOne({ _id: userData?.parentId })
-      if (!Parent_data) {
-        return this.fail(res, "parent data is not vaild !")
-
-      }
-
-
-      const matakaLimit = Parent_data?.matkalimit
-
-
-      const result = await Matkabet.aggregate([
-        {
-          $match: {
-            parentId: ObjectId(userData?.parentId),
-            roundid: data?.matchId,
-            // selectionId: data?.selectionId
-          }
-        },
-        {
-          $project: {
-            total: { $multiply: ["$betamount", "$odds"] }
-          }
-        },
-        {
-          $group: {
-            _id: null,
-            totalExposure: { $sum: "$total" }
-          }
-        }
-      ])
+  //   try {
+  //     const data = req.body;
+  //     const { _id, usernname }: any = req.user;
+  //     if (!data) {
+  //       return this.fail(res, "Invalid data")
+  //     }
 
 
 
-      const totalMatkaExposure = result[0]?.totalExposure || 0
-      console.log(totalMatkaExposure + data.stack*data.odds,"makkttt", matakaLimit,data.stack*data.odds)
+  //     const matkaexposer = await Matkabet.find({ userId: _id, status: "pending" }).select({ betamount: 1 });
+  //     const balanceData = await Balance.findOne({ userId: _id });
+  //     const userData = await User.findById(_id);
+  //     let totalexposer = 0;
+  //     matkaexposer.forEach((element: any) => {
+
+  //       totalexposer += element.betamount;
+
+  //     });
+  //     const Parent_data = await User.findOne({ _id: userData?.parentId })
+  //     if (!Parent_data) {
+  //       return this.fail(res, "parent data is not vaild !")
+
+  //     }
+
+
+  //     const matakaLimit = Parent_data?.matkalimit
+
+
+  //     const result = await Matkabet.aggregate([
+  //       {
+  //         $match: {
+  //           parentId: ObjectId(userData?.parentId),
+  //           roundid: data?.matchId,
+  //           // selectionId: data?.selectionId
+  //         }
+  //       },
+  //       {
+  //         $project: {
+  //           total: { $multiply: ["$betamount", "$odds"] }
+  //         }
+  //       },
+  //       {
+  //         $group: {
+  //           _id: null,
+  //           totalExposure: { $sum: "$total" }
+  //         }
+  //       }
+  //     ])
+
+
+
+  //     const totalMatkaExposure = result[0]?.totalExposure || 0
+  //     console.log(totalMatkaExposure + data.stack*data.odds,"makkttt", matakaLimit,data.stack*data.odds)
 
      
-      if(totalMatkaExposure + data.stack*data.odds > matakaLimit ){
-        return this.fail(res,"This Number Matka Limit is complete")
-      }
+  //     if(totalMatkaExposure + data.stack*data.odds > matakaLimit ){
+  //       return this.fail(res,"This Number Matka Limit is complete")
+  //     }
 
 
 
-      if (totalexposer + data.betamount + balanceData?.exposer > balanceData?.balance!) {
-        return this.fail(res, "Insufficient balance");
-      }
-      const newBet = new Matkabet({
-        gamename: data.matchName,
-        id: data.marketId,
+  //     if (totalexposer + data.betamount + balanceData?.exposer > balanceData?.balance!) {
+  //       return this.fail(res, "Insufficient balance");
+  //     }
+  //     const newBet = new Matkabet({
+  //       gamename: data.matchName,
+  //       id: data.marketId,
 
-        Date: data.Date,
-        result: "pending",
-        selectionId: data.selectionId,
+  //       Date: data.Date,
+  //       result: "pending",
+  //       selectionId: data.selectionId,
 
-        roundid: data.matchId,
-        odds: data.odds,
-        betamount: data.stack,
-        bettype: data.gtype,
-        userId: _id,
-        parentstr: userData?.parentStr,
-        parentId: userData?.parentId,
-        bet_on: data.betOn,
-        status: "pending"
-      })
-      await newBet.save();
+  //       roundid: data.matchId,
+  //       odds: data.odds,
+  //       betamount: data.stack,
+  //       bettype: data.gtype,
+  //       userId: _id,
+  //       parentstr: userData?.parentStr,
+  //       parentId: userData?.parentId,
+  //       bet_on: data.betOn,
+  //       status: "pending"
+  //     })
+  //     await newBet.save();
 
-      await balanceData!.updateOne({ matkaexposer: totalexposer + data.stack })
-      return this.success(res, newBet, "Bet placed successfully");
+  //     await balanceData!.updateOne({ matkaexposer: totalexposer + data.stack })
+  //     return this.success(res, newBet, "Bet placed successfully");
 
 
+  //   }
+  //   catch (e: any) {
+  //     console.log(e);
+  //     return this.fail(res, e);
+  //   }
+
+
+  // }
+
+// placeMatkabet = async (req: Request, res: Response): Promise<Response> => {
+//   const getAndar = (num: number) => Math.floor(num / 10);
+//   const getBahar = (num: number) => num % 10;
+
+//   try {
+//     const data = req.body;
+//     const { _id }: any = req.user;
+
+//     if (!data) return this.fail(res, "Invalid data");
+
+//     const userData = await User.findById(_id);
+//     const balanceData = await Balance.findOne({ userId: _id });
+//     const parentData = await User.findById(userData?.parentId);
+
+//     if (!userData || !balanceData || !parentData)
+//       return this.fail(res, "Invalid user data");
+
+//     const matkaLimit = parentData.matkalimit;
+
+//     // 🔹 USER TOTAL EXPOSURE
+//     const pendingBets = await Matkabet.find({
+//       userId: _id,
+//       status: "pending",
+//     }).select({ betamount: 1 });
+
+//     const userExposure = pendingBets.reduce(
+//       (sum: number, b: any) => sum + b.betamount,
+//       0
+//     );
+
+//     // 🔹 CURRENT BET DETAILS
+//     const betType = data.gtype; // single | andar | bahar
+//     const selection = Number(data.selectionId);
+
+//     const andar = getAndar(selection);
+//     const bahar = getBahar(selection);
+
+//     // 🔹 FETCH RELATED BETS (NO REGEX)
+//     const relatedBets = await Matkabet.find({
+//       parentId: ObjectId(userData.parentId),
+//       roundid: data.matchId,
+//       status: "pending",
+//     });
+
+//     let existingExposure = 0;
+
+//     for (const bet of relatedBets) {
+//       const betSel = Number(bet.selectionId);
+//       const betAndar = getAndar(betSel);
+//       const betBahar = getBahar(betSel);
+
+//       let count = false;
+
+//       if (betType === "single") {
+//         if (
+//           bet.bettype === "single" && betSel === selection ||
+//           bet.bettype === "andar" && betSel === andar ||
+//           bet.bettype === "bahar" && betSel === bahar
+//         ) {
+//           count = true;
+//         }
+//       }
+
+//       if (betType === "andar") {
+//         if (
+//           bet.bettype === "andar" && betSel === selection ||
+//           bet.bettype === "single" && getAndar(betSel) === selection
+//         ) {
+//           count = true;
+//         }
+//       }
+
+//       if (betType === "bahar") {
+//         if (
+//           bet.bettype === "bahar" && betSel === selection ||
+//           bet.bettype === "single" && getBahar(betSel) === selection
+//         ) {
+//           count = true;
+//         }
+//       }
+
+//       if (count) {
+//         existingExposure += bet.betamount * bet.odds;
+//       }
+//     }
+
+//     const newExposure = data.stack * data.odds;
+
+//     console.log("EXISTING:", existingExposure, "NEW:", newExposure);
+
+//     if (existingExposure + newExposure > matkaLimit) {
+//       return this.fail(res, "Matka limit exceeded for this number");
+//     }
+
+//     // 🔹 BALANCE CHECK
+//     if (
+//       userExposure + data.stack + balanceData.exposer >
+//       balanceData.balance
+//     ) {
+//       return this.fail(res, "Insufficient balance");
+//     }
+
+//     // 🔹 SAVE BET
+//     const newBet = new Matkabet({
+//       gamename: data.matchName,
+//       id: data.marketId,
+//       result: "pending",
+//       selectionId: selection,
+//       roundid: data.matchId,
+//       odds: data.odds,
+//       betamount: data.stack,
+//       bettype: betType,
+//       userId: _id,
+//       parentstr: userData.parentStr,
+//       parentId: userData.parentId,
+//       bet_on: betType,
+//       status: "pending",
+//     });
+
+//     await newBet.save();
+
+//     await balanceData.updateOne({
+//       matkaexposer: userExposure + data.stack,
+//     });
+
+//     return this.success(res, newBet, "Bet placed successfully");
+//   } catch (e: any) {
+//     console.error(e);
+//     return this.fail(res, e.message || "Something went wrong");
+//   }
+// };
+
+
+placeMatkabet = async (req: Request, res: Response): Promise<Response> => {
+
+  // ================= HELPERS =================
+  const getPossibleResults = (bettype: string, selection: number): number[] => {
+    const results: number[] = [];
+
+    // Single → sirf wahi number
+    if (bettype === "single") {
+      results.push(selection);
     }
-    catch (e: any) {
-      console.log(e);
-      return this.fail(res, e);
+
+    // Andar → 20–29 type
+    if (bettype === "andar") {
+      const start = selection * 10;
+      for (let i = start; i <= start + 9; i++) {
+        results.push(i);
+      }
     }
 
+    // Bahar → 02,12,22...
+    if (bettype === "bahar") {
+      for (let i = 0; i <= 9; i++) {
+        results.push(i * 10 + selection);
+      }
+    }
 
+    return results;
+  };
+
+  try {
+    const data = req.body;
+    const { _id }: any = req.user;
+
+    if (!data) return this.fail(res, "Invalid data");
+
+    // ================= USER / BALANCE =================
+    const userData = await User.findById(_id);
+    const balanceData = await Balance.findOne({ userId: _id });
+    const parentData = await User.findById(userData?.parentId);
+
+    if (!userData || !balanceData || !parentData) {
+      return this.fail(res, "Invalid user data");
+    }
+
+    const matkaLimit = parentData.matkalimit; // 👈 agent limit
+
+    // ================= USER TOTAL EXPOSURE =================
+    const pendingUserBets = await Matkabet.find({
+      userId: _id,
+      status: "pending",
+    }).select({ betamount: 1 });
+
+    const userExposure = pendingUserBets.reduce(
+      (sum: number, b: any) => sum + b.betamount,
+      0
+    );
+
+    // ================= CURRENT BET =================
+    const betType: "single" | "andar" | "bahar" = data.gtype;
+    const selection = Number(data.selectionId);
+    const newWinAmount = data.stack * data.odds;
+
+    // ================= FETCH ALL PARENT BETS =================
+    const relatedBets = await Matkabet.find({
+      parentId: ObjectId(userData.parentId),
+      roundid: data.matchId,
+      status: "pending",
+    });
+
+    // ================= RESULT-WISE EXPOSURE MAP =================
+    // { 23: 1800, 33: 900, ... }
+    const exposureMap: Record<number, number> = {};
+
+    for (const bet of relatedBets) {
+      const betResults = getPossibleResults(
+        bet.bettype,
+        Number(bet.selectionId)
+      );
+
+      for (const result of betResults) {
+        exposureMap[result] =
+          (exposureMap[result] || 0) + bet.betamount * bet.odds;
+      }
+    }
+
+    // ================= FINAL LIMIT LOGIC =================
+    // Sirf max-loss wale result ko check karna
+    const newBetResults = getPossibleResults(betType, selection);
+
+    let maxLossAfterBet = 0;
+
+    for (let result = 0; result <= 99; result++) {
+      const existingLoss = exposureMap[result] || 0;
+
+      const newLoss = newBetResults.includes(result)
+        ? newWinAmount
+        : 0;
+
+      const totalLoss = existingLoss + newLoss;
+
+      if (totalLoss > maxLossAfterBet) {
+        maxLossAfterBet = totalLoss;
+      }
+    }
+
+    if (maxLossAfterBet > matkaLimit) {
+      return this.fail(
+        res,
+        "Matka limit exceeded for this number"
+      );
+    }
+
+    // ================= BALANCE CHECK =================
+    if (
+      userExposure + data.stack + balanceData.exposer >
+      balanceData.balance
+    ) {
+      return this.fail(res, "Insufficient balance");
+    }
+
+    // ================= SAVE BET =================
+    const newBet = new Matkabet({
+      gamename: data.matchName,
+      id: data.marketId,
+      result: "pending",
+      selectionId: selection,
+      roundid: data.matchId,
+      odds: data.odds,
+      betamount: data.stack,
+      bettype: betType,
+      userId: _id,
+      parentstr: userData.parentStr,
+      parentId: userData.parentId,
+      bet_on: "MATKA",
+      status: "pending",
+    });
+
+    await newBet.save();
+
+    // ================= UPDATE USER EXPOSURE =================
+    await balanceData.updateOne({
+      matkaexposer: userExposure + data.stack,
+    });
+
+    return this.success(res, newBet, "Bet placed successfully");
+
+  } catch (e: any) {
+    console.error(e);
+    return this.fail(res, e.message || "Something went wrong");
   }
+};
+
 
 
 

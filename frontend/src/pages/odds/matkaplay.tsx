@@ -100,7 +100,7 @@ const MatkaPlay = () => {
         console.log(market,"market in matka555")
       }
 
-      const onBet = (isBack = false, market: any) => {
+      const onBet = (isBack = false, market: any,t:any) => {
         console.log("🔥 onBet CLICKED");
         console.log("👉 userState:", userState);
         console.log("👉 market received:", market);
@@ -133,7 +133,7 @@ const MatkaPlay = () => {
             type: IBetType.Match,
             matchName: match.name,
             betOn: IBetOn.MATKA,
-            gtype: gameType,
+            gtype: t,
             oppsiteVol: 0,
             oddsType: OddsType.M,
           },
@@ -232,7 +232,7 @@ const MatkaPlay = () => {
               <div className="row">
                 {singlePattiNumbers.map((num) => (
                   <div key={num} className="col-4 col-md-3 mb-2">
-                    <button   onClick={() => onBet(true, {num, matchId, })} className="btn btn-info w-100">{num}</button>
+                    <button   onClick={() => onBet(true, {num, matchId},"single")} className="btn btn-info w-100">{num}</button>
                     <span className="btn w-100">0</span>
                   </div>
                 ))}
@@ -247,7 +247,7 @@ const MatkaPlay = () => {
               <div className="row">
                 {harafNumbers.map((num) => (
                   <div key={`andar-${num}`} className="col-4 col-md-1 mb-2">
-                    <button onClick={() => onBet(true, {num, matchId })} className="btn btn-info w-100">{num}</button>
+                    <button onClick={() => onBet(true, {num, matchId},"andar")} className="btn btn-info w-100">{num}</button>
                     <span className="btn w-100">0</span>
                   </div>
                 ))}
@@ -258,7 +258,7 @@ const MatkaPlay = () => {
               <div className="row">
                 {harafNumbers.map((num) => (
                   <div key={`bahar-${num}`} className="col-4 col-md-1 mb-2">
-                    <button onClick={() => onBet(true, {num, matchId })} className="btn btn-info w-100">{num}</button>
+                    <button onClick={() => onBet(true, {num, matchId},"bahar")} className="btn btn-info w-100">{num}</button>
                     <span className="btn w-100">0</span>
                   </div>
                 ))}
