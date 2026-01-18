@@ -12,8 +12,11 @@ type GroupedLedger = {
 
   matchPlusMinus: number;
   sessionPlusMinus: number;
+  matkaPlusMinus: number;   // ✅ NEW
+  matkaCommission: number;  // ✅ NEW
   matchcommision: number;
   fancycommmision: number;
+
 };
 
 type FinalLedgerRow = {
@@ -164,6 +167,7 @@ const AllReport = () => {
         filteredData.forEach((item: any) => {
         const childId: string = item.ChildId ? item.ChildId : item.ParentId;
         const isFancy: boolean = item.Fancy;
+        const isMatka = item?.narration?.includes("Matka Bet");
         const money: number = Number(item.fammount) || 0;
         const commissionn: any = Number(item.commissiondega) || 0;
         const updown: number = Number(item.umoney) || 0;
@@ -175,13 +179,22 @@ const AllReport = () => {
             ss: item.superShare,
             matchPlusMinus: 0,
             sessionPlusMinus: 0,
+            matkaPlusMinus: 0,     // ✅
+            matkaCommission: 0, 
             matchcommision: 0,
             fancycommmision: 0,
             updownTotal: 0,
           };
         }
 
-        if (isFancy) {
+
+         // 🔵 MATKA
+  if (isMatka) {
+    grouped[childId].matkaPlusMinus += money;
+    grouped[childId].matkaCommission += commissionn;
+  }
+  // 🟢 SESSION
+  else if (isFancy) {
           grouped[childId].sessionPlusMinus += money;
           grouped[childId].fancycommmision += commissionn;
         } else {
@@ -208,10 +221,12 @@ const AllReport = () => {
           // const session = values.sessionPlusMinus;
           const match = values.matchPlusMinus;
           const session = values.sessionPlusMinus;
+          const matka = values.matkaPlusMinus;
           const matchc = values.matchcommision;
           const fancyc = values.fancycommmision;
-          const ctotal: any = matchc + fancyc;
-          const totall = match + session;
+          const mtCom = values.matkaCommission;  
+          const ctotal: any = matchc + fancyc + mtCom;
+          const totall = match + session + matka;
           const total = totall - ctotal;
 
           // ✅ Accumulate totals here
@@ -232,9 +247,11 @@ const AllReport = () => {
             ss: values.ss,
             match,
             session,
+            matka,
             totall,
             mCom: matchc,
             sCom: fancyc,
+            mtCom,
             tCom: ctotal,
             gTotal: total,
             upDownShare: (values.ss / 100) * total,
@@ -384,6 +401,16 @@ const AllReport = () => {
                   >
                     Session (+/-)
                   </th>
+
+                  <th
+                    className="navbar-bet99 text-dark pt-2 pb-2 small sorting_disabled"
+                    rowSpan={1}
+                    colSpan={1}
+                    style={{ width: "61px" }}
+                  >
+                    Matka (+/-)
+                  </th>
+                  
                   <th
                     className="navbar-bet99 text-dark pt-2 pb-2 small sorting_disabled"
                     rowSpan={1}
@@ -407,6 +434,14 @@ const AllReport = () => {
                     style={{ width: "34px" }}
                   >
                     S.Com
+                  </th>
+                  <th
+                    className="navbar-bet99 text-dark pt-2 pb-2 small sorting_disabled"
+                    rowSpan={1}
+                    colSpan={1}
+                    style={{ width: "34px" }}
+                  >
+                    MT.Com
                   </th>
                   <th
                     className="navbar-bet99 text-dark pt-2 pb-2 small sorting_disabled"
@@ -485,6 +520,16 @@ const AllReport = () => {
                       <td className="ng-scope">
                         <span
                           className={
+                            row.session < 0 ? "text-danger" : "text-success"
+                          }
+                        >
+                          {`${row.matka.toFixed(2)}`}
+                        </span>
+                      </td>
+
+                      <td className="ng-scope">
+                        <span
+                          className={
                             row.total < 0 ? "text-danger" : "text-success"
                           }
                         >
@@ -497,6 +542,9 @@ const AllReport = () => {
                       </td>
                       <td className="ng-scope">
                         <span className="text-danger">{row.sCom.toFixed(2)}</span>
+                      </td>
+                      <td className="ng-scope">
+                        <span className="text-danger">{row.mtCom.toFixed(2)}</span>
                       </td>
                       <td className="ng-scope">
                         <span className="text-danger">{row.tCom.toFixed(2)}</span>

@@ -723,9 +723,9 @@ const [userList, setUserList] = React.useState<any>({});
             <CloseIcon />
           </button> */}
 
-          <CustomLink to={"/"} className="logo-new navbarbg  -600">
+          <CustomLink to={"/"} className="logo-new navbarbg  -600" style={{background:"black"}}>
             {/* <img className="" src="/9x.png" /> */}
-             <img className=""  style={{ width: "500px" }} src="/imgs/d006 copy.png" />
+             <img className=""  style={{ width: "500px" }} src="/imgs/logo.png" />
 
           </CustomLink>
 
@@ -867,6 +867,21 @@ const [userList, setUserList] = React.useState<any>({});
                       <SummarizeIcon className="text-warning" />
                       <b className="md:text-lg text-xs font-medium text-white">
                        Casino Betting
+                      </b>
+                    </CustomLink>
+                  </li>
+
+                  <li className={`nav-item border-b md:w-60 w-fit ${activeMenu === "Cass" ? "bg-active" : ""} `}>
+                    <CustomLink
+                      // onClick={toggleDrawer}
+                      onClick={() => { toggleDrawer(); setActiveMenu("Cass");}}
+
+                      className="md:flex gap-2 py-2  md:flex-row flex flex-col items-center"
+                        to="/matka-pl"
+                    >
+                      <SummarizeIcon className="text-warning" />
+                      <b className="md:text-lg text-xs font-medium text-white">
+                       Matka Betting
                       </b>
                     </CustomLink>
                   </li>

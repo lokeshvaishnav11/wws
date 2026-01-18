@@ -17,8 +17,10 @@ const CasinoPL = () => {
       console.log(res,"Casino pl data")
       const items = res.data.data[0] || [];
 
-      const filteredItems = items.filter((item: any) => item.Casino === false);
-
+      const filteredItems = items.filter(
+        (item: any) => item.narration?.includes("Matka Bet")
+      );
+      
       const totalsCalc = {
         money: 0,
         commissionlega: 0,
@@ -45,6 +47,7 @@ const CasinoPL = () => {
           commissionlega,
           commissiondega,
           netpl,
+          matchId:item.matchId
         };
       });
 
@@ -89,15 +92,15 @@ const CasinoPL = () => {
             {data.map((item, index) => (
               <React.Fragment key={index}>
                 {/* Date row */}
-                <tr className="ng-scope background-yellow">
-                  <td>{new Date(item.date).toLocaleDateString()}</td>
+                {/* <tr className="ng-scope background-yellow">
+                  <td>{item.matchId}</td>
 
                   <td>{item.money.toFixed(2)}</td>
                   <td>{item.commissionlega.toFixed(2)}</td>
                   <td>{item.commissiondega.toFixed(2)}</td>
                   <td>{item.netpl.toFixed(2)}</td>
                   <td></td>
-                </tr>
+                </tr> */}
 
                 {/* Narration row */}
                 <tr className="ng-scope">

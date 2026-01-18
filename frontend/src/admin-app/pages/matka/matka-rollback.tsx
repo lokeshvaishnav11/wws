@@ -40,20 +40,22 @@ export default function MatkaResultRollback() {
   // ✅ SUBMIT HANDLER
   const handleSubmit = async (e:any) => {
     e.preventDefault();
-
     const selectedGame = matkaList.find(
-      (m:any) => m.id === selectedMatchId
+      (m: any) => m.roundid === selectedMatchId
     );
-
-    if (!selectedGame) return;
+    
+    if (!selectedGame) {
+      alert("Invalid round selected");
+      return;
+    }
+    
 
     const payload = {
-      matchId: selectedGame.id,
-      name: selectedGame.gamename,
-      roundid:selectedGame.roundid,
+      roundid: selectedGame.roundid, // 👈 MOST IMPORTANT
+      gamename: selectedGame.gamename,
       result,
-      date,
     };
+    
 
     console.log(payload,"bv")
 
@@ -97,18 +99,20 @@ export default function MatkaResultRollback() {
         <div className="col-md-3">
           <label className="form-label fw-bold">Market</label>
           <select
-            className="form-select"
-            value={selectedMatchId}
-            onChange={(e) => setSelectedMatchId(e.target.value)}
-            required
-          >
-            <option value="">Select Market</option>
-            {matkaList.map((item:any) => (
-              <option key={item.matchId} value={item.id}>
-                {item.roundid}
-              </option>
-            ))}
-          </select>
+  className="form-select"
+  value={selectedMatchId}
+  onChange={(e) => setSelectedMatchId(e.target.value)}
+  required
+>
+  <option value="">Select Market</option>
+
+  {matkaList.map((item: any) => (
+    <option key={item.roundid} value={item.roundid}>
+      {item.roundid}
+    </option>
+  ))}
+</select>
+
         </div>
 
         {/* RESULT */}

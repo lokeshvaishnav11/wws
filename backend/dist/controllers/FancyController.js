@@ -223,7 +223,7 @@ class FancyController extends ApiController_1.ApiController {
                         sportId: 900,
                     });
                     console.log(profitLossAmt, "matka profit loss amt");
-                    // await this.cal9xbro(ItemBetList._id, profitLossAmt, `Matka Bet Result for ${ItemBetList.gamename} - ${ItemBetList.roundid}`, ItemBetList.roundid, ItemBetList._id, "MATKA")
+                    yield this.cal9xbro(ItemBetList.userId, profitLossAmt, `Matka Bet Result for ${ItemBetList.gamename} - ${ItemBetList.roundid}`, ItemBetList.roundid, ItemBetList._id, "MATKA");
                     userIdList.push(ObjectId(ItemBetList.userId));
                     yield Matkabet_1.default.updateOne({ _id: ItemBetList._id }, { $set: { status: "completed" } });
                 }));

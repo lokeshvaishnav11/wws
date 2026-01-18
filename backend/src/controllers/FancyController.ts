@@ -264,7 +264,7 @@ export class FancyController extends ApiController {
         console.log(profitLossAmt, "matka profit loss amt");
 
 
-        // await this.cal9xbro(ItemBetList._id, profitLossAmt, `Matka Bet Result for ${ItemBetList.gamename} - ${ItemBetList.roundid}`, ItemBetList.roundid, ItemBetList._id, "MATKA")
+        await this.cal9xbro(ItemBetList.userId, profitLossAmt, `Matka Bet Result for ${ItemBetList.gamename} - ${ItemBetList.roundid}`, ItemBetList.roundid, ItemBetList._id, "MATKA")
 
         userIdList.push(ObjectId(ItemBetList.userId));
         await Matkabet.updateOne({ _id: ItemBetList._id }, { $set: { status: "completed" } });

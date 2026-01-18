@@ -43,6 +43,7 @@ class AccountService {
   marketcasino() {
     return api.get('marketcasino')
   }
+  
 
   getAccountList22() {
     return api.post(`account-statement-list-22`)
