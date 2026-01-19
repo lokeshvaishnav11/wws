@@ -171,7 +171,7 @@ const AdminRoutes = () => {
             {path: "sports-details", element: <SportsDetails/>},
 
             {path:"matka-books",  element:<MatkaDetail />},
-            {path:"detail-matka/:matchid",  element:<MatkaPlayAdmin />},
+            {path:"detail-matka/:matchId",  element:<MatkaPlayAdmin />},
 
             
             {path: "casino-details", element: <CasinoDetail/>},

@@ -22,7 +22,10 @@ const MatkaPlayAdmin = () => {
   const [gameType, setGameType] = React.useState<"single" | "haraf">("single");
   const [matkaBets, setMatkaBets] = React.useState<any[]>([]);
 
+
   const [matkaList, setMatkaList] = React.useState<any>([]);
+  console.log(matkaList,"makdk")
+
 
   React.useEffect(() => {
     const fetchMatkaList = async () => {
@@ -36,7 +39,10 @@ const MatkaPlayAdmin = () => {
     };
 
     fetchMatkaList();
-  }, [matchId]);
+  }, [matchId,userState]);
+
+  const match = matkaList.find((item: any) => item.roundid == matchId);
+
 
   React.useEffect(() => {
     const fetchMatkaBets = async () => {
@@ -61,14 +67,14 @@ const MatkaPlayAdmin = () => {
     };
 
     fetchMatkaBets();
-  }, [matchId]);
+  }, [matchId,userState]);
 
   // ✅ matching item nikaalo
-  const match = matkaList.find((item: any) => item.roundid == matchId);
 
-  if (!match) {
-    return <div className="text-center mt-3">Match not found</div>;
-  }
+
+//   if (!match) {
+//     return <div className="text-center mt-3">Match not found</div>;
+//   }
 
   const singlePattiNumbers = [
     ...Array.from({ length: 99 }, (_, i) => String(i + 1).padStart(2, "0")),
