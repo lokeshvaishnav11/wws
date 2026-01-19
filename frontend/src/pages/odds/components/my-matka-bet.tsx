@@ -119,8 +119,12 @@ React.useEffect(() => {
   }, [getMyAllBet])
 
   return (
-   <>{roundid  &&  <div className='table-responsive-new' style={{height:"200px", overflowY:"scroll"}}>
-     <h6 className="p-2 w-100 m-0 bg-info text-white text-center">Matka Bets</h6>
+   <>{roundid  && 
+    
+    <>
+    <h6 className="p-2 w-100 m-0 bg-info text-white text-center">Matka Bets</h6>
+
+   <div className='table-responsive-new' style={{height:"200px", overflowY:"scroll"}}>
       <table className='table coupon-table scorall mybet'>
         <thead>
           <tr style={{background:"#76d68f"}}>
@@ -130,6 +134,8 @@ React.useEffect(() => {
             <th className='text-center'> Rate</th>
             <th className='text-center'> Amount</th>
             <th className='text-center'> Selection</th>
+            <th className='text-center'> Type</th>
+
 
 
             {/* {!isMobile && <th style={{background:"#76d68f"}}> Place Date</th>} */}
@@ -174,9 +180,9 @@ React.useEffect(() => {
           </td>
 
 
-          {/* <td className='no-wrap text-center'>
-            {bet?.status == "pending" ? 'NO' : "YES"}
-          </td> */}
+          <td className='no-wrap text-center'>
+            {bet?.bettype}
+          </td>
 
           <td className='no-wrap text-center'>
             {moment
@@ -190,7 +196,8 @@ React.useEffect(() => {
 </tbody>
 
       </table>
-    </div>}</>
+    </div>
+    </>}</>
   )
 }
 

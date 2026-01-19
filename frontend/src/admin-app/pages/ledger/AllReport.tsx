@@ -12,11 +12,10 @@ type GroupedLedger = {
 
   matchPlusMinus: number;
   sessionPlusMinus: number;
-  matkaPlusMinus: number;   // ✅ NEW
-  matkaCommission: number;  // ✅ NEW
+  matkaPlusMinus: number; // ✅ NEW
+  matkaCommission: number; // ✅ NEW
   matchcommision: number;
   fancycommmision: number;
-
 };
 
 type FinalLedgerRow = {
@@ -41,14 +40,14 @@ const AllReport = () => {
   // const [tableData, setTableData] = React.useState([]);
   const [ledgerData, setLedgerData] = React.useState([]);
   const userState = useAppSelector(selectUserData);
-  console.log(userState);
+  //console.log(userState);
 
   const [startDate, setStartDate] = React.useState<string>("");
   const [endDate, setEndDate] = React.useState<string>("");
 
   // React.useEffect(() => {
   //   betService.twoledger().then((res: AxiosResponse<any>) => {
-  //     console.log(res, "maatchh commsion report")
+  //     //console.log(res, "maatchh commsion report")
   //     const rawData = res.data?.data || [];
 
   //     const grouped: Record<string, GroupedLedger & { updownTotal: number }> = {};
@@ -135,7 +134,7 @@ const AllReport = () => {
   //       };
 
   //     });
-  //     console.log(finalLedger,"heloo world final ledger is here")
+  //     //console.log(finalLedger,"heloo world final ledger is here")
 
   //     setLedgerTotal(finalTotals);
 
@@ -143,28 +142,29 @@ const AllReport = () => {
   //   });
   // }, []);
 
-  const handleDateFilter =  async (isFilterApplied = false) => {
+  const handleDateFilter = async (isFilterApplied = false) => {
     try {
       const res = await betService.twoledger();
-      console.log(res, "maatchh commsion report");
+      //console.log(res, "maatchh commsion report");
       // const rawData = res.data?.data || [];
-      const rawData = (res.data?.data || [])?.filter((item: any) => item?.settled !== true);
+      const rawData = (res.data?.data || [])?.filter(
+        (item: any) => item?.settled !== true
+      );
 
-      const filteredData = isFilterApplied ?  rawData?.filter((item: any) => {
-        const createdAt = new Date(item.createdAt);
-        const from = startDate ? new Date(startDate) : null;
-        const to = endDate ? new Date(endDate) : null;
-  
-        return (
-          (!from || createdAt >= from) &&
-          (!to || createdAt <= to)
-        );
-      }) : rawData;
+      const filteredData = isFilterApplied
+        ? rawData?.filter((item: any) => {
+            const createdAt = new Date(item.createdAt);
+            const from = startDate ? new Date(startDate) : null;
+            const to = endDate ? new Date(endDate) : null;
+
+            return (!from || createdAt >= from) && (!to || createdAt <= to);
+          })
+        : rawData;
 
       const grouped: Record<string, GroupedLedger & { updownTotal: number }> =
         {};
 
-        filteredData.forEach((item: any) => {
+      filteredData.forEach((item: any) => {
         const childId: string = item.ChildId ? item.ChildId : item.ParentId;
         const isFancy: boolean = item.Fancy;
         const isMatka = item?.narration?.includes("Matka Bet");
@@ -179,22 +179,21 @@ const AllReport = () => {
             ss: item.superShare,
             matchPlusMinus: 0,
             sessionPlusMinus: 0,
-            matkaPlusMinus: 0,     // ✅
-            matkaCommission: 0, 
+            matkaPlusMinus: 0, // ✅
+            matkaCommission: 0,
             matchcommision: 0,
             fancycommmision: 0,
             updownTotal: 0,
           };
         }
 
-
-         // 🔵 MATKA
-  if (isMatka) {
-    grouped[childId].matkaPlusMinus += money;
-    grouped[childId].matkaCommission += commissionn;
-  }
-  // 🟢 SESSION
-  else if (isFancy) {
+        // 🔵 MATKA
+        if (isMatka) {
+          grouped[childId].matkaPlusMinus += money;
+          grouped[childId].matkaCommission += commissionn;
+        }
+        // 🟢 SESSION
+        else if (isFancy) {
           grouped[childId].sessionPlusMinus += money;
           grouped[childId].fancycommmision += commissionn;
         } else {
@@ -224,7 +223,7 @@ const AllReport = () => {
           const matka = values.matkaPlusMinus;
           const matchc = values.matchcommision;
           const fancyc = values.fancycommmision;
-          const mtCom = values.matkaCommission;  
+          const mtCom = values.matkaCommission;
           const ctotal: any = matchc + fancyc + mtCom;
           const totall = match + session + matka;
           const total = totall - ctotal;
@@ -259,7 +258,7 @@ const AllReport = () => {
           };
         }
       );
-      console.log(finalLedger, "heloo world final ledger is here");
+      //console.log(finalLedger, "heloo world final ledger is here");
 
       setLedgerTotal(finalTotals);
 
@@ -296,10 +295,9 @@ const AllReport = () => {
   React.useEffect(() => {
     handleDateFilter(false); // no date filter
   }, []);
-  
 
   return (
-    <div style={{zoom:0.4}}>
+    <div style={{ zoom: 0.4 }}>
       <div className="relative">
         <h2 className="ledger-title">All Client Report</h2>
       </div>
@@ -327,7 +325,10 @@ const AllReport = () => {
             />
           </div>
           <div className="col-4 mt-2" style={{ paddingTop: 20 }}>
-            <button className="btn btn-info" onClick={() => handleDateFilter(true)}>
+            <button
+              className="btn btn-info"
+              onClick={() => handleDateFilter(true)}
+            >
               Submit
             </button>
           </div>
@@ -410,7 +411,7 @@ const AllReport = () => {
                   >
                     Matka (+/-)
                   </th>
-                  
+
                   <th
                     className="navbar-bet99 text-dark pt-2 pb-2 small sorting_disabled"
                     rowSpan={1}
@@ -538,16 +539,24 @@ const AllReport = () => {
                       </td>
 
                       <td className="ng-scope">
-                        <span className="text-danger">{row.mCom.toFixed(2)}</span>
+                        <span className="text-danger">
+                          {row.mCom.toFixed(2)}
+                        </span>
                       </td>
                       <td className="ng-scope">
-                        <span className="text-danger">{row.sCom.toFixed(2)}</span>
+                        <span className="text-danger">
+                          {row.sCom.toFixed(2)}
+                        </span>
                       </td>
                       <td className="ng-scope">
-                        <span className="text-danger">{row.mtCom.toFixed(2)}</span>
+                        <span className="text-danger">
+                          {row.mtCom.toFixed(2)}
+                        </span>
                       </td>
                       <td className="ng-scope">
-                        <span className="text-danger">{row.tCom.toFixed(2)}</span>
+                        <span className="text-danger">
+                          {row.tCom.toFixed(2)}
+                        </span>
                       </td>
 
                       <td className="ng-scope">
@@ -749,7 +758,6 @@ const AllReport = () => {
 
 export default AllReport;
 
-
 // import React from "react";
 // import betService from "../../../services/bet.service";
 // import ReportModal from "./ReportModal";
@@ -930,4 +938,3 @@ export default AllReport;
 // };
 
 // export default AllReport;
-

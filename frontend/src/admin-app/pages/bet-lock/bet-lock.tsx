@@ -1,75 +1,99 @@
-import React, { ChangeEvent, MouseEvent } from 'react'
-import { Button, Container, Dropdown, Form, Modal, Row, Table } from 'react-bootstrap'
-import betService from '../../../services/bet.service'
-import { AxiosResponse } from 'axios'
-import { useAppDispatch, useAppSelector } from '../../../redux/hooks'
-import { selectCurrentMatch } from '../../../redux/actions/sports/sportSlice'
-import IMatch from '../../../models/IMatch'
-import User from '../../../models/User'
-import { Paginate } from '../../../models/Paginate'
-import IMarket from '../../../models/IMarket'
-import { FancyBook, setMarketBookUser } from '../../../redux/actions/bet/betSlice'
+import React, { ChangeEvent, MouseEvent } from "react";
+import {
+  Button,
+  Container,
+  Dropdown,
+  Form,
+  Modal,
+  Row,
+  Table,
+} from "react-bootstrap";
+import betService from "../../../services/bet.service";
+import { AxiosResponse } from "axios";
+import { useAppDispatch, useAppSelector } from "../../../redux/hooks";
+import { selectCurrentMatch } from "../../../redux/actions/sports/sportSlice";
+import IMatch from "../../../models/IMatch";
+import User from "../../../models/User";
+import { Paginate } from "../../../models/Paginate";
+import IMarket from "../../../models/IMarket";
+import {
+  FancyBook,
+  setMarketBookUser,
+} from "../../../redux/actions/bet/betSlice";
 
-const MarketType: any = { M: 'Odds', B: 'Book', F: 'Fancy' }
-const MarketTypeKey: any = { M: 'betFair', B: 'book', F: 'fancy' }
+const MarketType: any = { M: "Odds", B: "Book", F: "Fancy" };
+const MarketTypeKey: any = { M: "betFair", B: "book", F: "fancy" };
 
 const BetLock = ({ markets }: { markets: IMarket[] }) => {
-  const [show, setShow] = React.useState(false)
-  const currentMatch: IMatch = useAppSelector(selectCurrentMatch)
-  const [selectedType, setSelectedType] = React.useState('')
-  const dispatch = useAppDispatch()
+  const [show, setShow] = React.useState(false);
+  const currentMatch: IMatch = useAppSelector(selectCurrentMatch);
+  const [selectedType, setSelectedType] = React.useState("");
+  const dispatch = useAppDispatch();
   const [users, setUsers] = React.useState<Paginate<Array<Partial<User>>>>(
-    {} as Paginate<Array<Partial<User>>>,
-  )
-  const [value, setValue] = React.useState('')
-  const onChange = (e: React.ChangeEvent<HTMLInputElement>) => setValue(e.target.value)
-  const [debouncedValue, setDebouncedValue] = React.useState<string>(value)
+    {} as Paginate<Array<Partial<User>>>
+  );
+  const [value, setValue] = React.useState("");
+  const onChange = (e: React.ChangeEvent<HTMLInputElement>) =>
+    setValue(e.target.value);
+  const [debouncedValue, setDebouncedValue] = React.useState<string>(value);
 
   React.useEffect(() => {
-    const timer = setTimeout(() => setDebouncedValue(value), 500)
-    return () => clearTimeout(timer)
-  }, [value, 500])
+    const timer = setTimeout(() => setDebouncedValue(value), 500);
+    return () => clearTimeout(timer);
+  }, [value, 500]);
 
   React.useEffect(() => {
     if (currentMatch && currentMatch.matchId && selectedType) {
       if (debouncedValue) {
-        getUserList(debouncedValue)
+        getUserList(debouncedValue);
       } else {
-        getUserList('')
+        getUserList("");
       }
     }
-  }, [debouncedValue, currentMatch])
+  }, [debouncedValue, currentMatch]);
 
-  const handleClose = () => setShow(false)
-  const handleShow = () => setShow(true)
+  const handleClose = () => setShow(false);
+  const handleShow = () => setShow(true);
 
-  const lock = (e: MouseEvent<HTMLAnchorElement>, status: boolean, type: string) => {
-    e.preventDefault()
+  const lock = (
+    e: MouseEvent<HTMLAnchorElement>,
+    status: boolean,
+    type: string
+  ) => {
+    e.preventDefault();
     if (currentMatch && currentMatch.matchId) {
-      betService.betLock({ match: currentMatch, type, status }).then((res: AxiosResponse) => {
-        console.log(res.data)
-      })
+      betService
+        .betLock({ match: currentMatch, type, status })
+        .then((res: AxiosResponse) => {
+          //console.log(res.data)
+        });
     }
-  }
+  };
 
   const getUserList = (username: string) => {
-    betService.getChildUserList(currentMatch.matchId, username).then((res: AxiosResponse) => {
-      setUsers(res.data.data)
-      handleShow()
-    })
-  }
+    betService
+      .getChildUserList(currentMatch.matchId, username)
+      .then((res: AxiosResponse) => {
+        setUsers(res.data.data);
+        handleShow();
+      });
+  };
 
   const selectUser = (e: MouseEvent<HTMLAnchorElement>, type: string) => {
-    e.preventDefault()
-    setSelectedType(type)
-    getUserList('')
-  }
+    e.preventDefault();
+    setSelectedType(type);
+    getUserList("");
+  };
 
-  const lockUser = (e: ChangeEvent<HTMLInputElement>, user: Partial<User>, index: number) => {
+  const lockUser = (
+    e: ChangeEvent<HTMLInputElement>,
+    user: Partial<User>,
+    index: number
+  ) => {
     if (currentMatch && currentMatch.matchId) {
-      const allUsers = [...users.docs]
-      allUsers[index][MarketTypeKey[selectedType]] = e.target.checked
-      setUsers({ ...users, docs: allUsers })
+      const allUsers = [...users.docs];
+      allUsers[index][MarketTypeKey[selectedType]] = e.target.checked;
+      setUsers({ ...users, docs: allUsers });
       betService
         .betLock({
           match: currentMatch,
@@ -78,94 +102,94 @@ const BetLock = ({ markets }: { markets: IMarket[] }) => {
           userId: user._id,
         })
         .then((res: AxiosResponse) => {
-          console.log(res.data)
-        })
+          //console.log(res.data);
+        });
     }
-  }
+  };
   const setUserwisebook = (marketId: any, marketName: string) => {
     const filter: FancyBook = {
       matchId: currentMatch.matchId,
       selectionId: marketId,
       marketName: marketName,
-    }
-    dispatch(setMarketBookUser(filter))
-  }
+    };
+    dispatch(setMarketBookUser(filter));
+  };
 
   return (
-    <div className='buttons buttons-list row'>
+    <div className="buttons buttons-list row">
       <Dropdown>
-        <Dropdown.Toggle variant='primary' id='dropdown-basic'>
+        <Dropdown.Toggle variant="primary" id="dropdown-basic">
           Bet Lock
         </Dropdown.Toggle>
 
         <Dropdown.Menu>
           <Dropdown.Item
-            href='#'
-            onClick={(e: MouseEvent<HTMLAnchorElement>) => lock(e, true, 'M')}
+            href="#"
+            onClick={(e: MouseEvent<HTMLAnchorElement>) => lock(e, true, "M")}
           >
             Lock
           </Dropdown.Item>
           <Dropdown.Item
-            href='#'
-            onClick={(e: MouseEvent<HTMLAnchorElement>) => lock(e, false, 'M')}
+            href="#"
+            onClick={(e: MouseEvent<HTMLAnchorElement>) => lock(e, false, "M")}
           >
             Unlock
           </Dropdown.Item>
           <Dropdown.Item
-            href='#'
-            onClick={(e: MouseEvent<HTMLAnchorElement>) => selectUser(e, 'M')}
+            href="#"
+            onClick={(e: MouseEvent<HTMLAnchorElement>) => selectUser(e, "M")}
           >
             Select User
           </Dropdown.Item>
         </Dropdown.Menu>
       </Dropdown>
       <Dropdown>
-        <Dropdown.Toggle variant='primary' id='dropdown-basic'>
+        <Dropdown.Toggle variant="primary" id="dropdown-basic">
           BookMaker Lock
         </Dropdown.Toggle>
 
         <Dropdown.Menu>
           <Dropdown.Item
-            href='#'
-            onClick={(e: MouseEvent<HTMLAnchorElement>) => lock(e, true, 'B')}
+            href="#"
+            onClick={(e: MouseEvent<HTMLAnchorElement>) => lock(e, true, "B")}
           >
             Lock
           </Dropdown.Item>
           <Dropdown.Item
-            href='#'
-            onClick={(e: MouseEvent<HTMLAnchorElement>) => lock(e, false, 'B')}
+            href="#"
+            onClick={(e: MouseEvent<HTMLAnchorElement>) => lock(e, false, "B")}
           >
             Unlock
           </Dropdown.Item>
           <Dropdown.Item
-            href='#'
-            onClick={(e: MouseEvent<HTMLAnchorElement>) => selectUser(e, 'B')}
+            href="#"
+            onClick={(e: MouseEvent<HTMLAnchorElement>) => selectUser(e, "B")}
           >
             Select User
           </Dropdown.Item>
         </Dropdown.Menu>
       </Dropdown>
       <Dropdown>
-        <Dropdown.Toggle variant='primary' id='dropdown-basic'>
+        <Dropdown.Toggle variant="primary" id="dropdown-basic">
           Fancy Lock
         </Dropdown.Toggle>
 
         <Dropdown.Menu>
           <Dropdown.Item
-            href='#'
-            onClick={(e: MouseEvent<HTMLAnchorElement>) => lock(e, true, 'F')}
+            href="#"
+            onClick={(e: MouseEvent<HTMLAnchorElement>) => lock(e, true, "F")}
           >
             Lock
           </Dropdown.Item>
           <Dropdown.Item
-            href='#'
-            onClick={(e: MouseEvent<HTMLAnchorElement>) => lock(e, false, 'F')}
+            href="#"
+            onClick={(e: MouseEvent<HTMLAnchorElement>) => lock(e, false, "F")}
           >
             Unlock
           </Dropdown.Item>
           <Dropdown.Item
-            href='#'
-            onClick={(e: MouseEvent<HTMLAnchorElement>) => selectUser(e, 'F')}
+            href="#"
+            onClick={(e: MouseEvent<HTMLAnchorElement>) => selectUser(e, "F")}
           >
             Select User
           </Dropdown.Item>
@@ -178,7 +202,7 @@ const BetLock = ({ markets }: { markets: IMarket[] }) => {
             className={`mt-10 mrc-5`}
             key={_id}
             onClick={() => {
-              setUserwisebook(marketId, marketName)
+              setUserwisebook(marketId, marketName);
             }}
           >
             {marketName} Book
@@ -191,8 +215,12 @@ const BetLock = ({ markets }: { markets: IMarket[] }) => {
         <Modal.Body>
           <Container>
             <Row>
-              <Form.Group className='mb-3'>
-                <Form.Control onChange={onChange} type='text' placeholder='Search User' />
+              <Form.Group className="mb-3">
+                <Form.Control
+                  onChange={onChange}
+                  type="text"
+                  placeholder="Search User"
+                />
               </Form.Group>
             </Row>
             <Row>
@@ -214,7 +242,7 @@ const BetLock = ({ markets }: { markets: IMarket[] }) => {
                         <td>{MarketType[selectedType]}</td>
                         <td>
                           <input
-                            type={'checkbox'}
+                            type={"checkbox"}
                             checked={user[MarketTypeKey[selectedType]]}
                             value={user._id}
                             onChange={(e: ChangeEvent<HTMLInputElement>) =>
@@ -231,7 +259,7 @@ const BetLock = ({ markets }: { markets: IMarket[] }) => {
         </Modal.Body>
       </Modal>
     </div>
-  )
-}
+  );
+};
 
-export default BetLock
+export default BetLock;

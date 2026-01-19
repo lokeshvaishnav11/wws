@@ -7,14 +7,14 @@ interface LedgerItem {
   _id: string;
   money: number;
   narration: string;
-  username:string;
-  createdAt:string;
-  updown:number;
+  username: string;
+  createdAt: string;
+  updown: number;
 }
 const ClientLedger = () => {
   const [tableData, setTableData] = React.useState<LedgerItem[]>([]);
   const [optionuser, setOptionuser] = React.useState<string>("all");
-  console.log(optionuser, "optionuser");
+  //console.log(optionuser, "optionuser");
 
   React.useEffect(() => {
     betService.oneledger().then((res: AxiosResponse<any>) => {
@@ -22,13 +22,12 @@ const ClientLedger = () => {
       const dataToUse = allData[0]?.length ? allData[0] : allData[1] || [];
       setTableData(dataToUse);
       // setTabledata(res.data.data);
-      console.log(res, "res for lena dena jai hind !");
+      //console.log(res, "res for lena dena jai hind !");
     });
   }, []);
 
   const getProcessedRows = () => {
     let balance = 0;
-
 
     const filteredData =
       optionuser === "all"
@@ -41,12 +40,12 @@ const ClientLedger = () => {
       debit: number;
       balance: number;
       narration: string;
-      date:string;
+      date: string;
     }[] = [];
 
-    filteredData.forEach((item:any) => {
+    filteredData.forEach((item: any) => {
       const money = item.umoney;
-     
+
       const credit = money > 0 ? money : 0;
       const debit = money < 0 ? money : 0; // keep -ve as-is
       balance += money;
@@ -57,7 +56,7 @@ const ClientLedger = () => {
         debit,
         balance,
         narration: item.narration,
-        date:item.createdAt,
+        date: item.createdAt,
       });
     });
 
@@ -67,7 +66,6 @@ const ClientLedger = () => {
 
   const processedRows = getProcessedRows();
   const finalBalance = processedRows.length > 0 ? processedRows[0].balance : 0;
-  
 
   return (
     <>
@@ -81,7 +79,7 @@ const ClientLedger = () => {
         value={optionuser}
         onChange={(e) => setOptionuser(e.target.value)}
       >
-        <option  value="all">All Clients</option>
+        <option value="all">All Clients</option>
         {Array.from(
           tableData
             .reduce((map: Map<string, any>, row: any) => {
@@ -161,20 +159,26 @@ const ClientLedger = () => {
                         role="row"
                         className={index % 2 === 0 ? "even" : "odd"}
                       >
-                        <td className="small pl-2 pr-0">{new Date(row.date).toLocaleString("en-US", {
+                        <td className="small pl-2 pr-0">
+                          {new Date(row.date).toLocaleString("en-US", {
                             month: "short", // Apr
                             day: "2-digit", // 16
                             hour: "2-digit", // 04
                             minute: "2-digit", // 09
                             hour12: true, // PM/AM format
-                          })}</td>
-
-                        <td>
-                          <span className="text-success">{(row.debit).toFixed(2)}</span>
+                          })}
                         </td>
 
                         <td>
-                          <span className="text-danger">{row.credit.toFixed(2)}</span>
+                          <span className="text-success">
+                            {row.debit.toFixed(2)}
+                          </span>
+                        </td>
+
+                        <td>
+                          <span className="text-danger">
+                            {row.credit.toFixed(2)}
+                          </span>
                         </td>
                         <td>
                           <span
@@ -182,7 +186,7 @@ const ClientLedger = () => {
                               row.balance >= 0 ? "text-danger" : "text-danger"
                             }
                           >
-                            {(row.balance).toFixed(2)}
+                            {row.balance.toFixed(2)}
                           </span>
                         </td>
                         <td>
@@ -215,7 +219,7 @@ const ClientLedger = () => {
             style={{
               position: "fixed",
               bottom: 0,
-              zIndex:50,
+              zIndex: 50,
               left: 0,
               background: "white",
             }}
@@ -256,7 +260,7 @@ const ClientLedger = () => {
               TOTAL
             </div>
             <div className="pt-2 pr-1 pl-1 col-7 with-commission btn btn-sm btn-success">
-              {(finalBalance).toFixed(2)}
+              {finalBalance.toFixed(2)}
             </div>
           </div>
 

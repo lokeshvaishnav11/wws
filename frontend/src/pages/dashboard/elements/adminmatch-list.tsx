@@ -16,14 +16,12 @@ const MatchList2: React.FC<MatchListProps> = ({
   currentMatch,
   //   memoOdds,
 }) => {
-  console.log(matchList, "matchlisy", currentMatch, "currentmatch", "memoodds");
+  //console.log(matchList, "matchlisy", currentMatch, "currentmatch", "memoodds");
 
   return (
     <div className="row mx-1">
       <table className=" ">
-        <thead>
-         
-        </thead>
+        <thead></thead>
         <tbody>
           {matchList?.map((match: LMatch, index: number) => {
             const marketId =
@@ -32,8 +30,6 @@ const MatchList2: React.FC<MatchListProps> = ({
                 : null;
             return (
               <>
-               
-
                 <tr
                   key={match.matchId}
                   className="col-md-6 event-row mb-3 float-left p-1"
@@ -81,7 +77,9 @@ const MatchList2: React.FC<MatchListProps> = ({
                                   </svg>
                                   <span className="ml-1">IN PLAY</span>
                                 </>
-                              ) : <span className="ml-1">IN PLAY</span>}
+                              ) : (
+                                <span className="ml-1">IN PLAY</span>
+                              )}
                             </div>
 
                             {/* ✅ Match date */}
@@ -96,8 +94,6 @@ const MatchList2: React.FC<MatchListProps> = ({
                     </div>
                   </a>
                 </tr>
-
-               
               </>
             );
           })}

@@ -22,8 +22,8 @@ const validationSchema = Yup.object().shape({
   username: Yup.string()
     .trim("User name cannot include leading and trailing spaces")
     .strict(true),
-    // .required("Username is required")
-    // .matches(/^[A-Z][a-z0-9_-]{3,19}$/, "Must Contain One Uppercase"),
+  // .required("Username is required")
+  // .matches(/^[A-Z][a-z0-9_-]{3,19}$/, "Must Contain One Uppercase"),
   // transactionPassword: Yup.string().default('123456').required('Transaction Password is required'),
 
   share: Yup.string(),
@@ -32,10 +32,10 @@ const validationSchema = Yup.object().shape({
 });
 
 const DeleteUser = (data: any) => {
-  console.log(data, "prorpsdatatfroeidt");
+  //console.log(data, "prorpsdatatfroeidt");
 
   const userState = useAppSelector<{ user: User }>(selectUserData);
-  console.log(userState, "userstate");
+  //console.log(userState, "userstate");
   const [selectedUser, setSelectedUser] = React.useState<User>();
   const [selectedUserChild, setSelectedUserChild] = React.useState<User>();
 
@@ -47,7 +47,7 @@ const DeleteUser = (data: any) => {
 
   // const username = data?.data?.username
 
-  console.log(username, "from params");
+  //console.log(username, "from params");
 
   const {
     register,
@@ -68,7 +68,7 @@ const DeleteUser = (data: any) => {
     if (username) {
       UserService.getUserDetail(username).then((res: AxiosResponse<any>) => {
         setSelectedUser(res.data.data);
-        console.log(res, "ressss");
+        //console.log(res, "ressss");
       });
     }
   }, [username]);
@@ -78,7 +78,7 @@ const DeleteUser = (data: any) => {
       UserService.getUserDetail(data?.data?.username).then(
         (res: AxiosResponse<any>) => {
           setSelectedUserChild(res.data.data);
-          console.log(res, "ressss for child own values ");
+          //console.log(res, "ressss for child own values ");
         }
       );
     }
@@ -91,8 +91,7 @@ const DeleteUser = (data: any) => {
       setValue("mcom", selectedUserChild.mcom);
       setValue("scom", selectedUserChild.scom);
 
-
-      const partnership:any = selectedUserChild.partnership || {};
+      const partnership: any = selectedUserChild.partnership || {};
       Object.keys(partnership).forEach((sportId) => {
         setValue(`partnership.${sportId}`, partnership[sportId]?.ownRatio);
         setValue(`partnershipOur.${sportId}`, partnership[sportId]?.ourRatio);
@@ -112,7 +111,7 @@ const DeleteUser = (data: any) => {
   //     const partenershipValue: any = [10, 20, 30]; // Temporary array
   //     const partenershipArr: { [x: string]: any } = {};
 
-  //     console.log("partenershipValue:", partenershipValue);
+  //     //console.log("partenershipValue:", partenershipValue);
 
   //     partenershipValue.forEach((element: any, index: any) => {
   //       if (element !== undefined) {
@@ -138,7 +137,7 @@ const DeleteUser = (data: any) => {
   //       toast.error(error);
   //     });
 
-  //   console.log(data, "send dataa");
+  //   //console.log(data, "send dataa");
   // });
 
   // const onSubmit = handleSubmit((formData:any,selectedUserChild:any,) => {
@@ -169,21 +168,19 @@ const DeleteUser = (data: any) => {
   //       toast.error(error);
   //     });
 
-  //   console.log(payload, "sending edited user payload");
+  //   //console.log(payload, "sending edited user payload");
   // });
-
-
 
   const onSubmit = handleSubmit((formData: any) => {
     const payload: any = {
       _id: selectedUserChild?._id,
       username: selectedUserChild?.username,
       share: Number(formData.share),
-      mcom:Number(formData.mcom),
-      scom:Number(formData.scom),
+      mcom: Number(formData.mcom),
+      scom: Number(formData.scom),
       partnership: {},
     };
-  
+
     if (formData.partnership) {
       Object.keys(formData.partnership).forEach((sportId) => {
         const downlineRatio = Number(formData?.partnership?.[sportId]);
@@ -194,7 +191,7 @@ const DeleteUser = (data: any) => {
         };
       });
     }
-  
+
     UserService.deleteU(payload)
       .then(() => {
         toast.success("User successfully Deleted");
@@ -203,12 +200,9 @@ const DeleteUser = (data: any) => {
         const error = e.response?.data?.message || "Something went wrong";
         toast.error(error);
       });
-  
-    console.log(payload, "sending edited user payload");
+
+    //console.log(payload, "sending edited user payload");
   });
-  
-
-
 
   const userData = selectedUser ? selectedUser : userState?.user;
 
@@ -222,9 +216,8 @@ const DeleteUser = (data: any) => {
             <div className="add-accounttt">
               <h2 className="m-b-20">
                 {/* <PersonAddIcon /> */}
-               Delete User -{data?.data?.username}
+                Delete User -{data?.data?.username}
               </h2>
-
 
               <form onSubmit={onSubmit}>
                 <div className="row hidden">
@@ -261,38 +254,34 @@ const DeleteUser = (data: any) => {
                     </div>
                   </div>
 
-
-{data?.data?.role === "user" ? "" :
-
-
-                  <div className="col-md-6 account-detail">
-                    {/* <h4 className="m-b-20 col-md-12">Account Detail</h4> */}
-                    <div className="row">
-                      <div className="col-md-6">
-                        <div className="form-group">
-                          <label htmlFor="share">Supershare Limit:</label>
-                          <p>Current : {childData.share}%</p>
-                          <input
-                            className="form-control"
-                            placeholder="Supershare Limit"
-                            {...register("share")}
-                            id="share"
-                            defaultValue={0}
-                            min="0"
-                            // value={childData.share}
-                            // required
-                            type="number"
-                          />
+                  {data?.data?.role === "user" ? (
+                    ""
+                  ) : (
+                    <div className="col-md-6 account-detail">
+                      {/* <h4 className="m-b-20 col-md-12">Account Detail</h4> */}
+                      <div className="row">
+                        <div className="col-md-6">
+                          <div className="form-group">
+                            <label htmlFor="share">Supershare Limit:</label>
+                            <p>Current : {childData.share}%</p>
+                            <input
+                              className="form-control"
+                              placeholder="Supershare Limit"
+                              {...register("share")}
+                              id="share"
+                              defaultValue={0}
+                              min="0"
+                              // value={childData.share}
+                              // required
+                              type="number"
+                            />
+                          </div>
                         </div>
                       </div>
                     </div>
-                  </div>
+                  )}
 
-}
-
-
-
-<div className="col-md-6 account-detail">
+                  <div className="col-md-6 account-detail">
                     {/* <h4 className="m-b-20 col-md-12">Account Detail</h4> */}
                     <div className="row">
                       <div className="col-md-6">
@@ -315,9 +304,7 @@ const DeleteUser = (data: any) => {
                     </div>
                   </div>
 
-
-
-<div className="col-md-6 account-detail">
+                  <div className="col-md-6 account-detail">
                     {/* <h4 className="m-b-20 col-md-12">Account Detail</h4> */}
                     <div className="row">
                       <div className="col-md-6">
@@ -339,8 +326,6 @@ const DeleteUser = (data: any) => {
                       </div>
                     </div>
                   </div>
-
-
                 </div>
                 {!isExposerAllow && (
                   <div className="row m-t-20 hidden" id="partnership-div">
@@ -415,7 +400,8 @@ const DeleteUser = (data: any) => {
                                         onChange: (e) => {
                                           const input = Number(e.target.value);
                                           const own =
-                                            userData?.partnership?.[sportId]?.ownRatio || 0;
+                                            userData?.partnership?.[sportId]
+                                              ?.ownRatio || 0;
                                           setValue(
                                             `partnershipOur.${sportId}`,
                                             own - input
@@ -425,7 +411,8 @@ const DeleteUser = (data: any) => {
                                       id={`partnership.${sportId}`}
                                       placeholder=""
                                       max={
-                                        userData?.partnership?.[sportId]?.ownRatio 
+                                        userData?.partnership?.[sportId]
+                                          ?.ownRatio
                                       }
                                       min="0"
                                       defaultValue={0}
@@ -449,14 +436,15 @@ const DeleteUser = (data: any) => {
                             {sportListState.sports?.map(({ _id, sportId }) =>
                               sportId == 1 || sportId == 2 ? (
                                 <td
-                                className="hidden"
+                                  className="hidden"
                                   id={`taxpartnership-our.${sportId}`}
                                   key={_id}
                                 >
                                   <input
                                     {...register(`partnershipOur.${sportId}`)}
                                     value={
-                                      userData?.partnership?.[sportId].ownRatio ?? 0
+                                      userData?.partnership?.[sportId]
+                                        .ownRatio ?? 0
                                     }
                                     // min={0}
                                     disabled={true}
@@ -479,7 +467,8 @@ const DeleteUser = (data: any) => {
                                   <input
                                     // {...register(`partnershipOur.${sportId}`)}
                                     value={
-                                      selectedUserChild?.partnership?.[sportId]?.ownRatio ?? 0
+                                      selectedUserChild?.partnership?.[sportId]
+                                        ?.ownRatio ?? 0
                                     }
                                     // min={0}
                                     disabled={true}
@@ -546,15 +535,19 @@ const DeleteUser = (data: any) => {
                 </div>
                 <div className="row m-t-20">
                   <div className="col-md-12">
-
-              <div className="fixe inset-0 flex items-center justify-center bg-blac bg-opacity-50 z-50">
-  <div className="bg-white rounded-2xl shadow-xl p-6 w-full max-w-xs text-center">
-    <h2 className="text-xl font-semibold text-gray-800 mb-6">Are you sure?</h2>
-    <SubmitButton type="submit" className="px-6 py-3 rounded-lg bg-red-600 hover:bg-red-700 text-white font-semibold text-lg">
-      Delete
-    </SubmitButton>
-  </div>
-</div>
+                    <div className="fixe inset-0 flex items-center justify-center bg-blac bg-opacity-50 z-50">
+                      <div className="bg-white rounded-2xl shadow-xl p-6 w-full max-w-xs text-center">
+                        <h2 className="text-xl font-semibold text-gray-800 mb-6">
+                          Are you sure?
+                        </h2>
+                        <SubmitButton
+                          type="submit"
+                          className="px-6 py-3 rounded-lg bg-red-600 hover:bg-red-700 text-white font-semibold text-lg"
+                        >
+                          Delete
+                        </SubmitButton>
+                      </div>
+                    </div>
                     {/* <div className="float-right">
                       <SubmitButton className="btn btn-submit" type="submit">
                         Edit User

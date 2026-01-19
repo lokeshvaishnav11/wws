@@ -38,7 +38,7 @@ const MatchDetail = (props: any) => {
   // const [sharedV, setSharedV] = React.useState<any>(null)
 
   const shared = useParams().share
-  console.log(props,"props is here in match details hahhahahah")
+  //console.log(props,"props is here in match details hahhahahah")
 
   return (
     <>

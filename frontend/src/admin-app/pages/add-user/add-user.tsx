@@ -13,12 +13,14 @@ import { toast } from "react-toastify";
 import "react-toastify/dist/ReactToastify.css";
 import { AxiosResponse } from "axios";
 import ISport from "../../../models/ISport";
-import { useParams, useSearchParams } from "react-router-dom";
+import { useNavigate, useParams, useSearchParams } from "react-router-dom";
 import { selectSportList } from "../../../redux/actions/sports/sportSlice";
 import SubmitButton from "../../../components/SubmitButton";
 import PersonAddIcon from "@mui/icons-material/PersonAdd";
 import DepositM from "../list-clients/modals/DepositM";
 import userService from "../../../services/user.service";
+import CancelIcon from "@mui/icons-material/Cancel";
+import SaveIcon from "@mui/icons-material/Save";
 
 const validationSchema = Yup.object().shape({
   username: Yup.string()
@@ -43,7 +45,6 @@ const validationSchema = Yup.object().shape({
 
   share: Yup.string(),
 
-
   mcom: Yup.string(),
   matcom: Yup.string(),
 
@@ -61,10 +62,8 @@ const validationSchema = Yup.object().shape({
   //   return !isNaN(num) && num >= 0 && num <= 2;
   // }),
 
-
   scom: Yup.string(),
   sendamount: Yup.number(),
-
 
   // code: Yup.string(),
 
@@ -81,15 +80,13 @@ const validationSchema = Yup.object().shape({
 
 const AddUser = () => {
   const userState = useAppSelector<{ user: User }>(selectUserData);
-  console.log(userState, "user admin details");
+  //console.log(userState, "user admin details");
   const [selectedUser, setSelectedUser] = React.useState<User>();
   const [isPartnership, setIsPartnership] = React.useState(false);
   const [isExposerAllow, setExposerAllow] = React.useState(false);
   const sportListState = useAppSelector<{ sports: ISport[] }>(selectSportList);
 
-
-
-const [uplineParent, setUplineParent] = React.useState<any>(null);
+  const [uplineParent, setUplineParent] = React.useState<any>(null);
 
   const [newbalance, setNewbalance] = React.useState({});
   const [pshared, setPshared] = React.useState();
@@ -99,10 +96,10 @@ const [uplineParent, setUplineParent] = React.useState<any>(null);
   const [users, setUserList] = React.useState<any>();
   const [upperlist, setUpperlist] = React.useState<any>();
 
-
   const [maxBalance, setMaxBalance] = React.useState<any>();
 
   const [loading, setLoading] = React.useState(false);
+  const navigate = useNavigate();
 
   React.useEffect(() => {
     // const userState = useAppSelector<{ user: User }>(selectUserData);
@@ -110,30 +107,28 @@ const [uplineParent, setUplineParent] = React.useState<any>(null);
       ? uplineParent?.username
       : userState?.user?.username;
 
-    console.log(username, "testagentmaster");
+    //console.log(username, "testagentmaster");
     UserService.getParentUserDetail(username).then(
       (res: AxiosResponse<any>) => {
-        console.log(res, "check balance for parent");
+        //console.log(res, "check balance for parent");
         const thatb = res.data?.data[0]?.balance?.balance;
-        const psharee = res?.data?.data[0]?.share
-        setPshared(psharee)
+        const psharee = res?.data?.data[0]?.share;
+        setPshared(psharee);
         setNewbalance(thatb);
         setMaxBalance(thatb);
       }
     );
-  }, [userState ,uplineParent]);
+  }, [userState, uplineParent]);
 
   const { username } = useParams();
 
-  const selfrole:any = userState?.user?.role;
+  const selfrole: any = userState?.user?.role;
 
-  const thetype:any = useParams().type;
-  console.log(thetype, "the type for code");
+  const thetype: any = useParams().type;
+  //console.log(thetype, "the type for code");
 
-
-
-   // ✅ Define disallowed combinations
-   const allowedPairs: Record<string, string[]> = {
+  // ✅ Define disallowed combinations
+  const allowedPairs: Record<string, string[]> = {
     sadmin: ["admin"], // agar thetype = sadmin aur selfrole = admin → skip
     suadmin: ["sadmin"],
     smdl: ["suadmin"],
@@ -142,16 +137,13 @@ const [uplineParent, setUplineParent] = React.useState<any>(null);
     user: ["dl"],
   };
 
-    // ✅ Helper function to check if combination is disallowed
-    const isallowed = React.useMemo(() => {
-      const sallowed = allowedPairs[thetype];
-      return sallowed?.includes(selfrole) ?? false;
-    }, [thetype, selfrole]);
+  // ✅ Helper function to check if combination is disallowed
+  const isallowed = React.useMemo(() => {
+    const sallowed = allowedPairs[thetype];
+    return sallowed?.includes(selfrole) ?? false;
+  }, [thetype, selfrole]);
 
-console.log(isallowed, "is disallowed or not");
-
- 
-
+  //console.log(isallowed, "is disallowed or not");
 
   // let fword = "";
 
@@ -181,28 +173,40 @@ console.log(isallowed, "is disallowed or not");
 
   // const randomNumber = Math.floor(Math.random() * (99999 - 19999 + 1)) + 19999;
   // const sendcode = fword + randomNumber;
-  // console.log(sendcode, "the first code");
+  // //console.log(sendcode, "the first code");
 
   const [sendcode, setSendcode] = React.useState("");
 
-React.useEffect(() => {
-  let fword = "";
+  React.useEffect(() => {
+    let fword = "";
 
-  switch (thetype) {
-    case "sadmin": fword = "SB"; break;
-    case "suadmin": fword = "AD"; break;
-    case "smdl": fword = "MA"; break;
-    case "mdl": fword = "SA"; break;
-    case "dl": fword = "A"; break;
-    case "user": fword = "C"; break;
-    default: fword = "";
-  }
+    switch (thetype) {
+      case "sadmin":
+        fword = "SB";
+        break;
+      case "suadmin":
+        fword = "AD";
+        break;
+      case "smdl":
+        fword = "MA";
+        break;
+      case "mdl":
+        fword = "SA";
+        break;
+      case "dl":
+        fword = "A";
+        break;
+      case "user":
+        fword = "C";
+        break;
+      default:
+        fword = "";
+    }
 
-  const randomNumber = Math.floor(Math.random() * (99999 - 19999 + 1)) + 19999;
-  setSendcode(fword + randomNumber);
-
-}, [thetype]);  // 👈 Only regenerate when account type changes
-
+    const randomNumber =
+      Math.floor(Math.random() * (99999 - 19999 + 1)) + 19999;
+    setSendcode(fword + randomNumber);
+  }, [thetype]); // 👈 Only regenerate when account type changes
 
   const {
     register,
@@ -214,7 +218,7 @@ React.useEffect(() => {
     formState: { errors },
   } = useForm<User>({
     resolver: yupResolver(validationSchema, { context: { maxBalance } }),
-    mode: "onChange", 
+    mode: "onChange",
     defaultValues: {
       password: "Abcd1122",
       transactionPassword: "123456", // Automatically sets transaction password
@@ -225,11 +229,13 @@ React.useEffect(() => {
 
   React.useEffect(() => {
     if (uplineParent ? uplineParent?.username : username) {
-      UserService.getUserDetail(uplineParent ? uplineParent?.username : username).then((res: AxiosResponse<any>) => {
+      UserService.getUserDetail(
+        uplineParent ? uplineParent?.username : username
+      ).then((res: AxiosResponse<any>) => {
         setSelectedUser(res.data.data);
       });
     }
-  }, [username ,uplineParent]);
+  }, [username, uplineParent]);
 
   React.useEffect(() => {
     const validRoles = Object.values(RoleType);
@@ -253,7 +259,7 @@ React.useEffect(() => {
   //     const partenershipArr: { [x: string]: any } = {}
   //     // const patr=[20,20,20]
   //     // const patr=[20,20,20]
-  //     console.log(partenershipValue)
+  //     //console.log(partenershipValue)
   //     // Object.keys(partenershipValue).forEach((key) => {
   //     //   partenershipArr[key] = partenershipValue[key]
   //     // })
@@ -267,7 +273,7 @@ React.useEffect(() => {
   //     const userSettingArr: { [x: string]: any } = {}
 
   //     const minBetValue = data.minbet
-  //     console.log(minBetValue)
+  //     //console.log(minBetValue)
   //     minBetValue.forEach((element: undefined, index: any) => {
   //       if (element !== undefined) {
   //         const minbetObj = { minBet: element }
@@ -317,12 +323,13 @@ React.useEffect(() => {
   const [senddata, setSenddata] = React.useState({});
 
   const onSubmit = handleSubmit((data) => {
-
     if (Number(data.sendamount) > Number(maxBalance)) {
-      toast.error(`Client Limit cannot exceed available balance (${maxBalance})`);
+      toast.error(
+        `Client Limit cannot exceed available balance (${maxBalance})`
+      );
       return; // Prevent further execution
     }
-  
+
     setLoading(true);
 
     data.creditRefrences = data.sendamount;
@@ -332,7 +339,7 @@ React.useEffect(() => {
       const partenershipValue: any = [10, 20, 30]; // Temporary array
       const partenershipArr: { [x: string]: any } = {};
 
-      console.log("partenershipValue:", partenershipValue);
+      //console.log("partenershipValue:", partenershipValue);
 
       partenershipValue.forEach((element: any, index: any) => {
         if (element !== undefined) {
@@ -354,9 +361,9 @@ React.useEffect(() => {
         ? data.delay
         : Object.values(data.delay || {});
 
-      console.log("minBetValue:", minBetValue);
-      console.log("maxBetValue:", maxBetValue);
-      console.log("delayValue:", delayValue);
+      //console.log("minBetValue:", minBetValue);
+      //console.log("maxBetValue:", maxBetValue);
+      //console.log("delayValue:", delayValue);
 
       minBetValue.forEach((element, index) => {
         if (element !== undefined) {
@@ -379,13 +386,13 @@ React.useEffect(() => {
           });
         }
       });
-      console.log(userSettingArr ,"setingnggnngrrr")
+      //console.log(userSettingArr, "setingnggnngrrr");
 
       data.userSetting = userSettingArr;
     }
 
     // Parent Name
-   data.parent = uplineParent ? uplineParent?.username : userData?.username;
+    data.parent = uplineParent ? uplineParent?.username : userData?.username;
 
     data.code = sendcode;
     data.pshare = pshared;
@@ -400,9 +407,9 @@ React.useEffect(() => {
       .then((ress) => {
         if (ress?.data?.message === "New User Added and Funded Successfully") {
           setLoading(false); // Stop loader
-          console.log(data, "cretae data");
+          //console.log(data, "cretae data");
           setSenddata(data);
-          console.log(ress, "resss ");
+          //console.log(ress, "resss ");
           toast.success("User successfully created");
           reset();
           window.location.reload();
@@ -417,7 +424,7 @@ React.useEffect(() => {
         toast.error(error);
       });
 
-    console.log(data, "send dataa");
+    //console.log(data, "send dataa");
   });
 
   const roleOption = () => {
@@ -457,7 +464,6 @@ React.useEffect(() => {
     search: "",
   });
 
-
   const getList = (obj: {
     username: string;
     type: string;
@@ -468,7 +474,7 @@ React.useEffect(() => {
     if (!obj.page) obj.page = 1;
     userService.getUserList(obj).then((res: AxiosResponse<any>) => {
       setSearchObj(obj);
-      console.log(res.data.data.items, "add user list data");
+      //console.log(res.data.data.items, "add user list data");
       setUserList(res.data.data);
       // clientlistdata(res.data.data.items);
     });
@@ -482,8 +488,13 @@ React.useEffect(() => {
       type: "",
     });
     // setPage(1);
-  }, [username, searchParams.get("search"), callbacklist , thetype, userState?.user?.username]);
-
+  }, [
+    username,
+    searchParams.get("search"),
+    callbacklist,
+    thetype,
+    userState?.user?.username,
+  ]);
 
   let addtype = "";
 
@@ -511,11 +522,11 @@ React.useEffect(() => {
       break;
   }
 
-  console.log(addtype, "check add user type");
+  //console.log(addtype, "check add user type");
 
   const filterred = users?.items?.filter((u: any) => u?.role === addtype);
 
-  console.log(filterred, "filter useres for add user");
+  //console.log(filterred, "filter useres for add user");
 
   // Step 3: Handle select change
   const handleSelectChange = (e: any) => {
@@ -527,10 +538,8 @@ React.useEffect(() => {
   };
 
   React.useEffect(() => {
-    console.log(uplineParent, "Currently selected upline parent data");
+    //console.log(uplineParent, "Currently selected upline parent data");
   }, [uplineParent]);
-
-
 
   return (
     <div className="container-fluid">
@@ -538,19 +547,33 @@ React.useEffect(() => {
         <div className="col-md-12 main-container">
           <div>
             <div className="add-account">
-              <h2 className="m-b-20">
-                <PersonAddIcon />
-                Create
-              </h2>
+              <div className="text-right mb-2 d-flex items-center justify-between bg-black p-2 rounded ">
+                <p className="text-xl text-white">
+                  {thetype == "sadmin"
+                    ? "Sub Admin"
+                    : thetype == "suadmin"
+                    ? "Admin"
+                    : thetype == "smdl"
+                    ? "Master Agent"
+                    : thetype == "mdl"
+                    ? "Super Agent Master"
+                    : thetype == "dl"
+                    ? "Agent Master"
+                    : "Client"}
+                </p>
+
+                <p className="btn btn-diamond">
+                  <PersonAddIcon /> Create
+                </p>
+              </div>
               <form onSubmit={onSubmit}>
                 <div className="row">
                   <div className="col-md-6 personal-detail">
                     {/* <h4 className="m-b-20 col-md-12">Personal Detail</h4> */}
 
-
                     {filterred?.length > 0 ? (
-                      <div className="mb-10 justify-between flex items-center">
-                        <label>Select Upperline:</label>
+                      <div className="mb-4 mt-4 justify-between flex items-center d-none">
+                        <label>Select Upperline</label>
                         <select
                           onChange={handleSelectChange}
                           className="border rounded-0 p-2"
@@ -567,46 +590,75 @@ React.useEffect(() => {
                       ""
                     )}
 
-
-
                     <div className="row">
                       <div className="col-md-6">
                         <div className="form-group">
-                          <label htmlFor="username"> Name:</label>
-                          <input
-                            placeholder="User Name"
-                            id="username"
-                            {...register("username")}
-                            defaultValue={""}
-                            type="text"
-                            className="form-control"
-                            // required
-                          />
-                          <span
-                            id="username-error"
-                            className="error"
-                            style={{ display: "none" }}
-                          >
-                            Username already taken
-                          </span>
-                          {errors?.username && (
-                            <span id="username-required" className="error">
-                              {errors.username.message}
-                            </span>
-                          )}
-                        </div>
+                          <div>
+                            <label htmlFor="username">UserName</label>
+                            <input
+                              type="text"
+                              className="form-control username"
+                              value={sendcode}
+                            />
+                          </div>
 
-                        <div>
-                          <input
-                            type="text"
-                            className="form-control username"
-                            value={sendcode}
-                          />
+                          <div style={{ display: "grid" }}>
+                            <label>Agent</label>
+                            {filterred?.length > 0 ? (
+                              <select
+                                onChange={handleSelectChange}
+                                className="border rounded-0 p-2"
+                              >
+                                <option value="">-- Select User --</option>
+                                {filterred?.map((user: any) => (
+                                  <option key={user?._id} value={user.username}>
+                                    {user?.username}({user?.code})
+                                  </option>
+                                ))}
+                              </select>
+                            ) : (
+                              ""
+                            )}
+                          </div>
+
+                          <div>
+                            <label htmlFor="">Agent Limit</label>
+                            <input
+                              type="text"
+                              className="form-control username"
+                              value={maxBalance}
+                            />
+                          </div>
+
+                          <div className="mt-4">
+                            <label htmlFor="username">Name</label>
+                            <input
+                              placeholder="User Name"
+                              id="username"
+                              {...register("username")}
+                              defaultValue={""}
+                              type="text"
+                              className="form-control"
+                              // required
+                            />
+                            <span
+                              id="username-error"
+                              className="error"
+                              style={{ display: "none" }}
+                            >
+                              Username already taken
+                            </span>
+                            {errors?.username && (
+                              <span id="username-required" className="error">
+                                {errors.username.message}
+                              </span>
+                            )}
+                          </div>
                         </div>
                       </div>
                       <div className="col-md-6">
                         <div className="form-group">
-                          <label htmlFor="password">User password:</label>
+                          <label htmlFor="password">Password</label>
                           <input
                             maxLength={8}
                             placeholder="Password"
@@ -708,7 +760,7 @@ React.useEffect(() => {
 
                         {thetype === "undefined" ? (
                           <div className={"form-group"}>
-                            <label htmlFor="role">Account Type:</label>
+                            <label htmlFor="role">Account Type</label>
                             {/* <select
                             {...register("role", {
                               onChange: (e) => {
@@ -751,10 +803,9 @@ React.useEffect(() => {
                         )}
                       </div>
 
-                      
                       <div className="col-md-6 d-none">
                         <div className="form-group">
-                          <label htmlFor="creditrefrence">Client Limit:</label>
+                          <label htmlFor="creditrefrence">Client Limit</label>
                           <input
                             className="form-control"
                             placeholder="Super Limit"
@@ -777,8 +828,10 @@ React.useEffect(() => {
                       {!isExposerAllow && (
                         <div className="col-md-6">
                           <div className="form-group">
-                            <label htmlFor="share">Super Share :{`(≤${pshared ? pshared : 0})`}</label>
-                            
+                            <label htmlFor="share">
+                              Super Share{`(≤${pshared ? pshared : 0})`}
+                            </label>
+
                             <input
                               className="form-control"
                               placeholder="Supershare Limit"
@@ -797,8 +850,7 @@ React.useEffect(() => {
                       <div className="col-md-6">
                         <div className="form-group">
                           <label htmlFor="sendamount">
-                            Client Limit Balance ({maxBalance ? maxBalance : ""}
-                            )
+                            Client Limit ({maxBalance ? maxBalance : ""})
                           </label>
                           <input
                             className="form-control"
@@ -825,12 +877,9 @@ React.useEffect(() => {
                             min="0"
                             max="2"
                             // required
-                            step="0.01" 
+                            step="0.01"
                             type="number"
                           />
-
-                          
-                         
                         </div>
                       </div>
 
@@ -846,12 +895,9 @@ React.useEffect(() => {
                             min="0"
                             max="10"
                             // required
-                            step="0.01" 
+                            step="0.01"
                             type="number"
                           />
-
-                          
-                         
                         </div>
                       </div>
 
@@ -876,7 +922,7 @@ React.useEffect(() => {
                       {isExposerAllow && (
                         <div className="col-md-6 d-none ">
                           <div className="form-group" id="exposer-limit">
-                            <label htmlFor="exposerLimit">Exposer Limit:</label>
+                            <label htmlFor="exposerLimit">Exposer Limit</label>
                             <input
                               placeholder="Exposer Limit"
                               id="exposerLimit"
@@ -1069,8 +1115,7 @@ React.useEffect(() => {
                   </div>
                 )}
 
-
-              <div
+                <div
                   // style={{ display: "none" }}
                   className="row m-t-20 "
                   id="min-max-bet-div"
@@ -1078,7 +1123,9 @@ React.useEffect(() => {
                   <div className="col-md-12 overflow-x-scroll">
                     {/* <h4 className="m-b-20 col-md-12"></h4> */}
                     <table className="table table-striped table-borderedddd">
-                      <thead className={` ${thetype === "sadmin" ? "d-" : "d-none"}`}>
+                      <thead
+                        className={` ${thetype === "sadmin" ? "d-" : "d-none"}`}
+                      >
                         <tr>
                           <th />
                           {sportListState.sports?.map((sports: any) =>
@@ -1086,12 +1133,13 @@ React.useEffect(() => {
                             sports.sportId === 2 ||
                             sports.sportId === 4 ? (
                               <th key={sports._id}>
-                                {
-                                  sports.name === "Cricket" ? "Casino " :
-                                  sports.name === "Soccer" ? "Match" :
-                                  sports.name === "Tennis" ? "Fancy " :
-                                  ""
-                                }
+                                {sports.name === "Cricket"
+                                  ? "Casino "
+                                  : sports.name === "Soccer"
+                                  ? "Match"
+                                  : sports.name === "Tennis"
+                                  ? "Fancy "
+                                  : ""}
                               </th>
                             ) : (
                               <th key={sports._id} />
@@ -1100,7 +1148,11 @@ React.useEffect(() => {
                         </tr>
                       </thead>
                       <tbody>
-                        <tr className={` ${thetype === "sadmin" ? "d-" : "d-none"}`}>
+                        <tr
+                          className={` ${
+                            thetype === "sadmin" ? "d-" : "d-none"
+                          }`}
+                        >
                           <td></td>
                           {sportListState.sports?.map(({ _id, sportId }) =>
                             sportId == 1 || sportId == 2 || sportId == 4 ? (
@@ -1112,7 +1164,11 @@ React.useEffect(() => {
                             )
                           )}
                         </tr>
-                        <tr className={` ${thetype === "sadmin" ? "d" : "d-none"}`}>
+                        <tr
+                          className={` ${
+                            thetype === "sadmin" ? "d" : "d-none"
+                          }`}
+                        >
                           <td>Provide Min Bet</td>
                           {sportListState.sports?.map(({ _id, sportId }) =>
                             sportId == 1 || sportId == 2 || sportId == 4 ? (
@@ -1124,7 +1180,9 @@ React.useEffect(() => {
                                   placeholder={""}
                                   max={userData?.userSetting?.[sportId].minBet}
                                   min={0}
-                                  defaultValue={userData?.userSetting?.[sportId].minBet}
+                                  defaultValue={
+                                    userData?.userSetting?.[sportId].minBet
+                                  }
                                   disabled={isPartnership}
                                   type="number"
                                 />
@@ -1135,7 +1193,11 @@ React.useEffect(() => {
                             )
                           )}
                         </tr>
-                        <tr className={` ${thetype === "sadmin" ? "d-" : "d-none"}`}>
+                        <tr
+                          className={` ${
+                            thetype === "sadmin" ? "d-" : "d-none"
+                          }`}
+                        >
                           <td>Max Bet</td>
                           {sportListState.sports?.map(({ _id, sportId }) =>
                             sportId == 1 || sportId == 2 || sportId == 4 ? (
@@ -1147,7 +1209,11 @@ React.useEffect(() => {
                             )
                           )}
                         </tr>
-                        <tr className={` ${thetype === "sadmin" ? "d-" : "d-none"}`}>
+                        <tr
+                          className={` ${
+                            thetype === "sadmin" ? "d-" : "d-none"
+                          }`}
+                        >
                           <td>Provide Min Bet</td>
                           {sportListState.sports?.map(({ _id, sportId }) =>
                             sportId == 1 || sportId == 2 || sportId == 4 ? (
@@ -1158,7 +1224,9 @@ React.useEffect(() => {
                                   {...register(`maxbet.${sportId}`)}
                                   placeholder={""}
                                   max={userData?.userSetting?.[sportId].maxBet}
-                                  defaultValue={userData?.userSetting?.[sportId].maxBet}
+                                  defaultValue={
+                                    userData?.userSetting?.[sportId].maxBet
+                                  }
                                   disabled={isPartnership}
                                   min={0}
                                   type="number"
@@ -1170,7 +1238,11 @@ React.useEffect(() => {
                             )
                           )}
                         </tr>
-                        <tr className={` ${thetype === "sadmin" ? "d" : "d-none"}`}>
+                        <tr
+                          className={` ${
+                            thetype === "sadmin" ? "d" : "d-none"
+                          }`}
+                        >
                           <td>Delay</td>
                           {sportListState.sports?.map(({ _id, sportId }) =>
                             sportId == 1 || sportId == 2 || sportId == 4 ? (
@@ -1182,7 +1254,9 @@ React.useEffect(() => {
                             )
                           )}
                         </tr>
-                        <tr className={` ${thetype === "sadmin" ? "" : "d-none"}`}>
+                        <tr
+                          className={` ${thetype === "sadmin" ? "" : "d-none"}`}
+                        >
                           <td>Provide Delay</td>
                           {sportListState.sports?.map(({ _id, sportId }) =>
                             sportId == 1 || sportId == 2 || sportId == 4 ? (
@@ -1193,7 +1267,9 @@ React.useEffect(() => {
                                   {...register(`delay.${sportId}`)}
                                   placeholder={""}
                                   max={userData?.userSetting?.[sportId].delay}
-                                  defaultValue={userData?.userSetting?.[sportId].delay}
+                                  defaultValue={
+                                    userData?.userSetting?.[sportId].delay
+                                  }
                                   disabled={isPartnership}
                                   type="number"
                                 />
@@ -1207,7 +1283,7 @@ React.useEffect(() => {
                       </tbody>
                     </table>
                   </div>
-                </div> 
+                </div>
 
                 <div className="row m-t-20">
                   <div className="col-md-12">
@@ -1233,12 +1309,25 @@ React.useEffect(() => {
                 </div>
                 <div className="row m-t-20">
                   <div className="col-md-12">
-
-                    {isallowed || uplineParent ?  <div className="float-right">
-                      <SubmitButton className="btn btn-submit" type="submit" disabled={loading}>
-                        {loading ? "Creating..." : "Create User"}
-                      </SubmitButton>
-                    </div> : <div className="float-right"> Select Upline</div>}
+                    {isallowed || uplineParent ? (
+                      <div className="float-right flex item-center ">
+                        <button
+                          onClick={() => navigate(-1)}
+                          className="btn btn-danger btn-md mr-2 flex items-center"
+                        >
+                          <CancelIcon /> Cancel
+                        </button>
+                        <SubmitButton
+                          className="btn btn-submit"
+                          type="submit"
+                          disabled={loading}
+                        >
+                          <SaveIcon /> {loading ? "Saving..." : "Save"}
+                        </SubmitButton>
+                      </div>
+                    ) : (
+                      <div className="float-right"> Select Upline</div>
+                    )}
                   </div>
                 </div>
               </form>

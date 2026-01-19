@@ -75,7 +75,7 @@ const AdminUseras = () => {
         setPage(page);
       })
       .catch((e) => {
-        console.log(e);
+        //console.log(e);
         // const error = e.response.data.message
         toast.error("error");
       });
@@ -154,7 +154,7 @@ const AdminUseras = () => {
   //               className="badge badge-primary p-1 ng-binding"
   //               style={{ fontSize: "xx-small" }}
   //             >
-               
+
   //               <i style={{fontSize:"10px"}} className="fas fa-trophy "></i> N/A
   //             </span>
   //           </td>
@@ -167,12 +167,8 @@ const AdminUseras = () => {
   //           <td className="green wnwrap">{stmt.closing}</td>
   //         </tr>
 
-
-
-
-
   //         )}
-         
+
   //       );
   //     });
   //   return achtml;
@@ -180,12 +176,12 @@ const AdminUseras = () => {
 
   const getAcHtml = () => {
     let closingbalance: number = page === 1 ? openBalance : closeBalance;
-  
+
     return currentItems?.map((stmt: any, index: number) => {
       closingbalance = closingbalance + stmt.amount;
-  
+
       if (stmt.narration.length === 0) return null; // skip if no narration
-  
+
       return (
         <tr key={`${stmt._id}${index}`}>
           <td
@@ -216,8 +212,6 @@ const AdminUseras = () => {
       );
     });
   };
-  
-
 
   const dataformat = (response: any, closingbalance: any) => {
     const aryNewFormat: any = [];

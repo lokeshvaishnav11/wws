@@ -1,22 +1,21 @@
-import React from 'react'
-import { Outlet, useLocation } from 'react-router-dom'
-import { ToastContainer } from 'react-toastify'
-import User, { RoleType } from '../../../models/User'
-import { useNavigateCustom } from '../../../pages/_layout/elements/custom-link'
-import { selectUserData } from '../../../redux/actions/login/loginSlice'
-import { useAppSelector } from '../../../redux/hooks'
-import authService from '../../../services/auth.service'
-import Footer from './elements/footer'
-import Header from './elements/header'
-import { DrawerProvider, useDrawer } from '../../../context/DrawerContext'
+import React from "react";
+import { Outlet, useLocation } from "react-router-dom";
+import { ToastContainer } from "react-toastify";
+import User, { RoleType } from "../../../models/User";
+import { useNavigateCustom } from "../../../pages/_layout/elements/custom-link";
+import { selectUserData } from "../../../redux/actions/login/loginSlice";
+import { useAppSelector } from "../../../redux/hooks";
+import authService from "../../../services/auth.service";
+import Footer from "./elements/footer";
+import Header from "./elements/header";
+import { DrawerProvider, useDrawer } from "../../../context/DrawerContext";
 
 import { isMobile } from "react-device-detect";
 // const isMobile =
 
-
 const MainAdmin = () => {
-  const userState = useAppSelector<{ user: User }>(selectUserData)
-  const navigate = useNavigateCustom()
+  const userState = useAppSelector<{ user: User }>(selectUserData);
+  const navigate = useNavigateCustom();
 
   // React.useEffect(() => {
   //   const currentUserRole = localStorage.getItem('userType')
@@ -29,55 +28,53 @@ const MainAdmin = () => {
   // }, [])
 
   React.useEffect(() => {
-    const auth = authService.isLoggedIn()
+    const auth = authService.isLoggedIn();
     if (!auth || userState.user.role === RoleType.user) {
-      return navigate.go('/admin/login')
+      return navigate.go("/admin/login");
     }
-  }, [userState.user])
+  }, [userState.user]);
   const location = useLocation();
-    const {  isOpen, isOpen2, toggleDrawer } = useDrawer();
-    console.log(isOpen,"isopen")
-  
+  const { isOpen, isOpen2, toggleDrawer } = useDrawer();
+  //console.log(isOpen,"isopen")
+
   return (
-    <div className='admin'>
+    <div className="admin">
       <Header />
       <ToastContainer />
-      {isMobile ? 
-      <div className={`main ${isOpen ? "ml-24" : ""}`}>
-        {(location.pathname.includes('odds/') || location.pathname.includes('casino/')) &&
-          <div className='container-fluid'>
-            <div className='row'>
-              <div className='col-md-12 mt-1'>
-                <Outlet></Outlet>
+      {isMobile ? (
+        <div className={`main ${isOpen ? "ml-24" : ""}`}>
+          {(location.pathname.includes("odds/") ||
+            location.pathname.includes("casino/")) && (
+            <div className="container-fluid">
+              <div className="row">
+                <div className="col-md-12 mt-1">
+                  <Outlet></Outlet>
+                </div>
               </div>
             </div>
-          </div>
-        }
-        {(!location.pathname.includes('odds/') && !location.pathname.includes('casino/')) &&
-          <Outlet></Outlet>
-        }
-      </div>
-:
-      <div className={`main ${isOpen ? "" : ""}`}>
-        {(location.pathname.includes('odds/') || location.pathname.includes('casino/')) &&
-          <div className='container-fluid'>
-            <div className='row'>
-              <div className='col-md-12 mt-1'>
-                <Outlet></Outlet>
+          )}
+          {!location.pathname.includes("odds/") &&
+            !location.pathname.includes("casino/") && <Outlet></Outlet>}
+        </div>
+      ) : (
+        <div className={`main ${isOpen ? "" : ""}`}>
+          {(location.pathname.includes("odds/") ||
+            location.pathname.includes("casino/")) && (
+            <div className="container-fluid">
+              <div className="row">
+                <div className="col-md-12 mt-1">
+                  <Outlet></Outlet>
+                </div>
               </div>
             </div>
-          </div>
-        }
-        {(!location.pathname.includes('odds/') && !location.pathname.includes('casino/')) &&
-          <Outlet></Outlet>
-        }
-      </div>
-}
-
+          )}
+          {!location.pathname.includes("odds/") &&
+            !location.pathname.includes("casino/") && <Outlet></Outlet>}
+        </div>
+      )}
 
       <Footer />
- 
     </div>
-  )
-}
-export default MainAdmin
+  );
+};
+export default MainAdmin;

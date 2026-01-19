@@ -1,215 +1,222 @@
-import moment from 'moment'
-import React, { MouseEvent, useState } from 'react'
+import moment from "moment";
+import React, { MouseEvent, useState } from "react";
 // import ReactPaginate from 'react-paginate'
-import { toast } from 'react-toastify'
-import accountService from '../../services/account.service'
-import { dateFormat } from '../../utils/helper'
-import { isMobile } from 'react-device-detect'
-import mobileSubheader from '../_layout/elements/mobile-subheader'
-import { AccoutStatement } from '../../models/AccountStatement'
-import { AxiosResponse } from 'axios'
-import betService from '../../services/bet.service'
-import ReactModal from 'react-modal'
-import BetListComponent from '../../admin-app/pages/UnsetteleBetHistory/bet-list.component'
-import { useAppSelector } from '../../redux/hooks'
-import { selectLoader } from '../../redux/actions/common/commonSlice'
-import ReactPaginate from 'react-paginate'
+import { toast } from "react-toastify";
+import accountService from "../../services/account.service";
+import { dateFormat } from "../../utils/helper";
+import { isMobile } from "react-device-detect";
+import mobileSubheader from "../_layout/elements/mobile-subheader";
+import { AccoutStatement } from "../../models/AccountStatement";
+import { AxiosResponse } from "axios";
+import betService from "../../services/bet.service";
+import ReactModal from "react-modal";
+import BetListComponent from "../../admin-app/pages/UnsetteleBetHistory/bet-list.component";
+import { useAppSelector } from "../../redux/hooks";
+import { selectLoader } from "../../redux/actions/common/commonSlice";
+import ReactPaginate from "react-paginate";
 import "./newaccount.css";
-import { reverse } from 'lodash'
-
+import { reverse } from "lodash";
 
 const AccountStatement = () => {
-  const loadingState = useAppSelector(selectLoader)
+  const loadingState = useAppSelector(selectLoader);
 
-  const [accountStmt, setAccountStmt] = React.useState<any>([])
-  const [parseAccountStmt, setparseAccountStmt] = React.useState<any>([])
-  const [isOpen, setIsOpen] = React.useState(false)
-  const [betHistory, setBetHistory] = React.useState<any>({})
-  const [selectedStmt, setSelectedStmt] = React.useState<AccoutStatement>({} as AccoutStatement)
-  const [pageBet, setPageBet] = React.useState(1)
-  const [openBalance, setOpenBalance] = React.useState(0)
-  const [closeBalance, setCloseBalance] = React.useState(0)
+  const [accountStmt, setAccountStmt] = React.useState<any>([]);
+  const [parseAccountStmt, setparseAccountStmt] = React.useState<any>([]);
+  const [isOpen, setIsOpen] = React.useState(false);
+  const [betHistory, setBetHistory] = React.useState<any>({});
+  const [selectedStmt, setSelectedStmt] = React.useState<AccoutStatement>(
+    {} as AccoutStatement
+  );
+  const [pageBet, setPageBet] = React.useState(1);
+  const [openBalance, setOpenBalance] = React.useState(0);
+  const [closeBalance, setCloseBalance] = React.useState(0);
   const [filterdata, setfilterdata] = React.useState<any>({
-    startDate: '',
-    endDate: '',
-    reportType: 'All',
-  })
-  const [page, setPage] = React.useState(0)
+    startDate: "",
+    endDate: "",
+    reportType: "All",
+  });
+  const [page, setPage] = React.useState(0);
 
-  const [currentItems, setCurrentItems] = useState<any>([])
-  const [pageCount, setPageCount] = useState<any>(0)
-  const [itemOffset, setItemOffset] = useState<any>(0)
-  const [itemsPerPage] = useState<any>(50000)
-  const [showAll, setShowAll] = useState(false)
-
-  React.useEffect(() => {
-    const filterObj = filterdata
-    filterObj.startDate = moment().subtract(7, 'days').format('YYYY-MM-DD')
-    filterObj.endDate = moment().format('YYYY-MM-DD')
-    setfilterdata(filterObj)
-    getAccountStmt(0)
-  }, [])
+  const [currentItems, setCurrentItems] = useState<any>([]);
+  const [pageCount, setPageCount] = useState<any>(0);
+  const [itemOffset, setItemOffset] = useState<any>(0);
+  const [itemsPerPage] = useState<any>(50000);
+  const [showAll, setShowAll] = useState(false);
 
   React.useEffect(() => {
-    const endOffset = itemOffset + itemsPerPage
-    setCurrentItems(parseAccountStmt.slice(itemOffset, endOffset).reverse())
-    setPageCount(Math.ceil(parseAccountStmt.length / itemsPerPage))
-  }, [itemOffset, itemsPerPage, parseAccountStmt])
+    const filterObj = filterdata;
+    filterObj.startDate = moment().subtract(7, "days").format("YYYY-MM-DD");
+    filterObj.endDate = moment().format("YYYY-MM-DD");
+    setfilterdata(filterObj);
+    getAccountStmt(0);
+  }, []);
+
+  React.useEffect(() => {
+    const endOffset = itemOffset + itemsPerPage;
+    setCurrentItems(parseAccountStmt.slice(itemOffset, endOffset).reverse());
+    setPageCount(Math.ceil(parseAccountStmt.length / itemsPerPage));
+  }, [itemOffset, itemsPerPage, parseAccountStmt]);
 
   const handlePageClick = (event: any) => {
-    const newOffset = (event.selected * itemsPerPage) % parseAccountStmt.length
-    setItemOffset(newOffset)
-    setPage(event.selected)
-  }
+    const newOffset = (event.selected * itemsPerPage) % parseAccountStmt.length;
+    setItemOffset(newOffset);
+    setPage(event.selected);
+  };
   const getAccountStmt = (page: number) => {
     accountService
       .getAccountList(page, filterdata)
       .then((res) => {
-        if (res?.data?.data) setAccountStmt(res?.data?.data?.items || [])
+        if (res?.data?.data) setAccountStmt(res?.data?.data?.items || []);
         if (res?.data?.data?.items && page == 0)
-          setOpenBalance(res?.data?.data?.openingBalance || 0)
+          setOpenBalance(res?.data?.data?.openingBalance || 0);
         setparseAccountStmt(
-          dataformat(res?.data?.data?.items || [], res?.data?.data?.openingBalance || 0),
-        )
-        setPage(page)
+          dataformat(
+            res?.data?.data?.items || [],
+            res?.data?.data?.openingBalance || 0
+          )
+        );
+        setPage(page);
       })
       .catch((e) => {
-        console.log(e)
+        console.log(e);
         // const error = e.response.data.message
-        toast.error(e.message)
-
-      })
-  }
+        toast.error(e.message);
+      });
+  };
   const handleformchange = (event: any) => {
-    const filterObj = filterdata
-    filterObj[event.target.name] = event.target.value
-    setfilterdata(filterObj)
-  }
+    const filterObj = filterdata;
+    filterObj[event.target.name] = event.target.value;
+    setfilterdata(filterObj);
+  };
   const handleSubmitform = (event: any) => {
-    event.preventDefault()
-    getAccountStmt(0)
-  }
+    event.preventDefault();
+    getAccountStmt(0);
+  };
 
   const createSrNo = (index: number) => {
-    return (page - 1) * itemsPerPage || 0 + index + 1
-  }
+    return (page - 1) * itemsPerPage || 0 + index + 1;
+  };
 
   const handlePageClickBets = (event: any) => {
-    getBetsData(selectedStmt, event.selected + 1)
-  }
+    getBetsData(selectedStmt, event.selected + 1);
+  };
 
   React.useEffect(() => {
-    if (isOpen) getBetsData(selectedStmt, pageBet)
-  }, [selectedStmt, pageBet, isOpen])
+    if (isOpen) getBetsData(selectedStmt, pageBet);
+  }, [selectedStmt, pageBet, isOpen]);
 
   const getBetsData = (stmt: any, pageNumber: number) => {
-    const allBetsid: any = []
-    const allbets = stmt?.allBets || []
+    const allBetsid: any = [];
+    const allbets = stmt?.allBets || [];
     if (allbets.length > 0) {
       allbets.map((Item: any) => {
-        allBetsid.push(Item.betId)
-      })
-      const betIds = allBetsid
-      betService.getBetListByIds(betIds, pageNumber).then((res: AxiosResponse) => {
-        setBetHistory(res.data.data)
-        setPageBet(pageNumber)
-      })
+        allBetsid.push(Item.betId);
+      });
+      const betIds = allBetsid;
+      betService
+        .getBetListByIds(betIds, pageNumber)
+        .then((res: AxiosResponse) => {
+          setBetHistory(res.data.data);
+          setPageBet(pageNumber);
+        });
     }
-  }
-  const getBets = (e: MouseEvent<HTMLTableCellElement>, stmt: AccoutStatement) => {
-    e.preventDefault()
-    setSelectedStmt(stmt)
-    setPageBet(1)
-    setIsOpen(true)
-  }
+  };
+  const getBets = (
+    e: MouseEvent<HTMLTableCellElement>,
+    stmt: AccoutStatement
+  ) => {
+    e.preventDefault();
+    setSelectedStmt(stmt);
+    setPageBet(1);
+    setIsOpen(true);
+  };
   const getAcHtml = () => {
-    let dataToRender = showAll ? parseAccountStmt : parseAccountStmt.slice(-20)
-    let closingbalance: number = page == 1 ? openBalance : closeBalance
+    let dataToRender = showAll ? parseAccountStmt : parseAccountStmt.slice(-20);
+    let closingbalance: number = page == 1 ? openBalance : closeBalance;
     const achtml =
-    dataToRender &&
+      dataToRender &&
       dataToRender?.reverse()?.map((stmt: any, index: number) => {
+        //console.log(currentItems,"fffff")
+        // console.log(stmt?.allBets?.result,"FGHJKLDFGHIODUI")
+        //  [0].stmt.allBets[0].result[0].betClickTime
+        //       console.log(stmt.stmt.allBets[0].result[0].betClickTime
+        // ,'tgIORTYUIORTYUIo')
 
-        console.log(currentItems,"fffff")
-       // console.log(stmt?.allBets?.result,"FGHJKLDFGHIODUI")
-      //  [0].stmt.allBets[0].result[0].betClickTime
-//       console.log(stmt.stmt.allBets[0].result[0].betClickTime
-// ,'tgIORTYUIORTYUIo')
-
-
-        closingbalance = closingbalance + stmt.amount
+        closingbalance = closingbalance + stmt.amount;
         // if (!stmt?.narration || !stmt?.stmt?.allBets) return;
         return (
           <tr key={`${stmt._id}${index}`}>
             {/* <td>{stmt.sr_no}</td> */}
             {/* <td className='wnwrap'>{stmt.stmt.allBets?.[0].result?.[0].betClickTime ? stmt?.stmt?.allBets?.[0].result[0]?.betClickTime : stmt.date}</td> */}
-            <td className='wnwrap'>{ stmt.date}</td>
+            <td className="wnwrap">{stmt.date}</td>
 
             <td
-              className=''
+              className=""
               // onClick={(e: MouseEvent<HTMLTableCellElement>) => getBets(e, stmt.stmt)}
             >
               {stmt.narration}
             </td>
-            <td className='green wnwrap'>{stmt.credit >= 0 && stmt.credit.toFixed(2)}</td>
-            <td className='red wnwrap'>{stmt.credit < 0 && stmt.credit.toFixed(2)}</td>
-            <td className='green wnwrap'>{stmt.closing}</td>
-           
+            <td className="green wnwrap">
+              {stmt.credit >= 0 && stmt.credit.toFixed(2)}
+            </td>
+            <td className="red wnwrap">
+              {stmt.credit < 0 && stmt.credit.toFixed(2)}
+            </td>
+            <td className="green wnwrap">{stmt.closing}</td>
           </tr>
-        )
-      })
-    return achtml
-  }
+        );
+      });
+    return achtml;
+  };
 
   const dataformat = (response: any, closingbalance: any) => {
-    const aryNewFormat: any = []
-    console.log(response,"ressss")
+    const aryNewFormat: any = [];
+    console.log(response, "ressss");
 
     response &&
       response?.map((stmt: any, index: number) => {
+        // 🟡 Sum all commissions from stmt.bets array
+        // const totalCommission = Array.isArray(stmt.allBets)
+        // ? stmt.allBets.reduce((sum: number, bet: any) => sum + (Number(bet?.commission) || 0), 0)
+        // : 0;
 
-         // 🟡 Sum all commissions from stmt.bets array
-    // const totalCommission = Array.isArray(stmt.allBets)
-    // ? stmt.allBets.reduce((sum: number, bet: any) => sum + (Number(bet?.commission) || 0), 0)
-    // : 0;
+        // console.log(totalCommission,"totla commison")
 
-// console.log(totalCommission,"totla commison")
-
-        closingbalance = closingbalance + stmt.amount ;
-        console.log(stmt.commision,"ddd")
+        closingbalance = closingbalance + stmt.amount;
+        console.log(stmt.commision, "ddd");
         aryNewFormat.push({
           _id: stmt._id,
           // eslint-disable-next-line camelcase
           sr_no: index + 1,
-          date: moment(stmt.createdAt).format('lll'),
+          date: moment(stmt.createdAt).format("lll"),
           credit: stmt.amount,
           debit: stmt.amount,
           closing: closingbalance.toFixed(2),
           narration: stmt.narration,
           stmt: stmt,
-        })
-      })
-    return aryNewFormat
-  }
+        });
+      });
+    return aryNewFormat;
+  };
 
   return (
     <>
-      <div className={!isMobile ? ' mt-1' : 'padding-custom'}>
-
-      <div className="body-wrap">
+      <div className={!isMobile ? " mt-1" : "padding-custom"}>
+        <div className="body-wrap">
           <div className="back-main-menu my-3">
             <a href="/">BACK TO MAIN MENU</a>
           </div>
 
+          <div className="">
+            <div
+              className="back-main-menu my-3"
+              style={{ background: "#3b394a" }}
+            >
+              <a style={{ background: "#3b394a" }}>MY STATEMENT</a>
+            </div>
 
-
-        <div className=''>
-          
-      <div className="back-main-menu my-3" style={{background:"#3b394a"}} >
-            <a style={{background:"#3b394a"}}>MY STATEMENT</a>
-          </div>
-
-          <div className='card-body p0'>
-            {/* <form
+            <div className="card-body p0">
+              {/* <form
               className='ng-pristine ng-valid ng-touched mb-0'
               method='post'
               onSubmit={handleSubmitform}
@@ -269,103 +276,144 @@ const AccountStatement = () => {
                 </div>
               </div>
             </form> */}
-            <div className='table-responsive'>
-              <table className='text-center' id='customers1'>
-                <thead>
-                  <tr>
-                    {/* <th style={{ width: '10%', textAlign: 'center', whiteSpace: 'nowrap' }}>
+              <div className="table-responsive">
+                <table className="text-center" id="customers1">
+                  <thead>
+                    <tr>
+                      {/* <th style={{ width: '10%', textAlign: 'center', whiteSpace: 'nowrap' }}>
                       Sr No.
                     </th> */}
-                    <th style={{ width: '20%', textAlign: 'center', whiteSpace: 'nowrap' , background:"#888399" }}>
-                      DATE{' '}
-                    </th> 
-                    <th style={{ width: '45%', textAlign: 'center', background:"#888399" }}>DESCRIPTION</th>
+                      <th
+                        style={{
+                          width: "20%",
+                          textAlign: "center",
+                          whiteSpace: "nowrap",
+                          background: "#888399",
+                        }}
+                      >
+                        DATE{" "}
+                      </th>
+                      <th
+                        style={{
+                          width: "45%",
+                          textAlign: "center",
+                          background: "#888399",
+                        }}
+                      >
+                        DESCRIPTION
+                      </th>
 
-                    <th style={{ width: '10%', textAlign: 'center', background:"#888399" }}>CREDIT </th>
-                    <th style={{ width: '10%', textAlign: 'center', background:"#888399" }}>DEBIT</th>
-                    <th style={{ width: '10%', textAlign: 'center', background:"#888399" }}>BALANCE</th>
-                  </tr>
-                </thead>
-                <tbody>
-                  {parseAccountStmt.length <= 0 ||
-                    (parseAccountStmt.length > 0 && parseAccountStmt.length <= 0 && (
-                      <tr>
-                        <td colSpan={8} className='text-center'>
-                          No Result Found
-                        </td>
-                      </tr>
-                    ))}
-                  {parseAccountStmt.length > 0 && parseAccountStmt.length > 0 && page == 0 && (
-                    <tr key={parseAccountStmt[0]._id}>
-                      {/* <td>-</td> */}
-                      {/* <td className='wnwrap'>
+                      <th
+                        style={{
+                          width: "10%",
+                          textAlign: "center",
+                          background: "#888399",
+                        }}
+                      >
+                        CREDIT{" "}
+                      </th>
+                      <th
+                        style={{
+                          width: "10%",
+                          textAlign: "center",
+                          background: "#888399",
+                        }}
+                      >
+                        DEBIT
+                      </th>
+                      <th
+                        style={{
+                          width: "10%",
+                          textAlign: "center",
+                          background: "#888399",
+                        }}
+                      >
+                        BALANCE
+                      </th>
+                    </tr>
+                  </thead>
+                  <tbody>
+                    {parseAccountStmt.length <= 0 ||
+                      (parseAccountStmt.length > 0 &&
+                        parseAccountStmt.length <= 0 && (
+                          <tr>
+                            <td colSpan={8} className="text-center">
+                              No Result Found
+                            </td>
+                          </tr>
+                        ))}
+                    {parseAccountStmt.length > 0 &&
+                      parseAccountStmt.length > 0 &&
+                      page == 0 && (
+                        <tr key={parseAccountStmt[0]._id}>
+                          {/* <td>-</td> */}
+                          {/* <td className='wnwrap'>
                         {moment(parseAccountStmt[0].createdAt).format(dateFormat)}
                       </td> */}
-                      {/* <td>-</td> */}
-                      {/* <td>-</td> */}
-                      {/* <td className='wnwrap'>{openBalance?.toFixed(2)}</td>
+                          {/* <td>-</td> */}
+                          {/* <td>-</td> */}
+                          {/* <td className='wnwrap'>{openBalance?.toFixed(2)}</td>
                       <td className='wnwrap'>Opening Balance</td> */}
-                    </tr>
-                  )}
+                        </tr>
+                      )}
 
-                  {getAcHtml()}
-                </tbody>
-              </table>
+                    {getAcHtml()}
+                  </tbody>
+                </table>
+              </div>
+
+              {parseAccountStmt.length > 20 && (
+                <div className="text-center my-3">
+                  <button
+                    className={showAll ? "d-none" : "btn btn-primary"}
+                    onClick={() => setShowAll((prev) => !prev)}
+                  >
+                    {showAll ? "View Less" : "View All"}
+                  </button>
+                </div>
+              )}
+
+              <ReactPaginate
+                className="d-none"
+                breakLabel="..."
+                nextLabel=">>"
+                onPageChange={handlePageClick}
+                pageRangeDisplayed={5}
+                pageCount={pageCount}
+                containerClassName={"pagination"}
+                activeClassName={"active"}
+                previousLabel={"<<"}
+                breakClassName={"break-me"}
+              />
             </div>
-
-
-            {parseAccountStmt.length > 20 && (
-  <div className='text-center my-3'>
-    <button
-      className={showAll ? 'd-none' : "btn btn-primary"}
-      onClick={() => setShowAll((prev) => !prev)}
-    >
-      {showAll ? 'View Less' : 'View All'}
-    </button>
-  </div>
-)}
-
- 
-            <ReactPaginate
-            className='d-none'
-              breakLabel='...'
-              nextLabel='>>'
-              onPageChange={handlePageClick}
-              pageRangeDisplayed={5}
-              pageCount={pageCount}
-              containerClassName={'pagination'}
-              activeClassName={'active'}
-              previousLabel={'<<'}
-              breakClassName={'break-me'}
-            />
           </div>
-        </div>
 
-        <div className="back-main-menu my-2">
+          <div className="back-main-menu my-2">
             <a href="/">BACK TO MAIN MENU</a>
           </div>
         </div>
-
-
       </div>
       <ReactModal
         isOpen={isOpen}
         onAfterClose={() => setIsOpen(false)}
         onRequestClose={(e: any) => {
-          setIsOpen(false)
+          setIsOpen(false);
         }}
-        contentLabel='Set Max Bet Limit'
-        className={'col-md-12'}
+        contentLabel="Set Max Bet Limit"
+        className={"col-md-12"}
         ariaHideApp={false}
       >
-        <div className='modal-content'>
-          <div className='modal-header'>
+        <div className="modal-content">
+          <div className="modal-header">
             <h5>Bets</h5>
-            <button onClick={() => setIsOpen(false)} className='close float-right'>
-              <i className='fa fa-times-circle'></i>
+            <button
+              onClick={() => setIsOpen(false)}
+              className="close float-right"
+            >
+              <i className="fa fa-times-circle"></i>
             </button>
           </div>
-          <div className='modal-body'>
+          <div className="modal-body">
             {!loadingState && (
               <BetListComponent
                 bethistory={betHistory}
@@ -378,19 +426,9 @@ const AccountStatement = () => {
         </div>
       </ReactModal>
     </>
-  )
-}
-export default AccountStatement
-
-
-
-
-
-
-
-
-
-
+  );
+};
+export default AccountStatement;
 
 // import moment from 'moment'
 // import React, { MouseEvent, useState } from 'react'
@@ -409,7 +447,6 @@ export default AccountStatement
 // import { selectLoader } from '../../redux/actions/common/commonSlice'
 // import ReactPaginate from 'react-paginate'
 // import "./newaccount.css";
-
 
 // const AccountStatement = () => {
 //   const loadingState = useAppSelector(selectLoader)
@@ -525,7 +562,6 @@ export default AccountStatement
 
 //         console.log(currentItems,"fffff")
 
-
 //         closingbalance = closingbalance + stmt.amount
 //         // if (!stmt?.narration || !stmt?.stmt?.allBets) return;
 //         return (
@@ -541,7 +577,7 @@ export default AccountStatement
 //             <td className='green wnwrap'>{stmt.amount >= 0 && stmt.amount.toFixed(2)}</td>
 //             <td className='red wnwrap'>{stmt.amount < 0 && stmt.amount.toFixed(2)}</td>
 //             <td className='green wnwrap'>{stmt?.closeBal + stmt.commission }</td>
-           
+
 //           </tr>
 //         )
 //       })
@@ -578,8 +614,6 @@ export default AccountStatement
 //           <div className="back-main-menu my-3">
 //             <a href="/">BACK TO MAIN MENU</a>
 //           </div>
-
-
 
 //         <div className=''>
 //           {mobileSubheader.subheaderdesktop('My Statement')}
@@ -653,7 +687,7 @@ export default AccountStatement
 //                     </th> */}
 //                     <th style={{ width: '20%', textAlign: 'center', whiteSpace: 'nowrap' }}>
 //                       DATE{' '}
-//                     </th> 
+//                     </th>
 //                     <th style={{ width: '45%', textAlign: 'center' }}>DESCRIPTION</th>
 
 //                     <th style={{ width: '10%', textAlign: 'center' }}>CREDIT </th>
@@ -705,7 +739,6 @@ export default AccountStatement
 //             <a href="/">BACK TO MAIN MENU</a>
 //           </div>
 //         </div>
-
 
 //       </div>
 //       <ReactModal

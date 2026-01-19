@@ -62,6 +62,35 @@ body {
 
 }
 
+.satta-tabs {
+  display: flex;
+  width: 100%;
+  max-width: 320px;
+  border: 1px solid #000;
+  border-radius: 6px;
+  overflow: hidden;
+}
+
+.satta-tab {
+  flex: 1;
+  padding: 10px 0;
+  font-weight: 600;
+  border: none;
+  background: #fff;
+  color: #000;
+  cursor: pointer;
+  transition: all 0.2s ease;
+}
+
+.satta-tab.active {
+  background: #17a2b8;
+  color: #fff;
+}
+
+.satta-tab:not(.active):hover {
+  background: #f2f2f2;
+}
+
 .bg-gray-header{
   background-color:  darkgoldenrod;
  }
@@ -778,10 +807,11 @@ input+.slider span:last-child {
     /* width: 71px; */
     /* height: 35px; */
     /* old */
+    left: 2px;
 
 
-    width: 88px;
-    height: 47px;
+    width: 78px;
+    /* height: 47px; */
     /* padding-top: 13px; */
     display: flex;
     align-items: center;
@@ -6219,7 +6249,7 @@ img.rrotate {
 }
 
 .table-row {
-  background-color: darkgoldenrod;
+  background-color: rgb(0, 0, 0);
 }
 
 .fancy-market .table-row {
@@ -6288,7 +6318,7 @@ img.rrotate {
 }
 
 .table-row>div .odd {
-  font-size: 16px;
+  font-size: 12px;
   font-weight: bold;
   margin-bottom: 1px;
 }

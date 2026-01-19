@@ -43,7 +43,7 @@ const AdminDashboard = () => {
   React.useEffect(() => {
     betService.getMarketAnalysis().then((res: AxiosResponse) => {
       setmarketData(res.data.data);
-      console.log(res, "market data");
+      //console.log(res, "market data");
     });
   }, []);
   const [gameList, setGameList] = React.useState([]);
@@ -52,10 +52,8 @@ const AdminDashboard = () => {
   const [shared, setShared] = React.useState();
   const [detail, setDetail] = React.useState<any>({});
 
-
-
   const userState = useAppSelector<{ user: User }>(selectUserData);
-  console.log(userState, "user admin details");
+  //console.log(userState, "user admin details");
 
   React.useEffect(() => {
     if (gameList.length <= 0)
@@ -66,17 +64,16 @@ const AdminDashboard = () => {
 
   React.useEffect(() => {
     // const userState = useAppSelector<{ user: User }>(selectUserData);
-    const username:any = userState?.user?.username;
+    const username: any = userState?.user?.username;
 
-    console.log(username, "testagentmaster");
+    //console.log(username, "testagentmaster");
     UserService.getParentUserDetail(username).then(
       (res: AxiosResponse<any>) => {
-        console.log(res, "check balance for parent");
+        //console.log(res, "check balance for parent");
         const thatb = res?.data?.data[0];
-        setDetail(thatb)
+        setDetail(thatb);
         setNewbalance(thatb?.balance?.balance);
         setShared(thatb?.share);
-
       }
     );
   }, [userState]);
@@ -109,7 +106,7 @@ const AdminDashboard = () => {
 
     userService.getUserList(fullObj).then((res: AxiosResponse<any>) => {
       setSearchObj(fullObj); // ✅ Now matches the expected state shape
-      console.log(res.data.data, "lista i want to render");
+      //console.log(res.data.data, "lista i want to render");
       setUserList(res.data.data);
     });
   };
@@ -118,10 +115,10 @@ const AdminDashboard = () => {
     getList(searchObj); // Trigger on mount or when searchObj changes
   }, [userState]);
 
-  console.log(marketdata, "marketdata");
+  //console.log(marketdata, "marketdata");
   //  React.useEffect(()=>{
   //     betService.lenadena().then((res:AxiosResponse<any>)  =>{
-  //       console.log(res,"res for lena dena jai hind !")
+  //       //console.log(res,"res for lena dena jai hind !")
   //     })
   //   },[])
   const listItem = () => {
@@ -253,7 +250,7 @@ const AdminDashboard = () => {
   };
 
   const marketIdsEvent = (data: any, oddsData: any, event: string) => {
-    console.log(data, oddsData, event, "market Event Data");
+    //console.log(data, oddsData, event, "market Event Data");
     data.map((match: IMatch) => {
       match.markets?.map((market) => {
         if (market.marketName == "Match Odds" && !odds[market.marketId]) {
@@ -272,7 +269,7 @@ const AdminDashboard = () => {
   React.useEffect(() => {
     sportsServices.getMatchList("4").then((res: AxiosResponse<any>) => {
       const oddsData = { ...odds };
-      console.log(res.data, "data from sport list");
+      //console.log(res.data, "data from sport list");
       marketIdsEvent(res.data.data, oddsData, "joinMarketRoom");
       setOdds(oddsData);
       setMatchList(res.data.data);
@@ -288,44 +285,55 @@ const AdminDashboard = () => {
     navigate.go(`/odds/${match.matchId}`);
   };
 
-   const getRoleOptions = (): { key: RoleType; label: string }[] => {
-      const userRole = userState?.user?.role as RoleType;
-  
-      const allRoles = {
-        admin: "Super Admin",
-        sadmin: "Sub Admin",
-        suadmin: "Admin",
-        smdl: "Master Agent",
-        mdl: "Super Agent Master",
-        dl: "Agent Master",
-        user: "Client Master",
-      };
-  
-      const roleMap: Record<RoleType, RoleType[]> = {
-        [RoleType.admin]: [
-          RoleType.sadmin,
-          RoleType.suadmin,
-          RoleType.smdl,
-          RoleType.mdl,
-          RoleType.dl,
-          RoleType.user,
-        ],
-        [RoleType.sadmin]: [RoleType.suadmin ,RoleType.smdl, RoleType.mdl,  RoleType.dl, RoleType.user,],
-        [RoleType.suadmin]: [RoleType.smdl, RoleType.mdl, RoleType.dl, RoleType.user,],
-  
-        [RoleType.smdl]: [RoleType.mdl, RoleType.dl, RoleType.user],
-        [RoleType.mdl]: [RoleType.dl, RoleType.user],
-        [RoleType.dl]: [RoleType.user],
-        [RoleType.user]: [],
-      };
-  
-      const allowedRoles = roleMap[userRole] || [];
-  
-      return allowedRoles.map((key) => ({
-        key,
-        label: allRoles[key],
-      }));
+  const getRoleOptions = (): { key: RoleType; label: string }[] => {
+    const userRole = userState?.user?.role as RoleType;
+
+    const allRoles = {
+      admin: "Super Admin",
+      sadmin: "Sub Admin",
+      suadmin: "Admin",
+      smdl: "Master Agent",
+      mdl: "Super Agent Master",
+      dl: "Agent Master",
+      user: "Client Master",
     };
+
+    const roleMap: Record<RoleType, RoleType[]> = {
+      [RoleType.admin]: [
+        RoleType.sadmin,
+        RoleType.suadmin,
+        RoleType.smdl,
+        RoleType.mdl,
+        RoleType.dl,
+        RoleType.user,
+      ],
+      [RoleType.sadmin]: [
+        RoleType.suadmin,
+        RoleType.smdl,
+        RoleType.mdl,
+        RoleType.dl,
+        RoleType.user,
+      ],
+      [RoleType.suadmin]: [
+        RoleType.smdl,
+        RoleType.mdl,
+        RoleType.dl,
+        RoleType.user,
+      ],
+
+      [RoleType.smdl]: [RoleType.mdl, RoleType.dl, RoleType.user],
+      [RoleType.mdl]: [RoleType.dl, RoleType.user],
+      [RoleType.dl]: [RoleType.user],
+      [RoleType.user]: [],
+    };
+
+    const allowedRoles = roleMap[userRole] || [];
+
+    return allowedRoles.map((key) => ({
+      key,
+      label: allRoles[key],
+    }));
+  };
 
   return (
     <>
@@ -389,6 +397,25 @@ const AdminDashboard = () => {
                             </div>
                           );
                         })}
+
+                    <div className="col-3 col-md-2 event-row p-0 float-left mt-3">
+                      <div
+                        style={{ border: "none" }}
+                        className="card-body m-0 p-0"
+                      >
+                        <CustomLink to={`/matka-books`} className="block">
+                          <img
+                            className="casino_img"
+                            src={"imgs/matka.png"}
+                            style={{
+                              borderRadius: "10px",
+                              // width: "150px",
+                            }}
+                          />
+                          <span className="casino_img_text">Matka</span>
+                        </CustomLink>
+                      </div>
+                    </div>
                   </div>
                 </div>
 
@@ -414,7 +441,9 @@ const AdminDashboard = () => {
           <div className="container mt30">
             <div className="row">
               <div className="col-6 mb-2 col-md-3 text-center">
-                <a href={`admin/list-clients/${userState?.user?.username}/user`}>
+                <a
+                  href={`admin/list-clients/${userState?.user?.username}/user`}
+                >
                   <div className="wap w-100 text-center">
                     <span className="icon-circle">
                       <AccountCircleIcon
@@ -492,9 +521,8 @@ const AdminDashboard = () => {
                 <div className="card ">
                   <div className="card-header h6 ng-binding">
                     {/* Match/Sess Comm ( {userState?.user?.partnership[1]?.ownRatio}% / 4% ) */}
-                    Match/Sess Comm ({" "}
-                    {detail?.mcom ?? 0}% /{" "}
-                    {detail?.scom ?? 0}% )
+                    Match/Sess Comm ( {detail?.mcom ?? 0}% / {detail?.scom ?? 0}
+                    % )
                   </div>
                 </div>
               </div>
@@ -511,22 +539,25 @@ const AdminDashboard = () => {
               </div> */}
 
               {getRoleOptions().map((role) => (
-                        <div key={role.key} className="col-md-4 mb-2 ng-scope">
-                          <CustomLink
-                            to={`/list-clients/${userState?.user?.username}/${role.key}`}
-                            // onClick={() => setDropdownOpen(!dropdownOpen)}
-                            //  onClick={toggleDrawer}
-                            className="card"
-                          >
-                            <div className="card-header h6 ng-binding">
-                              {role.label}({userList?.items?.filter((i: any) => i.role === `${role.key}`)?.length})
-                            </div>
-                          </CustomLink>
-                        </div>
-                      ))}
-
-
-
+                <div key={role.key} className="col-md-4 mb-2 ng-scope">
+                  <CustomLink
+                    to={`/list-clients/${userState?.user?.username}/${role.key}`}
+                    // onClick={() => setDropdownOpen(!dropdownOpen)}
+                    //  onClick={toggleDrawer}
+                    className="card"
+                  >
+                    <div className="card-header h6 ng-binding">
+                      {role.label}(
+                      {
+                        userList?.items?.filter(
+                          (i: any) => i.role === `${role.key}`
+                        )?.length
+                      }
+                      )
+                    </div>
+                  </CustomLink>
+                </div>
+              ))}
             </div>
           </div>
         </div>

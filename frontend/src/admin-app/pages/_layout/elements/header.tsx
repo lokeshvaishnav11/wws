@@ -375,8 +375,8 @@ import SportsSoccerIcon from "@mui/icons-material/SportsSoccer";
 import ReceiptLongIcon from "@mui/icons-material/ReceiptLong";
 import LocalOfferIcon from "@mui/icons-material/LocalOffer";
 
-import DeleteIcon from '@mui/icons-material/Delete';
-import GroupIcon from '@mui/icons-material/Group';
+import DeleteIcon from "@mui/icons-material/Delete";
+import GroupIcon from "@mui/icons-material/Group";
 import { useParams } from "react-router-dom";
 const Header = () => {
   const userState = useAppSelector<{ user: User }>(selectUserData);
@@ -415,9 +415,9 @@ const Header = () => {
 
   const [notice, setNotice] = React.useState<any>();
   React.useEffect(() => {
-   betService.getnotice().then((res: AxiosResponse<any>) => {
-        setNotice(res.data.data);
-      });
+    betService.getnotice().then((res: AxiosResponse<any>) => {
+      setNotice(res.data.data);
+    });
   }, []);
 
   // const toggleDrawer = () => {
@@ -434,9 +434,9 @@ const Header = () => {
   //   console.log("CLose");
   // };
 
-
-  const {  isOpen, isOpen2, toggleDrawer,activeMenu, setActiveMenu } = useDrawer();
-  console.log(isOpen, isOpen2,"toggle drawrree")
+  const { isOpen, isOpen2, toggleDrawer, activeMenu, setActiveMenu } =
+    useDrawer();
+  //console.log(isOpen, isOpen2,"toggle drawrree")
 
   const logoutUser = (e: any) => {
     e.preventDefault();
@@ -565,8 +565,19 @@ const Header = () => {
         RoleType.dl,
         RoleType.user,
       ],
-      [RoleType.sadmin]: [RoleType.suadmin ,RoleType.smdl, RoleType.mdl,  RoleType.dl, RoleType.user,],
-      [RoleType.suadmin]: [RoleType.smdl, RoleType.mdl, RoleType.dl, RoleType.user,],
+      [RoleType.sadmin]: [
+        RoleType.suadmin,
+        RoleType.smdl,
+        RoleType.mdl,
+        RoleType.dl,
+        RoleType.user,
+      ],
+      [RoleType.suadmin]: [
+        RoleType.smdl,
+        RoleType.mdl,
+        RoleType.dl,
+        RoleType.user,
+      ],
 
       [RoleType.smdl]: [RoleType.mdl, RoleType.dl, RoleType.user],
       [RoleType.mdl]: [RoleType.dl, RoleType.user],
@@ -582,15 +593,12 @@ const Header = () => {
     }));
   };
 
-
   const [dropdownOpen, setDropdownOpen] = React.useState(false);
   const [dropdownOpen2, setDropdownOpen2] = React.useState(false);
   const [dropdownOpen3, setDropdownOpen3] = React.useState(false);
   const [dropdownOpen4, setDropdownOpen4] = React.useState(false);
 
-console.log(activeMenu,"active menu")
-
-
+  //console.log(activeMenu, "active menu");
 
   const [searchObj, setSearchObj] = React.useState({
     username: "",
@@ -600,7 +608,7 @@ console.log(activeMenu,"active menu")
     page: 1,
   });
 
-const [userList, setUserList] = React.useState<any>({});
+  const [userList, setUserList] = React.useState<any>({});
 
   const getList = (obj: {
     username: string;
@@ -619,7 +627,7 @@ const [userList, setUserList] = React.useState<any>({});
 
     userService.getUserList(fullObj).then((res: AxiosResponse<any>) => {
       setSearchObj(fullObj); // ✅ Now matches the expected state shape
-      console.log(res.data.data, "number of lincntedf list number");
+      //console.log(res.data.data, "number of lincntedf list number");
       setUserList(res.data.data);
     });
   };
@@ -632,14 +640,14 @@ const [userList, setUserList] = React.useState<any>({});
   //   userList?.items?.filter((i: any) => i.role === "user").length,
   //   "← total users with role 'user'"
   // );
-  
+
   return (
     <>
       <header className="">
-
-
-
-        <div className="flex newmargin  justify-between md:justify-end p-2  bg-gray-header" style={{backgroundColor:"#000",color:"black"}}>
+        <div
+          className="flex newmargin  justify-between md:justify-end p-2  bg-gray-header"
+          style={{ backgroundColor: "#000", color: "black" }}
+        >
           <div
             className="side-menu-buttonn md:hidden ml-2 "
             onClick={toggleDrawer}
@@ -656,17 +664,17 @@ const [userList, setUserList] = React.useState<any>({});
             } font-bold text-white md:hidden`}
             onClick={toggleDrawer}
           >
-           <div className="bar1" />
+            <div className="bar1" />
             <div className="bar2" />
             <div className="bar3" />
           </div>
-
 
           <div className="">
             <ul className="user-searchh flex gap-2  list-unstyled ">
               <li className="username  text-white my-2">
                 <span
-                  className="bg-gray-500 relative  rounded-sm px-2 py-2" style={{backgroundColor:"#6c757d",color:"white"}}
+                  className="bg-gray-500 relative  rounded-sm px-2 py-2"
+                  style={{ backgroundColor: "#6c757d", color: "white" }}
                   onClick={() => setShowMenu(!showMenu)}
                 >
                   {userState?.user?.username} <i className="fa fa-caret-down" />
@@ -707,9 +715,8 @@ const [userList, setUserList] = React.useState<any>({});
           </div>
         </div>
 
-        <Marqueemessge  message={notice?.bnotice || "."} />
+        <Marqueemessge message={notice?.bnotice || "."} />
         <div
-       
           className={`top-0 fixed md:block ${
             isOpen ? "block" : "hidden"
           } nine-x-gray text-wrap  z-50 md:w-60	  h-full overflow-y-scroll`}
@@ -723,10 +730,13 @@ const [userList, setUserList] = React.useState<any>({});
             <CloseIcon />
           </button> */}
 
-          <CustomLink to={"/"} className="logo-new navbarbg  -600" style={{background:"black"}}>
+          <CustomLink
+            to={"/"}
+            className="logo-new navbarbg  -600"
+            style={{ background: "black" }}
+          >
             {/* <img className="" src="/9x.png" /> */}
-             <img className=""  style={{ width: "500px" }} src="/imgs/logo.png" />
-
+            <img className="" style={{ width: "500px" }} src="/imgs/logo.png" />
           </CustomLink>
 
           <div className="">
@@ -746,9 +756,16 @@ const [userList, setUserList] = React.useState<any>({});
                     </CustomLink>
                   </li> */}
 
-                  <li className={`nav-item  border-b md:w-60 w-fit ${activeMenu === "Dashboard" ? "bg-active" : ""}`}>
+                  <li
+                    className={`nav-item  border-b md:w-60 w-fit ${
+                      activeMenu === "Dashboard" ? "bg-active" : ""
+                    }`}
+                  >
                     <CustomLink
-                      onClick={() => { toggleDrawer(); setActiveMenu("Dashboard");}}
+                      onClick={() => {
+                        toggleDrawer();
+                        setActiveMenu("Dashboard");
+                      }}
                       className="md:flex gap-2 py-2 md:flex-row flex flex-col items-center"
                       to={"/market-analysis"}
                     >
@@ -772,7 +789,11 @@ const [userList, setUserList] = React.useState<any>({});
                     </CustomLink>
                   </li> */}
 
-                  <li className={` ${activeMenu === "User" ? "bg-active" : ""} nav-item dropdown border-b md:w-60 group relative`}>
+                  <li
+                    className={` ${
+                      activeMenu === "User" ? "bg-active" : ""
+                    } nav-item dropdown border-b md:w-60 group relative`}
+                  >
                     <CustomLink
                       // to={`/list-clients/${userState?.user?.username}/${userState?.user?.role === "admin"
                       //     ? "sadmin"
@@ -791,8 +812,10 @@ const [userList, setUserList] = React.useState<any>({});
                       //     : ""}`}
                       to={`/market-analysis`}
                       className="md:flex py-2  md:flex-row flex flex-col gap-2 items-center cursor-pointer"
-                      onClick={() => {setDropdownOpen(!dropdownOpen); setActiveMenu("User");}}
-                     
+                      onClick={() => {
+                        setDropdownOpen(!dropdownOpen);
+                        setActiveMenu("User");
+                      }}
                     >
                       <GroupIcon className="text-warning" />
                       <b className="md:text-lg text-xs font-medium  text-white">
@@ -814,40 +837,61 @@ const [userList, setUserList] = React.useState<any>({});
                           : ""}
                       </b>
                       <i className="fa fa-caret-down text-white" />
-                     
-
                     </CustomLink>
 
-                    { dropdownOpen ? <div style={{    background: "rgb(134 100 226 / 82%)"}}  className="dropdown-menuj bg-neutral-700 md:pl-2   absolutek z-50 hiddenj group-hover:block w-full">
-                      {getRoleOptions().map((role) => (
-                        <li key={role.key} className="border-b-4 border-black pb-2">
-                          <CustomLink
-                            to={`/list-clients/${userState?.user?.username}/${role.key}`}
-                            // onClick={() => setDropdownOpen(!dropdownOpen)}
-                            //  onClick={toggleDrawer}
-                            onClick={() => { toggleDrawer(); setDropdownOpen(!dropdownOpen) ; setActiveMenu("User");}}
-                            className="dropdown-item hover:bg-gray-400"
+                    {dropdownOpen ? (
+                      <div
+                        style={{ background: "rgb(134 100 226 / 82%)" }}
+                        className="dropdown-menuj bg-neutral-700 md:pl-2   absolutek z-50 hiddenj group-hover:block w-full"
+                      >
+                        {getRoleOptions().map((role) => (
+                          <li
+                            key={role.key}
+                            className="border-b-4 border-black pb-2"
                           >
-                            <b className="text-white mobile-style md:text-lg text-xs  md:flex md:flex-row flex flex-col items-center gap-1">
-                              <ListIcon className="text-black-600" />
-                              {role.label}({userList?.items?.filter((i: any) => i.role === `${role.key}`)?.length})
-                            </b>
-                          </CustomLink>
-                        </li>
-                      ))}
-                    </div> : ""}
-
-                   
+                            <CustomLink
+                              to={`/list-clients/${userState?.user?.username}/${role.key}`}
+                              // onClick={() => setDropdownOpen(!dropdownOpen)}
+                              //  onClick={toggleDrawer}
+                              onClick={() => {
+                                toggleDrawer();
+                                setDropdownOpen(!dropdownOpen);
+                                setActiveMenu("User");
+                              }}
+                              className="dropdown-item hover:bg-gray-400"
+                            >
+                              <b className="text-white mobile-style md:text-lg text-xs  md:flex md:flex-row flex flex-col items-center gap-1">
+                                <ListIcon className="text-black-600" />
+                                {role.label}(
+                                {
+                                  userList?.items?.filter(
+                                    (i: any) => i.role === `${role.key}`
+                                  )?.length
+                                }
+                                )
+                              </b>
+                            </CustomLink>
+                          </li>
+                        ))}
+                      </div>
+                    ) : (
+                      ""
+                    )}
                   </li>
 
-
-                  <li className={`nav-item border-b md:w-60 w-fit ${activeMenu === "Sports" ? "bg-active" : ""} `}>
+                  <li
+                    className={`nav-item border-b md:w-60 w-fit ${
+                      activeMenu === "Sports" ? "bg-active" : ""
+                    } `}
+                  >
                     <CustomLink
                       // onClick={toggleDrawer}
-                      onClick={() => { toggleDrawer(); setActiveMenu("Sports");}}
-
+                      onClick={() => {
+                        toggleDrawer();
+                        setActiveMenu("Sports");
+                      }}
                       className="md:flex gap-2 py-2  md:flex-row flex flex-col items-center"
-                        to="/sports-details"
+                      to="/sports-details"
                     >
                       <SportsSoccerIcon className="text-warning" />
                       <b className="md:text-lg text-xs font-medium text-white">
@@ -856,87 +900,106 @@ const [userList, setUserList] = React.useState<any>({});
                     </CustomLink>
                   </li>
 
-                  <li className={`nav-item border-b md:w-60 w-fit ${activeMenu === "Cass" ? "bg-active" : ""} `}>
+                  <li
+                    className={`nav-item border-b md:w-60 w-fit ${
+                      activeMenu === "Cass" ? "bg-active" : ""
+                    } `}
+                  >
                     <CustomLink
                       // onClick={toggleDrawer}
-                      onClick={() => { toggleDrawer(); setActiveMenu("Cass");}}
-
+                      onClick={() => {
+                        toggleDrawer();
+                        setActiveMenu("Cass");
+                      }}
                       className="md:flex gap-2 py-2  md:flex-row flex flex-col items-center"
-                        to="/casino-details"
+                      to="/casino-details"
                     >
                       <SummarizeIcon className="text-warning" />
                       <b className="md:text-lg text-xs font-medium text-white">
-                       Casino Betting
+                        Casino Betting
                       </b>
                     </CustomLink>
                   </li>
 
-                  <li className={`nav-item border-b md:w-60 w-fit ${activeMenu === "Cass" ? "bg-active" : ""} `}>
+                  <li
+                    className={`nav-item border-b md:w-60 w-fit ${
+                      activeMenu === "Cass" ? "bg-active" : ""
+                    } `}
+                  >
                     <CustomLink
                       // onClick={toggleDrawer}
-                      onClick={() => { toggleDrawer(); setActiveMenu("Cass");}}
-
+                      onClick={() => {
+                        toggleDrawer();
+                        setActiveMenu("Cass");
+                      }}
                       className="md:flex gap-2 py-2  md:flex-row flex flex-col items-center"
-                        to="/matka-pl"
+                      to="/matka-pl"
                     >
                       <SummarizeIcon className="text-warning" />
                       <b className="md:text-lg text-xs font-medium text-white">
-                       Matka Betting
+                        Matka Betting
                       </b>
                     </CustomLink>
                   </li>
 
                   <li className="nav-item hidden dropdown border-b-4 border-black md:w-60">
-                    <a onClick={() => setDropdownOpen2(!dropdownOpen2)} className="md:flex md:flex-row flex flex-col gap-2 items-center">
+                    <a
+                      onClick={() => setDropdownOpen2(!dropdownOpen2)}
+                      className="md:flex md:flex-row flex flex-col gap-2 items-center"
+                    >
                       <SportsSoccerIcon className="text-warning" />
                       <b className="md:text-lg text-xs font-medium text-white">
                         Sports Betting
                       </b>{" "}
                       <i className="fa fa-caret-down text-white" />
                     </a>
-                   { dropdownOpen2 ? <div
-                      className="dropdown-menum bg-neutral-700 md:pl-2"
-                      aria-labelledby="navbarDropdownMenuLink"
-                    >
-                      <li>
-                        <CustomLink
-                         onClick={() => setDropdownOpen2(!dropdownOpen2)}
-                          to="/inplay-games"
-                          className="dropdown-item"
-                        >
-                          <b className="text-white md:text-lg  text-xs md:flex md:flex-row flex flex-col items-center gap-1">
-                            <ListIcon className="text-warning" />
-                            {"Inplay Games"}
-                          </b>
-                        </CustomLink>
-                      </li>
+                    {dropdownOpen2 ? (
+                      <div
+                        className="dropdown-menum bg-neutral-700 md:pl-2"
+                        aria-labelledby="navbarDropdownMenuLink"
+                      >
+                        <li>
+                          <CustomLink
+                            onClick={() => setDropdownOpen2(!dropdownOpen2)}
+                            to="/inplay-games"
+                            className="dropdown-item"
+                          >
+                            <b className="text-white md:text-lg  text-xs md:flex md:flex-row flex flex-col items-center gap-1">
+                              <ListIcon className="text-warning" />
+                              {"Inplay Games"}
+                            </b>
+                          </CustomLink>
+                        </li>
 
-                      <li>
-                        <CustomLink
-                          to="/sports-details"
-                          onClick={() => setDropdownOpen2(!dropdownOpen2)}
-                          className="dropdown-item"
-                        >
-                          <b className="text-white md:text-lg text-xs md:flex md:flex-row flex flex-col items-center gap-1">
-                            <ListIcon className="text-warning" />
-                            Sport's Betting
-                          </b>
-                        </CustomLink>
-                      </li>
+                        <li>
+                          <CustomLink
+                            to="/sports-details"
+                            onClick={() => setDropdownOpen2(!dropdownOpen2)}
+                            className="dropdown-item"
+                          >
+                            <b className="text-white md:text-lg text-xs md:flex md:flex-row flex flex-col items-center gap-1">
+                              <ListIcon className="text-warning" />
+                              Sport's Betting
+                            </b>
+                          </CustomLink>
+                        </li>
 
-                      <li>
-                        <CustomLink
-                          to="/sports-details"
-                          onClick={() => setDropdownOpen2(!dropdownOpen2)}
-                          className="dropdown-item hidden"
-                        >
-                          <b className="text-white md:text-lg text-xs md:flex md:flex-row flex flex-col items-center gap-1">
-                            <ListIcon className="text-warning" />
-                            Completed Games
-                          </b>
-                        </CustomLink>
-                      </li>
-                    </div> : ""}
+                        <li>
+                          <CustomLink
+                            to="/sports-details"
+                            onClick={() => setDropdownOpen2(!dropdownOpen2)}
+                            className="dropdown-item hidden"
+                          >
+                            <b className="text-white md:text-lg text-xs md:flex md:flex-row flex flex-col items-center gap-1">
+                              <ListIcon className="text-warning" />
+                              Completed Games
+                            </b>
+                          </CustomLink>
+                        </li>
+                      </div>
+                    ) : (
+                      ""
+                    )}
                   </li>
 
                   {/* <li className="nav-item dropdown border-b-4 border-black md:w-60">
@@ -1185,102 +1248,137 @@ const [userList, setUserList] = React.useState<any>({});
                     </ul>
                   </li> */}
 
-                  <li className={`nav-item dropdown border-b md:w-60 ${activeMenu === "Ledger" ? "bg-active" : ""}`}>
-                    <a   onClick={() => {setDropdownOpen3(!dropdownOpen3); setActiveMenu("Ledger");}} className={`md:flex py-2  md:flex-row flex flex-col gap-2 items-center `}>
+                  <li
+                    className={`nav-item dropdown border-b md:w-60 ${
+                      activeMenu === "Ledger" ? "bg-active" : ""
+                    }`}
+                  >
+                    <a
+                      onClick={() => {
+                        setDropdownOpen3(!dropdownOpen3);
+                        setActiveMenu("Ledger");
+                      }}
+                      className={`md:flex py-2  md:flex-row flex flex-col gap-2 items-center `}
+                    >
                       <ReceiptLongIcon className="text-warning" />
                       <b className="md:text-lg text-xs font-medium text-white">
                         Ledger
                       </b>{" "}
                       <i className="fa fa-caret-down text-white" />
                     </a>
-                   { dropdownOpen3 ?  <div
-                      className="dropdown-menuf bg-neutral-700 md:pl-2"
-                      aria-labelledby="navbarDropdownMenuLink"
-                      style={{background: "rgb(134 100 226 / 82%)"}}
-                    >
-                      <li className="border-b-4 border-black pb-2">
-                        <CustomLink
-                        //  onClick={() => setDropdownOpen3(!dropdownOpen3)}
-                        onClick={() => {toggleDrawer() ; setActiveMenu("My");}}
-                          to="/my-ledger"
-                          className={`dropdown-item border-b-4 border-black ${activeMenu === "My" ? "bg-active" : ""}`}
-                        >
-                          <b className="text-white mobile-style md:text-lg text-xs md:flex md:flex-row flex flex-col items-center gap-1">
-                            <ListIcon className="text-warning" />
-                            {"My Ledger"}
-                          </b>
-                        </CustomLink>
-                      </li>
-
-                      <li className="border-b-4 border-black pb-2">
-                        <CustomLink
-                          to="/all-settlement"
-                          // onClick={() => setDropdownOpen3(!dropdownOpen3)}
-                          onClick={() => {toggleDrawer() ; setActiveMenu("All");}}
-                          className={`dropdown-item border-b-4 border-black border-white/30 ${activeMenu === "All" ? "bg-active" : ""}`}
-                        >
-                          <b className="text-white md:text-lg text-xs md:flex md:flex-row flex flex-col items-center gap-1">
-                            <ListIcon className="text-warning" />
-                            All{" "}
-                            {userState?.user?.role === RoleType.dl
-                              ? "Client"
-                              : "Agent"}{" "}
-                            Ledger
-                          </b>
-                        </CustomLink>
-                      </li>
-
-                      <li className="border-b-4 border-black pb-2">
-                        <CustomLink
-                          to="/total-profit"
-                          // onClick={() => setDropdownOpen3(!dropdownOpen3)}
-                          onClick={() => {toggleDrawer() ; setActiveMenu("Total");}}
-                          className={`dropdown-item  border-b-4 border-black border-white/30 ${activeMenu === "Total" ? "bg-active" : ""}`}
-
-                        >
-                          <b className="text-white md:text-lg text-xs md:flex md:flex-row flex flex-col items-center gap-1">
-                            <ListIcon className="text-warning" />
-                            Total Profit
-                          </b>
-                        </CustomLink>
-                      </li>
-
-                      <li className="pb-2">
-                        <CustomLink
-                          to="/ledger-client"
-                          // onClick={() => setDropdownOpen3(!dropdownOpen3)}
-                          onClick={() => {toggleDrawer() ; setActiveMenu("ALedger");}}
-                          className={`dropdown-item ${activeMenu === "ALedger" ? "bg-active" : ""}`}
-                        >
-                          <b className="text-white md:text-lg text-xs md:flex md:flex-row flex flex-col items-center gap-1">
-                            <ListIcon className="text-warning" />
-                            {userState?.user?.role === RoleType.dl
-                              ? "Client"
-                              : "Agent"}{" "}
-                            Ledger
-                          </b>
-                        </CustomLink>
-                      </li>
-
-                      {userState?.user?.role === "dl" ? (
-                        <li>
+                    {dropdownOpen3 ? (
+                      <div
+                        className="dropdown-menuf bg-neutral-700 md:pl-2"
+                        aria-labelledby="navbarDropdownMenuLink"
+                        style={{ background: "rgb(134 100 226 / 82%)" }}
+                      >
+                        <li className="border-b-4 border-black pb-2">
                           <CustomLink
-                          //  onClick={() => setDropdownOpen3(!dropdownOpen3)}
-                          onClick={() => {toggleDrawer() ; setActiveMenu("Comm");}}
-                            to="/commision-len-den"
-                            className={`dropdown-item ${activeMenu === "Comm" ? "bg-active" : ""}`}
-                            >
-                            <b className="text-white md:text-lg text-xs md:flex md:flex-row flex flex-col items-center gap-1">
+                            //  onClick={() => setDropdownOpen3(!dropdownOpen3)}
+                            onClick={() => {
+                              toggleDrawer();
+                              setActiveMenu("My");
+                            }}
+                            to="/my-ledger"
+                            className={`dropdown-item border-b-4 border-black ${
+                              activeMenu === "My" ? "bg-active" : ""
+                            }`}
+                          >
+                            <b className="text-white mobile-style md:text-lg text-xs md:flex md:flex-row flex flex-col items-center gap-1">
                               <ListIcon className="text-warning" />
-                              {"कमीशन लेन देन"}
+                              {"My Ledger"}
                             </b>
                           </CustomLink>
                         </li>
-                      ) : (
-                        ""
-                      )}
 
-                      {/* {userState?.user?.role === RoleType.admin && (
+                        <li className="border-b-4 border-black pb-2">
+                          <CustomLink
+                            to="/all-settlement"
+                            // onClick={() => setDropdownOpen3(!dropdownOpen3)}
+                            onClick={() => {
+                              toggleDrawer();
+                              setActiveMenu("All");
+                            }}
+                            className={`dropdown-item border-b-4 border-black border-white/30 ${
+                              activeMenu === "All" ? "bg-active" : ""
+                            }`}
+                          >
+                            <b className="text-white md:text-lg text-xs md:flex md:flex-row flex flex-col items-center gap-1">
+                              <ListIcon className="text-warning" />
+                              All{" "}
+                              {userState?.user?.role === RoleType.dl
+                                ? "Client"
+                                : "Agent"}{" "}
+                              Ledger
+                            </b>
+                          </CustomLink>
+                        </li>
+
+                        <li className="border-b-4 border-black pb-2">
+                          <CustomLink
+                            to="/total-profit"
+                            // onClick={() => setDropdownOpen3(!dropdownOpen3)}
+                            onClick={() => {
+                              toggleDrawer();
+                              setActiveMenu("Total");
+                            }}
+                            className={`dropdown-item  border-b-4 border-black border-white/30 ${
+                              activeMenu === "Total" ? "bg-active" : ""
+                            }`}
+                          >
+                            <b className="text-white md:text-lg text-xs md:flex md:flex-row flex flex-col items-center gap-1">
+                              <ListIcon className="text-warning" />
+                              Total Profit
+                            </b>
+                          </CustomLink>
+                        </li>
+
+                        <li className="pb-2">
+                          <CustomLink
+                            to="/ledger-client"
+                            // onClick={() => setDropdownOpen3(!dropdownOpen3)}
+                            onClick={() => {
+                              toggleDrawer();
+                              setActiveMenu("ALedger");
+                            }}
+                            className={`dropdown-item ${
+                              activeMenu === "ALedger" ? "bg-active" : ""
+                            }`}
+                          >
+                            <b className="text-white md:text-lg text-xs md:flex md:flex-row flex flex-col items-center gap-1">
+                              <ListIcon className="text-warning" />
+                              {userState?.user?.role === RoleType.dl
+                                ? "Client"
+                                : "Agent"}{" "}
+                              Ledger
+                            </b>
+                          </CustomLink>
+                        </li>
+
+                        {userState?.user?.role === "dl" ? (
+                          <li>
+                            <CustomLink
+                              //  onClick={() => setDropdownOpen3(!dropdownOpen3)}
+                              onClick={() => {
+                                toggleDrawer();
+                                setActiveMenu("Comm");
+                              }}
+                              to="/commision-len-den"
+                              className={`dropdown-item ${
+                                activeMenu === "Comm" ? "bg-active" : ""
+                              }`}
+                            >
+                              <b className="text-white md:text-lg text-xs md:flex md:flex-row flex flex-col items-center gap-1">
+                                <ListIcon className="text-warning" />
+                                {"कमीशन लेन देन"}
+                              </b>
+                            </CustomLink>
+                          </li>
+                        ) : (
+                          ""
+                        )}
+
+                        {/* {userState?.user?.role === RoleType.admin && (
                         <li>
                           <CustomLink
                             onClick={toggleDrawer}
@@ -1294,12 +1392,12 @@ const [userList, setUserList] = React.useState<any>({});
                           </CustomLink>
                         </li>
                       )} */}
-                      {/* <li>
+                        {/* <li>
                         <a href='greport.html' className='dropdown-item'>
                           <b>General Report</b>
                         </a>
                       </li> */}
-                      {/* <li>
+                        {/* <li>
                         <CustomLink
                           to="/game-reports"
                           className="dropdown-item"
@@ -1310,12 +1408,15 @@ const [userList, setUserList] = React.useState<any>({});
                           </b>
                         </CustomLink>
                       </li> */}
-                      {/* <li>
+                        {/* <li>
                         <CustomLink to='/profitloss' className='dropdown-item'>
                           <b className='text-white md:text-lg text-xs md:flex md:flex-row flex flex-col items-center gap-1'><ListIcon className='text-warning' />Profit And Loss</b>
                         </CustomLink>
                       </li> */}
-                    </div> :""}
+                      </div>
+                    ) : (
+                      ""
+                    )}
                   </li>
                   {/* 
                   <li className='nav-item dropdown'>
@@ -1370,22 +1471,33 @@ const [userList, setUserList] = React.useState<any>({});
                   </li> */}
 
                   {userState?.user?.role === RoleType.admin && (
-                    <li className={`nav-item dropdown border-b md:w-60 w-fit ${activeMenu === "Setting" ? "bg-active" : ""}`}>
-                      <a onClick={() => {setDropdownOpen4(!dropdownOpen4); setActiveMenu("Setting");}} className="md:flex py-2  md:flex-row flex flex-col gap-1 items-center">
+                    <li
+                      className={`nav-item dropdown border-b md:w-60 w-fit ${
+                        activeMenu === "Setting" ? "bg-active" : ""
+                      }`}
+                    >
+                      <a
+                        onClick={() => {
+                          setDropdownOpen4(!dropdownOpen4);
+                          setActiveMenu("Setting");
+                        }}
+                        className="md:flex py-2  md:flex-row flex flex-col gap-1 items-center"
+                      >
                         <SettingsIcon className="text-warning" />
                         <b className="md:text-lg text-xs font-medium text-white">
                           Settings
                         </b>{" "}
                         <i className="fa fa-caret-down text-white" />
                       </a>
-                     { dropdownOpen4 ? <div
-                        className="dropdown-menud bg-none  md:pl-2"
-                        aria-labelledby="navbarDropdownMenuLink"
-                        style={{ background: "rgb(134 100 226 / 82%)"}}
-                      >
-                        {userState?.user?.role === RoleType.admin && (
-                          <>
-                            {/* <li>
+                      {dropdownOpen4 ? (
+                        <div
+                          className="dropdown-menud bg-none  md:pl-2"
+                          aria-labelledby="navbarDropdownMenuLink"
+                          style={{ background: "rgb(134 100 226 / 82%)" }}
+                        >
+                          {userState?.user?.role === RoleType.admin && (
+                            <>
+                              {/* <li>
                               <CustomLink
                                 onClick={toggleDrawer}
                                 to="/messages"
@@ -1397,142 +1509,175 @@ const [userList, setUserList] = React.useState<any>({});
                                 </b>
                               </CustomLink>
                             </li> */}
-                            <li className="border-b-4 border-black pb-2">
-                              <CustomLink
-                                // onClick={() => setDropdownOpen4(!dropdownOpen4)}
-                                onClick={() => {toggleDrawer() ; setActiveMenu("Adm");}}
-                                to={"/matches/4"}
-                                className={`dropdown-item ${activeMenu === "Adm" ? "bg-active" : ""}`}
-                              >
-                                <b className="text-white mobile-style md:text-lg text-xs md:flex md:flex-row flex flex-col gap-1 items-center">
-                                  <TuneIcon className="text-warning" />
-                                  Add Match List
-                                </b>
-                              </CustomLink>
-                            </li>
+                              <li className="border-b-4 border-black pb-2">
+                                <CustomLink
+                                  // onClick={() => setDropdownOpen4(!dropdownOpen4)}
+                                  onClick={() => {
+                                    toggleDrawer();
+                                    setActiveMenu("Adm");
+                                  }}
+                                  to={"/matches/4"}
+                                  className={`dropdown-item ${
+                                    activeMenu === "Adm" ? "bg-active" : ""
+                                  }`}
+                                >
+                                  <b className="text-white mobile-style md:text-lg text-xs md:flex md:flex-row flex flex-col gap-1 items-center">
+                                    <TuneIcon className="text-warning" />
+                                    Add Match List
+                                  </b>
+                                </CustomLink>
+                              </li>
 
-                            <li className="border-b-4 border-black pb-2">
-                              <CustomLink
-                                //  onClick={() => setDropdownOpen4(!dropdownOpen4)}
-                                onClick={() => {toggleDrawer() ; setActiveMenu("CS");}}
-                                to='/casino-list'
-                                className={`dropdown-item ${activeMenu === "CS" ? "bg-active" : ""}`}
-                              >
-                                <b className="text-white  mobile-style md:text-lg text-xs md:flex md:flex-row flex flex-col gap-1 items-center">
-                                  <TuneIcon className="text-warning" />
-                                  Casino List
-                                </b>
-                              </CustomLink>
-                            </li>
+                              <li className="border-b-4 border-black pb-2">
+                                <CustomLink
+                                  //  onClick={() => setDropdownOpen4(!dropdownOpen4)}
+                                  onClick={() => {
+                                    toggleDrawer();
+                                    setActiveMenu("CS");
+                                  }}
+                                  to="/casino-list"
+                                  className={`dropdown-item ${
+                                    activeMenu === "CS" ? "bg-active" : ""
+                                  }`}
+                                >
+                                  <b className="text-white  mobile-style md:text-lg text-xs md:flex md:flex-row flex flex-col gap-1 items-center">
+                                    <TuneIcon className="text-warning" />
+                                    Casino List
+                                  </b>
+                                </CustomLink>
+                              </li>
 
+                              <li className="border-b-4 border-black pb-2">
+                                <CustomLink
+                                  // onClick={() => setDropdownOpen4(!dropdownOpen4)}
+                                  // to="/sports-list/active-matches"
+                                  onClick={() => {
+                                    toggleDrawer();
+                                    setActiveMenu("BM");
+                                  }}
+                                  to="/active-matches/4"
+                                  className={`dropdown-item ${
+                                    activeMenu === "BM" ? "bg-active" : ""
+                                  }`}
+                                >
+                                  <b className="text-white  mobile-style md:text-lg text-xs md:flex md:flex-row flex flex-col gap-1 items-center">
+                                    <TuneIcon className="text-warning" />
+                                    {"Block Markets"}
+                                  </b>
+                                </CustomLink>
+                              </li>
 
-                            <li className="border-b-4 border-black pb-2">
-                              <CustomLink
-                                // onClick={() => setDropdownOpen4(!dropdownOpen4)}
-                                // to="/sports-list/active-matches"
-                                onClick={() => {toggleDrawer() ; setActiveMenu("BM");}}
-                                to="/active-matches/4"
-                                className={`dropdown-item ${activeMenu === "BM" ? "bg-active" : ""}`}
-                              >
-                                <b className="text-white  mobile-style md:text-lg text-xs md:flex md:flex-row flex flex-col gap-1 items-center">
-                                  <TuneIcon className="text-warning" />
-                                  {"Block Markets"}
-                                </b>
-                              </CustomLink>
-                            </li>
+                              <li className="border-b-4 border-black pb-2">
+                                <CustomLink
+                                  // onClick={() => setDropdownOpen4(!dropdownOpen4)}
+                                  // to="/sports-list/active-matches"
+                                  onClick={() => {
+                                    toggleDrawer();
+                                    setActiveMenu("BM");
+                                  }}
+                                  to="/matka-results"
+                                  className={`dropdown-item ${
+                                    activeMenu === "BM" ? "bg-active" : ""
+                                  }`}
+                                >
+                                  <b className="text-white  mobile-style md:text-lg text-xs md:flex md:flex-row flex flex-col gap-1 items-center">
+                                    <TuneIcon className="text-warning" />
+                                    {"Matka Markets"}
+                                  </b>
+                                </CustomLink>
+                              </li>
 
-                            <li className="border-b-4 border-black pb-2">
-                              <CustomLink
-                                // onClick={() => setDropdownOpen4(!dropdownOpen4)}
-                                // to="/sports-list/active-matches"
-                                onClick={() => {toggleDrawer() ; setActiveMenu("BM");}}
-                                to="/matka-results"
-                                className={`dropdown-item ${activeMenu === "BM" ? "bg-active" : ""}`}
-                              >
-                                <b className="text-white  mobile-style md:text-lg text-xs md:flex md:flex-row flex flex-col gap-1 items-center">
-                                  <TuneIcon className="text-warning" />
-                                  {"Matka Markets"}
-                                </b>
-                              </CustomLink>
-                            </li>
+                              <li className="border-b-4 border-black pb-2">
+                                <CustomLink
+                                  // onClick={() => setDropdownOpen4(!dropdownOpen4)}
+                                  // to="/sports-list/active-matches"
+                                  onClick={() => {
+                                    toggleDrawer();
+                                    setActiveMenu("BM");
+                                  }}
+                                  to="/matka-results-rollback"
+                                  className={`dropdown-item ${
+                                    activeMenu === "BM" ? "bg-active" : ""
+                                  }`}
+                                >
+                                  <b className="text-white  mobile-style md:text-lg text-xs md:flex md:flex-row flex flex-col gap-1 items-center">
+                                    <TuneIcon className="text-warning" />
+                                    {"Matka Rollback Results"}
+                                  </b>
+                                </CustomLink>
+                              </li>
 
+                              <li className="border-b-4 border-black pb-2">
+                                <CustomLink
+                                  // onClick={() => setDropdownOpen4(!dropdownOpen4)}
+                                  onClick={() => {
+                                    toggleDrawer();
+                                    setActiveMenu("DB");
+                                  }}
+                                  to="/unsettledbet"
+                                  className={`dropdown-item ${
+                                    activeMenu === "DB" ? "bg-active" : ""
+                                  }`}
+                                >
+                                  <b className="text-white  mobile-style md:text-lg text-xs md:flex md:flex-row flex flex-col items-center gap-1">
+                                    <DeleteIcon className="text-warning" />
+                                    Deleted Bets
+                                  </b>
+                                </CustomLink>
+                              </li>
 
-                            <li className="border-b-4 border-black pb-2">
-                              <CustomLink
-                                // onClick={() => setDropdownOpen4(!dropdownOpen4)}
-                                // to="/sports-list/active-matches"
-                                onClick={() => {toggleDrawer() ; setActiveMenu("BM");}}
-                                to="/matka-results-rollback"
-                                className={`dropdown-item ${activeMenu === "BM" ? "bg-active" : ""}`}
-                              >
-                                <b className="text-white  mobile-style md:text-lg text-xs md:flex md:flex-row flex flex-col gap-1 items-center">
-                                  <TuneIcon className="text-warning" />
-                                  {"Matka Rollback Results"}
-                                </b>
-                              </CustomLink>
-                            </li>
+                              <li className="border-b-4 border-black pb-2">
+                                <CustomLink
+                                  onClick={toggleDrawer}
+                                  to="/deleted-bets"
+                                  className="dropdown-item"
+                                >
+                                  <b className="text-white  mobile-style md:text-lg text-xs md:flex md:flex-row flex flex-col items-center gap-1">
+                                    <ListIcon className="text-warning" />
+                                    Deleted Bets History
+                                  </b>
+                                </CustomLink>
+                              </li>
 
-                         
+                              <li className="border-b-4 border-black pb-2">
+                                <CustomLink
+                                  // onClick={() => setDropdownOpen4(!dropdownOpen4)}
+                                  onClick={() => {
+                                    toggleDrawer();
+                                    setActiveMenu("NC");
+                                  }}
+                                  to="/notice"
+                                  className={`dropdown-item ${
+                                    activeMenu === "NC" ? "bg-active" : ""
+                                  }`}
+                                >
+                                  <b className="text-white  mobile-style md:text-lg text-xs md:flex md:flex-row flex flex-col items-center gap-1">
+                                    <ListIcon className="text-warning" />
+                                    Notice
+                                  </b>
+                                </CustomLink>
+                              </li>
 
-                            <li className="border-b-4 border-black pb-2">
-                              <CustomLink
-                                // onClick={() => setDropdownOpen4(!dropdownOpen4)}
-                                onClick={() => {toggleDrawer() ; setActiveMenu("DB");}}
-                                to="/unsettledbet"
-                                className={`dropdown-item ${activeMenu === "DB" ? "bg-active" : ""}`}
-                              >
-                                <b className="text-white  mobile-style md:text-lg text-xs md:flex md:flex-row flex flex-col items-center gap-1">
-                                  <DeleteIcon className="text-warning" />
-                                  Deleted Bets
-                                </b>
-                              </CustomLink>
-                            </li>
+                              <li className="border-b-4 border-black pb-2">
+                                <CustomLink
+                                  // onClick={() => setDropdownOpen4(!dropdownOpen4)}
+                                  onClick={() => {
+                                    toggleDrawer();
+                                    setActiveMenu("MO");
+                                  }}
+                                  to="/manage-odds"
+                                  className={`dropdown-item ${
+                                    activeMenu === "MO" ? "bg-active" : ""
+                                  }`}
+                                >
+                                  <b className="text-white  mobile-style md:text-lg text-xs md:flex md:flex-row flex flex-col items-center gap-1">
+                                    <ListIcon className="text-warning" />
+                                    Manage Odds
+                                  </b>
+                                </CustomLink>
+                              </li>
 
-
-                            <li className="border-b-4 border-black pb-2">
-                          <CustomLink
-                            onClick={toggleDrawer}
-                            to="/deleted-bets"
-                            className="dropdown-item"
-                          >
-                            <b className="text-white  mobile-style md:text-lg text-xs md:flex md:flex-row flex flex-col items-center gap-1">
-                              <ListIcon className="text-warning" />
-                              Deleted Bets History
-                            </b>
-                          </CustomLink>
-                        </li>
-
-
-                            <li className="border-b-4 border-black pb-2">
-                              <CustomLink
-                                // onClick={() => setDropdownOpen4(!dropdownOpen4)}
-                                onClick={() => {toggleDrawer() ; setActiveMenu("NC");}}
-                                to="/notice"
-                                className={`dropdown-item ${activeMenu === "NC" ? "bg-active" : ""}`}
-                              >
-                                <b className="text-white  mobile-style md:text-lg text-xs md:flex md:flex-row flex flex-col items-center gap-1">
-                                  <ListIcon className="text-warning" />
-                                  Notice
-                                </b>
-                              </CustomLink>
-                            </li>
-
-
-                            <li className="border-b-4 border-black pb-2">
-                              <CustomLink
-                                // onClick={() => setDropdownOpen4(!dropdownOpen4)}
-                                onClick={() => {toggleDrawer() ; setActiveMenu("MO");}}
-                                to="/manage-odds"
-                                className={`dropdown-item ${activeMenu === "MO" ? "bg-active" : ""}`}
-                              >
-                                <b className="text-white  mobile-style md:text-lg text-xs md:flex md:flex-row flex flex-col items-center gap-1">
-                                  <ListIcon className="text-warning" />
-                                  Manage Odds
-                                </b>
-                              </CustomLink>
-                            </li>
-
-                            {/* <li>
+                              {/* <li>
                               <CustomLink
                                 onClick={toggleDrawer}
                                 to="/casino-list"
@@ -1544,10 +1689,10 @@ const [userList, setUserList] = React.useState<any>({});
                                 </b>
                               </CustomLink>
                             </li> */}
-                          </>
-                        )}
+                            </>
+                          )}
 
-                        {/* <li>
+                          {/* <li>
       <CustomLink
         onClick={toggleDrawer}
         to="/payment-method"
@@ -1560,7 +1705,7 @@ const [userList, setUserList] = React.useState<any>({});
       </CustomLink>
     </li> */}
 
-                        {/* <li>
+                          {/* <li>
       <CustomLink
         to="/client-ledger"
         className="dropdown-item"
@@ -1571,14 +1716,23 @@ const [userList, setUserList] = React.useState<any>({});
         </b>
       </CustomLink>
     </li> */}
-                      </div> : ""}
+                        </div>
+                      ) : (
+                        ""
+                      )}
                     </li>
                   )}
-                  <li className={`nav-item border-b md:w-60 w-fit ${activeMenu === "Report" ? "bg-active" : ""} `}>
+                  <li
+                    className={`nav-item border-b md:w-60 w-fit ${
+                      activeMenu === "Report" ? "bg-active" : ""
+                    } `}
+                  >
                     <CustomLink
                       // onClick={toggleDrawer}
-                      onClick={() => { toggleDrawer(); setActiveMenu("Report");}}
-                      
+                      onClick={() => {
+                        toggleDrawer();
+                        setActiveMenu("Report");
+                      }}
                       className="md:flex gap-2 py-2 md:flex-row flex flex-col items-center"
                       to={"/all-client-report"}
                     >

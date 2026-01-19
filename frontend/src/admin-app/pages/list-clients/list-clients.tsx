@@ -872,7 +872,10 @@ const ListClients = () => {
                     </div> */}
                   </div>
                   <div className="float-right   col-md-4 grid gap-2 ">
-                    <p className="text-right">
+                    <p className="text-right d-flex items-center justify-between bg-black p-2 rounded ">
+
+                       <p className="text-xl text-white">{newtype == "sadmin" ? "Sub Admin" : newtype == "suadmin" ? "Admin" : newtype == "smdl" ? "Master Agent" :newtype == "mdl" ? "Super Agent Master" :newtype == "dl" ? "Agent Master" : "Client" }</p>
+                     
                       {username ? (
                         <CustomLink
                           to={`/add-user/${username}/${newtype}`}
@@ -890,13 +893,16 @@ const ListClients = () => {
                       )}
                     </p>
 
-                    <div className="flex item-center gap-1">
+                    <div className="flex item-center flex-col gap-1 mb-2">
+                      <div className="px-10">
                       <input
                         type="text"
-                        placeholder="Search"
+                        placeholder=""
                         className="mx-input mt-"
                         onChange={(e) => debouncedChangeHandler(e.target.value)}
                       />
+                      </div>
+                      <div className="d-flex justify-content-center gap-3">
                       <button
                         className="btn btn-primar border   "
                         style={{ backgroundColor: "#1d2d3d", color: "#fff" }}
@@ -910,6 +916,7 @@ const ListClients = () => {
                       >
                         Reset
                       </button>
+                      </div>
                     </div>
                   </div>
                 </div>
@@ -1711,10 +1718,10 @@ const ListClients = () => {
 
                                       const res =
                                         await accountService.getBets32(data);
-                                      console.log(
-                                        res,
-                                        "response from getBets32"
-                                      );
+                                      // console.log(
+                                      //   res,
+                                      //   "response from getBets32"
+                                      // );
 
                                       // yahan assume kar rahe hain ki res.data ya res.results me array aata hai
                                       if (res) {

@@ -1,27 +1,26 @@
 import React from "react";
 import { useParams } from "react-router-dom";
 import moment from "moment";
-import authService from "../../services/auth.service";
-import { betPopup } from "../../redux/actions/bet/betSlice";
-import { RoleType } from "../../models/User";
-import { useAppDispatch, useAppSelector } from "../../redux/hooks";
-import { selectUserData } from "../../redux/actions/login/loginSlice";
-import { IBetOn, IBetType } from "../../models/IBet";
-import { OddsType } from "../../models/IMarket";
-import PlaceBetBox from "./components/place-bet-box";
-import { IUserBetStake } from "../../models/IUserStake";
-import accountService from "../../services/account.service";
-import MyBetComponent from "./components/my-bet.component";
-import MyMatkaBetComponent22 from "./components/my-matka-bet";
+import authService from "../../../services/auth.service";
+import { betPopup } from "../../../redux/actions/bet/betSlice";
+import { RoleType } from "../../../models/User";
+import { useAppDispatch, useAppSelector } from "../../../redux/hooks";
+import { selectUserData } from "../../../redux/actions/login/loginSlice";
+import { IBetOn, IBetType } from "../../../models/IBet";
+import { IUserBetStake } from "../../../models/IUserStake";
+import accountService from "../../../services/account.service";
 
-const MatkaPlay = () => {
+const MatkaPlayAdmin = () => {
   const { matchId } = useParams(); // 👈 URL se matchId
+
+  //console.log(matchId ,"mamkff")
 
   const userState = useAppSelector(selectUserData);
   const dispatch = useAppDispatch();
 
   // const [gameType, setGameType] = React.useState("");
   const [gameType, setGameType] = React.useState<"single" | "haraf">("single");
+  const [matkaBets, setMatkaBets] = React.useState<any[]>([]);
 
   const [matkaList, setMatkaList] = React.useState<any>([]);
 
@@ -39,8 +38,33 @@ const MatkaPlay = () => {
     fetchMatkaList();
   }, [matchId]);
 
+  React.useEffect(() => {
+    const fetchMatkaBets = async () => {
+      try {
+        if (!matchId) return;
+
+        const res = await accountService.marketmatkaa();
+
+        const allBets = res?.data?.data?.bets || [];
+
+        // ✅ sirf usi roundid ki bets
+        const filteredBets = allBets.filter(
+          (bet: any) => String(bet.roundid) == String(matchId)
+        );
+
+        //console.log(filteredBets,"ffffff")
+
+        setMatkaBets(filteredBets);
+      } catch (error) {
+        console.error("Market matka bets error:", error);
+      }
+    };
+
+    fetchMatkaBets();
+  }, [matchId]);
+
   // ✅ matching item nikaalo
-  const match = matkaList.find((item: any) => item.id == matchId);
+  const match = matkaList.find((item: any) => item.roundid == matchId);
 
   if (!match) {
     return <div className="text-center mt-3">Match not found</div>;
@@ -52,92 +76,6 @@ const MatkaPlay = () => {
   ];
 
   const harafNumbers = Array.from({ length: 10 }, (_, i) => i);
-
-  const onBetkkkold = (isBack = false, market: any) => {
-    //console.log(market, "market in matka");
-    if (userState.user.role !== RoleType.user) return false;
-
-    // if (market.BackPrice1 === 0 && isBack) return false
-    // if (market.LayPrice1 === 0 && !isBack) return false
-
-    const ipAddress = authService.getIpAddress();
-
-    dispatch(
-      betPopup({
-        isOpen: true,
-        betData: {
-          isBack,
-          odds: isBack ? market.BackPrice1 : market.LayPrice1,
-          volume: isBack ? market.BackSize1 : market.LaySize1,
-          marketId: market.marketId,
-          marketName: "MATKA",
-          matchId: market.matchId,
-          selectionName: market.RunnerName,
-          selectionId: market.SelectionId,
-          pnl: 0,
-          stack: 0,
-          currentMarketOdds: isBack ? market.BackPrice1 : market.LayPrice1,
-          eventId: market.sportId,
-          exposure: -0,
-          ipAddress: ipAddress,
-          type: IBetType.Match,
-          matchName: "matka disawa",
-          betOn: IBetOn.MATKA,
-          gtype: market.gtype,
-          oppsiteVol: isBack ? market.LaySize1 : market.BackSize1,
-          oddsType: OddsType.M,
-        },
-      })
-    );
-
-    //console.log(market, "market in matka555");
-  };
-
-  const onBet = (isBack = false, market: any, t: any) => {
-    //console.log("🔥 onBet CLICKED");
-    //console.log("👉 userState:", userState);
-    //console.log("👉 market received:", market);
-
-    if (userState.user.role !== RoleType.user) {
-      //console.log("❌ User role not allowed:", userState.user.role);
-      return false;
-    }
-
-    const ipAddress = authService.getIpAddress();
-    //console.log("👉 IP Address:", ipAddress);
-
-    const payload: any = {
-      isOpen: true,
-      betData: {
-        isBack,
-        odds: gameType === "single" ? 90 : 9,
-        volume: 0,
-        marketId: match.id,
-        marketName: "MATKA",
-        matchId: match.roundid,
-        selectionName: market.num,
-        selectionId: parseInt(market.num),
-        pnl: 0,
-        stack: 0,
-        currentMarketOdds: 0,
-        eventId: "MATKA",
-        exposure: 0,
-        ipAddress,
-        type: IBetType.Match,
-        matchName: match.name,
-        betOn: IBetOn.MATKA,
-        gtype: t,
-        oppsiteVol: 0,
-        oddsType: OddsType.M,
-      },
-    };
-
-    //console.log("🚀 DISPATCHING betPopup payload:", payload);
-
-    dispatch(betPopup(payload));
-
-    //console.log("✅ betPopup DISPATCHED");
-  };
 
   const usid: any = userState!.user!._id;
 
@@ -244,12 +182,7 @@ const MatkaPlay = () => {
             <div className="row">
               {singlePattiNumbers.map((num) => (
                 <div key={num} className="col-4 col-md-3 mb-2">
-                  <button
-                    onClick={() => onBet(true, { num, matchId }, "single")}
-                    className="btn btn-info w-100"
-                  >
-                    {num}
-                  </button>
+                  <button className="btn btn-info w-100">{num}</button>
                   <span className="btn w-100">0</span>
                 </div>
               ))}
@@ -264,12 +197,7 @@ const MatkaPlay = () => {
             <div className="row">
               {harafNumbers.map((num) => (
                 <div key={`andar-${num}`} className="col-4 col-md-1 mb-2">
-                  <button
-                    onClick={() => onBet(true, { num, matchId }, "andar")}
-                    className="btn btn-info w-100"
-                  >
-                    {num}
-                  </button>
+                  <button className="btn btn-info w-100">{num}</button>
                   <span className="btn w-100">0</span>
                 </div>
               ))}
@@ -280,12 +208,7 @@ const MatkaPlay = () => {
             <div className="row">
               {harafNumbers.map((num) => (
                 <div key={`bahar-${num}`} className="col-4 col-md-1 mb-2">
-                  <button
-                    onClick={() => onBet(true, { num, matchId }, "bahar")}
-                    className="btn btn-info w-100"
-                  >
-                    {num}
-                  </button>
+                  <button className="btn btn-info w-100">{num}</button>
                   <span className="btn w-100">0</span>
                 </div>
               ))}
@@ -294,11 +217,79 @@ const MatkaPlay = () => {
         )}
       </div>
 
-      <MyMatkaBetComponent22 roundid={match?.roundid} />
+      <h6 className="p-2 w-100 m-0 bg-info text-white text-center">
+        Matka Bets
+      </h6>
 
-      <PlaceBetBox stake={matkastake[0]} />
+      <div
+        className="table-responsive-new"
+        style={{ height: "200px", overflowY: "scroll" }}
+      >
+        <table className="table coupon-table scorall mybet">
+          <thead>
+            <tr style={{ background: "#76d68f" }}>
+              <th className="p-2"> Sr. </th>
+              {userState.user.role !== RoleType.user && (
+                <th className="p-2">Username</th>
+              )}
+              <th className="text-center p-2"> Narration</th>
+              <th className="text-center p-2"> Rate</th>
+              <th className="text-center p-2"> Amount</th>
+              <th className="text-center p-2"> Selection</th>
+              <th className="text-center p-2"> Type</th>
+
+              {/* {!isMobile && <th style={{background:"#76d68f"}}> Place Date</th>} */}
+              {/* {!isMobile && <th style={{background:"#76d68f"}}> Match Date</th>} */}
+              {/* <th className='text-center'> Dec</th> */}
+              <th className="text-center p-2">Date</th>
+            </tr>
+          </thead>
+          <tbody>
+            {matkaBets.length === 0 ? (
+              <tr>
+                <td colSpan={8} className="text-center">
+                  No bets found for this round
+                </td>
+              </tr>
+            ) : (
+              matkaBets.map((bet: any, index: number) => (
+                <tr
+                  key={bet._id}
+                  className={
+                    Number(bet.profitLoss?.$numberDecimal || 0) < 0
+                      ? "bg-danger text-white"
+                      : "bg-success"
+                  }
+                >
+                  <td className="text-center text-nowrap">{index + 1}</td>
+
+                  {userState.user.role !== RoleType.user && (
+                    <td>{bet.userName}</td>
+                  )}
+
+                  <td className="text-center text-nowrap">{bet.roundid}</td>
+
+                  <td className="text-center text-nowrap">{bet.odds}</td>
+
+                  <td className="text-center text-nowrap">{bet.betamount}</td>
+
+                  <td className="text-center text-nowrap">{bet.selectionId}</td>
+
+                  <td className="text-center text-nowrap">{bet.bettype}</td>
+
+                  <td className="text-center text-nowrap">
+                    {moment
+                      .utc(bet.betClickTime)
+                      .format("DD/MM/YYYY hh:mm:ss A")}
+                  </td>
+                </tr>
+              ))
+            )}
+          </tbody>
+        </table>
+      </div>
     </div>
   );
 };
 
-export default MatkaPlay;
+export default MatkaPlayAdmin;

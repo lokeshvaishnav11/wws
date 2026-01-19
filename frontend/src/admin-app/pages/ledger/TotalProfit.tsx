@@ -16,7 +16,7 @@ const TotalProfit = () => {
   const [tableData2, setTableData2] = React.useState([]);
 
   const [optionuser, setOptionuser] = React.useState<string>("all");
-  console.log(optionuser, "optionuser");
+  //console.log(optionuser, "optionuser");
 
   const [totalCommission, setTotalCommission] = React.useState<number>(0);
 
@@ -24,7 +24,7 @@ const TotalProfit = () => {
     betService.oneledger().then((res: AxiosResponse<any>) => {
       const allData = res.data?.data || [];
       // const dataToUse =  allData[1] ? allData[1] : allData[0]  || [];
-      const dataToUse = allData[0]
+      const dataToUse = allData[0];
 
       setTableData2(dataToUse);
       // setTabledata(res.data.data);
@@ -36,17 +36,17 @@ const TotalProfit = () => {
           : dataToUse.filter((item: any) => item.username === optionuser);
 
       const total = filteredData.reduce((sum: number, item: any) => {
-        console.log(sum,item,"sum and item hahahahhahha")
-        return sum + ( item?.profit);
+        //console.log(sum,item,"sum and item hahahahhahha")
+        return sum + item?.profit;
       }, 0);
 
-      console.log(filteredData,)
+      //console.log(filteredData,)
 
       setTableData(filteredData);
 
       setTotalCommission(total);
 
-      console.log(res, "res for lena dena jai hind !");
+      //console.log(res, "res for lena dena jai hind !");
     });
   }, [optionuser]);
 
@@ -135,7 +135,7 @@ const TotalProfit = () => {
                   </thead>
 
                   <tbody>
-                    {tableData.map((row:any, index) => (
+                    {tableData.map((row: any, index) => (
                       <tr
                         key={row._id}
                         role="row"
@@ -153,17 +153,16 @@ const TotalProfit = () => {
                         </td>
                         <td>
                           <span className="text-success">
-                          {(row.profit <0 ? 0 : row.profit).toFixed()} 
+                            {(row.profit < 0 ? 0 : row.profit).toFixed()}
                           </span>
                         </td>
                         <td>
                           {/* <span className="text-danger">0</span> */}
-                          {(row.profit< 0 ? row.profit :0).toFixed()} 
-
+                          {(row.profit < 0 ? row.profit : 0).toFixed()}
                         </td>
                         <td>
                           <span className={"text-danger text-danger"}>
-                            { (row.profit).toFixed()} 
+                            {row.profit.toFixed()}
                           </span>
                         </td>
                         <td>

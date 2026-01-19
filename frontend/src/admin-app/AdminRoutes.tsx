@@ -15,10 +15,13 @@ import AdminUseras from './pages/list-clients/modals/AdminUseras'
 import SingleLedger from './pages/ledger/SingleLedger'
 import Operation from './pages/AccountStatement/Operation'
 import Completedbets from './pages/SportsDetail/Completedbets'
-import RejectedBets from './pages/SportsDetail/RejectedBets'
 import ReportBets from './pages/SportsDetail/ReportBets'
 import ClientBetsLedger from './pages/SportsDetail/ClientBetsLedger'
 import CasinoDetail from './pages/SportsDetail/CasinoDetail'
+import DeletedBetsMatch from './pages/SportsDetail/DeletedBets'
+import MatkaDetail from './pages/SportsDetail/MatkaDetail'
+import MatkaPlayAdmin from './pages/SportsDetail/MatkaPlayAdmin'
+import SessionBets from './pages/SportsDetail/RejectedBets'
 
 
 const ActiveMarkets = React.lazy(() => import('../admin-app/pages/active-matches/active-markets'))
@@ -146,7 +149,9 @@ const AdminRoutes = () => {
             
 
             { path: "session-bets/:id", element: <Completedbets/>},
-            { path: "match-bets/:id", element: <RejectedBets />},
+            { path: "match-bets/:id", element: <SessionBets />},
+            { path: "match-bets-deleted/:id", element: <DeletedBetsMatch />},
+
             { path: "report-bets/:id", element: <ReportBets />},
             { path: "client-bets/:id", element: <ClientBetsLedger />},
 
@@ -164,7 +169,14 @@ const AdminRoutes = () => {
             {path: "all-client-report", element: <AllReport/>},
             {path:"matka-pl", element:<CasinoPL/>},
             {path: "sports-details", element: <SportsDetails/>},
+
+            {path:"matka-books",  element:<MatkaDetail />},
+            {path:"detail-matka/:matchid",  element:<MatkaPlayAdmin />},
+
+            
             {path: "casino-details", element: <CasinoDetail/>},
+
+            
 
             {path: "inplay-games", element: <Inplaygames/>},
             {path:"user-ac", element: <AdminUseras/>},

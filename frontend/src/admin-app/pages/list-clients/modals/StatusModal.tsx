@@ -26,9 +26,7 @@ const StatusModal = ({
     // transactionPassword: Yup.string().required('Transaction Password is required'),
   });
 
-
-  console.log(userDetails,"UserDetails");
-  
+  //console.log(userDetails,"UserDetails");
 
   const {
     register,
@@ -69,7 +67,7 @@ const StatusModal = ({
     });
   });
 
-  // console.log(userDetails,"userdetails")
+  // //console.log(userDetails,"userdetails")
   return (
     <>
       <Modal

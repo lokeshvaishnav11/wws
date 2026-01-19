@@ -25,10 +25,9 @@ const CommisionLenden: React.FC = () => {
   const [endDate, setEndDate] = React.useState<string>("");
   const [zoom, setZoom] = React.useState(1);
 
-
   React.useEffect(() => {
     betService.oneledger().then((res: AxiosResponse<any>) => {
-      console.log(res, "dmbsdbh lena dena");
+      //console.log(res, "dmbsdbh lena dena");
       const data = res.data.data;
       const processed = processCommissionTable(data);
       setCommissionData(processed);
@@ -44,7 +43,6 @@ const CommisionLenden: React.FC = () => {
     const usernameMap: Record<string, string> = {};
     const cnameMap: Record<string, string> = {};
 
-
     // const sourceArray = data[0]?.length > 0 ? data[1] : data[1] || [];
     const sourceArray = data[0]?.length > 0 ? data[0] : data[0] || [];
 
@@ -54,15 +52,14 @@ const CommisionLenden: React.FC = () => {
 
       // const mila = entry.commissionlega || 0;
       // const dena = entry.commissiondega || 0;
-      const mila = entry.iscomSet ? 0 : (entry.commissionlega || 0);
-      const dena = entry.iscomSet ? 0 : (entry.commissiondega || 0);
+      const mila = entry.iscomSet ? 0 : entry.commissionlega || 0;
+      const dena = entry.iscomSet ? 0 : entry.commissiondega || 0;
 
       // Set name based on ParentId match from data[0]
       if (!usernameMap[childId]) {
         const match = data[0]?.find((ref: any) => ref.ParentId === childId);
         usernameMap[childId] = match?.username || entry.username || childId;
       }
-
 
       if (!cnameMap[childId]) {
         const match = data[0]?.find((ref: any) => ref.ParentId === childId);
@@ -133,11 +130,10 @@ const CommisionLenden: React.FC = () => {
       denaTotalComm: totalDenaCasino + totalDenaSports,
     });
 
-    console.log(result, "ressss")
+    //console.log(result, "ressss")
 
     return result;
   };
-
 
   const handleDateFilter = () => {
     if (!startDate || !endDate) return;
@@ -146,23 +142,23 @@ const CommisionLenden: React.FC = () => {
     const end = new Date(endDate);
     end.setHours(23, 59, 59, 999); // Include full end day
 
-    const filteredData = allEntries[0]?.filter((entry: any) => {
-      const entryDate = new Date(entry.createdAt);
-      return entryDate >= start && entryDate <= end;
-    }) || [];
+    const filteredData =
+      allEntries[0]?.filter((entry: any) => {
+        const entryDate = new Date(entry.createdAt);
+        return entryDate >= start && entryDate <= end;
+      }) || [];
 
     // Reprocess only with filtered entries
     const updatedCommissionData = processCommissionTable([filteredData]);
     setCommissionData(updatedCommissionData);
   };
 
-
   const renderUserDetails = (childId: string) => {
-    console.log(childId, "cjhild");
-    console.log(allEntries, "allentries");
+    //console.log(childId, "cjhild");
+    //console.log(allEntries, "allentries");
     const sourceArray =
       allEntries[1]?.length > 0 ? allEntries[0] : allEntries[0] || [];
-    console.log(sourceArray, "source array");
+    //console.log(sourceArray, "source array");
     const filtered = sourceArray.filter(
       (item: any) => item.username === childId
     );
@@ -212,8 +208,7 @@ const CommisionLenden: React.FC = () => {
     return [...rows, totalRow];
   };
 
-
-  //  date filter in particular user too 
+  //  date filter in particular user too
   // const renderUserDetails = (childId: string) => {
   //   const sourceArray = allEntries[0] || [];
 
@@ -231,22 +226,20 @@ const CommisionLenden: React.FC = () => {
   //   ...
   // };
 
-
-  console.log(commissionData, "commsiondata")
+  //console.log(commissionData, "commsiondata")
 
   // const settled = (name:any) =>{
   //   betService.comreset(name).then((res)=>{
-  //     console.log(res,"check resetttt")
+  //     //console.log(res,"check resetttt")
   //   })
   // }
-
 
   const settled = async (name: string) => {
     try {
       const res = await betService.comreset({ name });
-      console.log("Reset response:", res);
+      //console.log("Reset response:", res);
       if (res.data.status) {
-        window.location.reload()
+        window.location.reload();
       }
       // Optionally, show success toast or refresh data
     } catch (error) {
@@ -255,10 +248,11 @@ const CommisionLenden: React.FC = () => {
     }
   };
 
-
   return (
-    <div style={{zoom}}>
-       <div style={{ display: "flex", gap: 10, marginBottom: 10 ,marginLeft:10}}>
+    <div style={{ zoom }}>
+      <div
+        style={{ display: "flex", gap: 10, marginBottom: 10, marginLeft: 10 }}
+      >
         <button
           className="btn btn-sm btn-success"
           onClick={() => setZoom((z) => Math.min(z + 0.1, 1.5))}
@@ -278,7 +272,6 @@ const CommisionLenden: React.FC = () => {
 
       <div className="bg-full">Commision Len Den</div>
 
-
       <div className="row p-4">
         <div className="col-6 mt-1">
           <label className="small"> Start Date</label>
@@ -290,7 +283,6 @@ const CommisionLenden: React.FC = () => {
             value={startDate}
             onChange={(e) => setStartDate(e.target.value)}
           />
-
         </div>
         <div className="col-6 mt-1">
           <label className="small"> End Date</label>
@@ -304,11 +296,12 @@ const CommisionLenden: React.FC = () => {
           />
         </div>
 
-        <button className="btn btn-primary mt-2 mx-3" onClick={handleDateFilter}>
+        <button
+          className="btn btn-primary mt-2 mx-3"
+          onClick={handleDateFilter}
+        >
           Submit
         </button>
-
-
       </div>
 
       <select
@@ -332,14 +325,29 @@ const CommisionLenden: React.FC = () => {
               {optionuser === "all" ? (
                 <>
                   <tr>
-                    <th style={{ borderRightColor: "darkgoldenrod", borderRightWidth: "20px" }} colSpan={4}>MILA HAI</th>
+                    <th
+                      style={{
+                        borderRightColor: "darkgoldenrod",
+                        borderRightWidth: "20px",
+                      }}
+                      colSpan={4}
+                    >
+                      MILA HAI
+                    </th>
                     <th colSpan={4}>DENA HAI</th>
                   </tr>
                   <tr>
                     <th>Name</th>
-                    <th >M Comm</th>
+                    <th>M Comm</th>
                     <th>S Comm</th>
-                    <th style={{ borderRightColor: "darkgoldenrod", borderRightWidth: "20px" }}>Total Comm</th>
+                    <th
+                      style={{
+                        borderRightColor: "darkgoldenrod",
+                        borderRightWidth: "20px",
+                      }}
+                    >
+                      Total Comm
+                    </th>
                     <th>M Comm</th>
                     <th>S Comm</th>
                     <th>Total Comm</th>
@@ -374,34 +382,45 @@ const CommisionLenden: React.FC = () => {
                 : renderUserDetails(optionuser)} */}
               {optionuser === "all"
                 ? commissionData
-                  ?.filter((row, index, self) => index === self.findIndex((r) => r.name === row.name))
-                  ?.map((row) => (
-                    Number(row?.milaTotalComm.toFixed(2)) + Number(row?.denaTotalComm.toFixed(2)) > 0 &&
-                     (
-                      <tr key={row.name}>
-                        <td className="">
-                          {row.name}
-                          {`(${row.cname})`}
-                          <button
-                            onClick={() => settled(row.name)}
-                            className="bg-yellow-400 mt-1.5 px-2 py-1.5 rounded-md"
-                          >
-                            Reset
-                          </button>
-                        </td>
-                        <td className="">{row.milaCasinoComm.toFixed(2)}</td>
-                        <td>{row.milaSportsComm.toFixed(2)}</td>
-                        <td style={{ borderRightColor: "darkgoldenrod", borderRightWidth: "20px" }}>
-                          {row.milaTotalComm.toFixed(2)}
-                        </td>
-                        <td>{row.denaCasinoComm.toFixed(2)}</td>
-                        <td>{row.denaSportsComm.toFixed(2)}</td>
-                        <td>{row.denaTotalComm.toFixed(2)}</td>
-                      </tr>
+                    ?.filter(
+                      (row, index, self) =>
+                        index === self.findIndex((r) => r.name === row.name)
                     )
-                  ))
+                    ?.map(
+                      (row) =>
+                        Number(row?.milaTotalComm.toFixed(2)) +
+                          Number(row?.denaTotalComm.toFixed(2)) >
+                          0 && (
+                          <tr key={row.name}>
+                            <td className="">
+                              {row.name}
+                              {`(${row.cname})`}
+                              <button
+                                onClick={() => settled(row.name)}
+                                className="bg-yellow-400 mt-1.5 px-2 py-1.5 rounded-md"
+                              >
+                                Reset
+                              </button>
+                            </td>
+                            <td className="">
+                              {row.milaCasinoComm.toFixed(2)}
+                            </td>
+                            <td>{row.milaSportsComm.toFixed(2)}</td>
+                            <td
+                              style={{
+                                borderRightColor: "darkgoldenrod",
+                                borderRightWidth: "20px",
+                              }}
+                            >
+                              {row.milaTotalComm.toFixed(2)}
+                            </td>
+                            <td>{row.denaCasinoComm.toFixed(2)}</td>
+                            <td>{row.denaSportsComm.toFixed(2)}</td>
+                            <td>{row.denaTotalComm.toFixed(2)}</td>
+                          </tr>
+                        )
+                    )
                 : renderUserDetails(optionuser)}
-
             </tbody>
           </table>
         </div>

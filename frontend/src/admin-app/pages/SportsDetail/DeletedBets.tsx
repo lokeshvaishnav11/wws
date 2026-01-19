@@ -3,16 +3,16 @@ import { useParams } from "react-router-dom";
 import accountService from "../../../services/account.service";
 import { AxiosResponse } from "axios";
 
-const SessionBets = () => {
+const DeletedBetsMatch = () => {
   const maid = useParams().id;
   const [marketdata, setmarketData] = React.useState<any>([]);
 
   React.useEffect(() => {
     accountService.matchdetail2().then((res: AxiosResponse) => {
       //console.log(res, "marketffffff data");
-      const allBets = res.data.data.bets;
-      const filteredBets = allBets.filter(
-        (bet: any) => bet.matchId == maid && bet.status === "pending"
+      const allBets = res?.data?.data?.bets;
+      const filteredBets = allBets?.filter(
+        (bet: any) => bet?.matchId == maid && bet?.status === "deleted"
       );
       //console.log(filteredBets,"filterreerre")
       setmarketData(filteredBets);
@@ -41,7 +41,7 @@ const SessionBets = () => {
               </tr>
             </thead>
             <tbody>
-              {marketdata.map((bet: any, index: any) => (
+              {marketdata?.map((bet: any, index: any) => (
                 <tr key={index}>
                   <td className="p-1 small">{bet.userName}</td>
                   <td className="p-1">{bet.selectionName}</td>
@@ -74,4 +74,4 @@ const SessionBets = () => {
   );
 };
 
-export default SessionBets;
+export default DeletedBetsMatch;

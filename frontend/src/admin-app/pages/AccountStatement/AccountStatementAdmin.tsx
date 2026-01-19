@@ -22,9 +22,7 @@ import { useParams } from "react-router-dom";
 const AccountStatementAdmin = () => {
   const loadingState = useAppSelector(selectLoader);
 
-  const myuser = useParams().name
-
-  
+  const myuser = useParams().name;
 
   const [accountStmt, setAccountStmt] = React.useState<any>({});
   const [parseAccountStmt, setparseAccountStmt] = React.useState<any>([]);
@@ -62,7 +60,7 @@ const AccountStatementAdmin = () => {
   React.useEffect(() => {
     betService.lenadena().then((res: AxiosResponse<any>) => {
       setTabledata(res.data.data);
-      console.log(res, "res for lena dena jai hind !");
+      //console.log(res, "res for lena dena jai hind !");
     });
   }, []);
 
@@ -141,18 +139,16 @@ const AccountStatementAdmin = () => {
 
   const handleSubmitform = (event: any) => {
     event.preventDefault();
-   submitAccountStatement();
+    submitAccountStatement();
   };
 
   const onSuggestionsFetchRequested = ({ value }: any) => {
     return userService.getUserListSuggestion({ username: value });
   };
 
-
   // React.useEffect(()=>{
   //   submitAccountStatement();
   // },[myuser])
-
 
   React.useEffect(() => {
     if (myuser) {
@@ -166,18 +162,12 @@ const AccountStatementAdmin = () => {
     }
   }, [filterdata.userId]);
 
-
   // const onSelectUser = () => {
 
   //   // console.log(user._id,"user id")
 
   //   setfilterdata({ ...filterdata, userId: myuser });
   // };
-
-
-
-
-
 
   const handlePageClickBets = (event: any) => {
     getBetsData(selectedStmt, event.selected + 1);
@@ -245,7 +235,6 @@ const AccountStatementAdmin = () => {
     return achtml;
   };
 
-
   const calculateTotal = (casino: number, sports: number) => {
     return casino + sports;
   };
@@ -260,139 +249,202 @@ const AccountStatementAdmin = () => {
               !isMobile ? "col-md-12 mt-1" : "col-md-12 padding-custom"
             }
           >
-            <div className='card-body p15 bg-gray mb-20'>
+            <div className="card-body p15 bg-gray mb-20">
               <form
-                className='ng-pristine ng-valid ng-touched mb-0'
-                method='post'
+                className="ng-pristine ng-valid ng-touched mb-0"
+                method="post"
                 onSubmit={handleSubmitform}
               >
                 {/* <div className='row row5'> oldd */}
-                <div className='row row2'>
-
-                  <div className='col-6 col-lg-2 mbc-5 d-none'>
-                    <label className='label'>User</label>
+                <div className="row row2">
+                  <div className="col-6 col-lg-2 mbc-5 d-none">
+                    <label className="label">User</label>
                     <CustomAutoComplete
                       onSuggestionsFetchRequested={onSuggestionsFetchRequested}
                       // onSelectUser={onSelectUser}
                     />
                   </div>
-                  <div className='col-6 col-lg-2 mbc-5 d-none'>
-                    <div className='form-group mb-0'>
-                      <label className='label'>Start Date</label>
-                      <div className='mx-datepicker'>
-                        <div className='mx-input-wrapper'>
+                  <div className="col-6 col-lg-2 mbc-5 d-none">
+                    <div className="form-group mb-0">
+                      <label className="label">Start Date</label>
+                      <div className="mx-datepicker">
+                        <div className="mx-input-wrapper">
                           <input
-                            name='startDate'
-                            type='date'
-                            autoComplete='off'
+                            name="startDate"
+                            type="date"
+                            autoComplete="off"
                             onChange={handleformchange}
                             defaultValue={filterdata.startDate}
-                            placeholder='Select Date'
-                            className='mx-input ng-pristine ng-valid ng-touched'
+                            placeholder="Select Date"
+                            className="mx-input ng-pristine ng-valid ng-touched"
                           />
                         </div>
                       </div>
                     </div>
                   </div>
-                  <div className='col-6 col-lg-2 mbc-5 d-none'>
-                    <div className='form-group mb-0'>
-                      <label className='label'>End Date</label>
-                      <div className='mx-datepicker'>
-                        <div className='mx-input-wrapper'>
+                  <div className="col-6 col-lg-2 mbc-5 d-none">
+                    <div className="form-group mb-0">
+                      <label className="label">End Date</label>
+                      <div className="mx-datepicker">
+                        <div className="mx-input-wrapper">
                           <input
-                            name='endDate'
-                            type='date'
-                            autoComplete='off'
+                            name="endDate"
+                            type="date"
+                            autoComplete="off"
                             defaultValue={filterdata.endDate}
                             onChange={handleformchange}
-                            placeholder='Select Date'
-                            className='mx-input ng-untouched ng-pristine ng-valid'
+                            placeholder="Select Date"
+                            className="mx-input ng-untouched ng-pristine ng-valid"
                           />
                         </div>
                       </div>
                     </div>
                   </div>
-                  <div className='col-12 col-lg-2 mbc-5'>
-                    <div className='form-group mb-0'>
-                      <label className='label'>Type</label>
+                  <div className="col-12 col-lg-2 mbc-5">
+                    <div className="form-group mb-0">
+                      <label className="label">Type</label>
                       <select
-                        name='reportType'
+                        name="reportType"
                         onChange={handleformchange}
-                        className='custom-select ng-untouched ng-pristine ng-valid'
+                        className="custom-select ng-untouched ng-pristine ng-valid"
                       >
-                        <option value='ALL'>All </option>
-                        <option value='chip'>Deposit/Withdraw </option>
-                        <option value='game'>Game Report </option>
+                        <option value="ALL">All </option>
+                        <option value="chip">Deposit/Withdraw </option>
+                        <option value="game">Game Report </option>
                       </select>
                     </div>
                   </div>
-                  <div className='col-12 col-lg-1 mbc-5'>
-                    <label className='label'>&nbsp;</label>
-                    <button type='submit' className='btn btn-primary btn-block'>
+                  <div className="col-12 col-lg-1 mbc-5">
+                    <label className="label">&nbsp;</label>
+                    <button type="submit" className="btn btn-primary btn-block">
                       Submit
                     </button>
                   </div>
                 </div>
               </form>
             </div>
-            <div className='card-body'>
-              <div className='table-responsive'>
-                <table className='text-center' id='customers1'>
+            <div className="card-body">
+              <div className="table-responsive">
+                <table className="text-center" id="customers1">
                   <thead>
                     <tr>
-                      <th className="text-black" style={{ width: '10%', background:"darkgoldenrod", textAlign: 'center', whiteSpace: 'nowrap' }}>
+                      <th
+                        className="text-black"
+                        style={{
+                          width: "10%",
+                          background: "darkgoldenrod",
+                          textAlign: "center",
+                          whiteSpace: "nowrap",
+                        }}
+                      >
                         Sr No.
                       </th>
-                      <th className="text-black" style={{ width: '20%', background:"darkgoldenrod", textAlign: 'center', whiteSpace: 'nowrap' }}>
-                        Date{' '}
+                      <th
+                        className="text-black"
+                        style={{
+                          width: "20%",
+                          background: "darkgoldenrod",
+                          textAlign: "center",
+                          whiteSpace: "nowrap",
+                        }}
+                      >
+                        Date{" "}
                       </th>
-                      <th className="text-black" style={{ width: '10%', background:"darkgoldenrod", textAlign: 'center' }}>Credit </th>
-                      <th className="text-black" style={{ width: '10%', background:"darkgoldenrod", textAlign: 'center' }}>Debit</th>
-                      <th className="text-black" style={{ width: '10%', background:"darkgoldenrod", textAlign: 'center' }}>Balance</th>
-                      <th className="text-black" style={{ width: '10%', background:"darkgoldenrod", textAlign: 'center' }}>From</th>
-                      <th className="text-black" style={{ width: '45%', background:"darkgoldenrod", textAlign: 'center' }}>Remark</th>
+                      <th
+                        className="text-black"
+                        style={{
+                          width: "10%",
+                          background: "darkgoldenrod",
+                          textAlign: "center",
+                        }}
+                      >
+                        Credit{" "}
+                      </th>
+                      <th
+                        className="text-black"
+                        style={{
+                          width: "10%",
+                          background: "darkgoldenrod",
+                          textAlign: "center",
+                        }}
+                      >
+                        Debit
+                      </th>
+                      <th
+                        className="text-black"
+                        style={{
+                          width: "10%",
+                          background: "darkgoldenrod",
+                          textAlign: "center",
+                        }}
+                      >
+                        Balance
+                      </th>
+                      <th
+                        className="text-black"
+                        style={{
+                          width: "10%",
+                          background: "darkgoldenrod",
+                          textAlign: "center",
+                        }}
+                      >
+                        From
+                      </th>
+                      <th
+                        className="text-black"
+                        style={{
+                          width: "45%",
+                          background: "darkgoldenrod",
+                          textAlign: "center",
+                        }}
+                      >
+                        Remark
+                      </th>
                     </tr>
                   </thead>
                   <tbody>
                     {parseAccountStmt.length <= 0 ||
-                      (parseAccountStmt.length > 0 && parseAccountStmt.length <= 0 && (
-                        <tr>
-                          <td colSpan={8} className='text-center'>
-                            No Result Found
+                      (parseAccountStmt.length > 0 &&
+                        parseAccountStmt.length <= 0 && (
+                          <tr>
+                            <td colSpan={8} className="text-center">
+                              No Result Found
+                            </td>
+                          </tr>
+                        ))}
+                    {parseAccountStmt.length > 0 &&
+                      parseAccountStmt.length > 0 &&
+                      page == 0 && (
+                        <tr key={parseAccountStmt[0]._id}>
+                          <td>-</td>
+                          <td className="wnwrap">
+                            {moment(parseAccountStmt[0].createdAt).format(
+                              betDateFormat
+                            )}
                           </td>
+                          <td>-</td>
+                          <td>-</td>
+                          <td className="wnwrap">{openBalance}</td>
+                          <td className="wnwrap">Opening Balance</td>
                         </tr>
-                      ))}
-                    {parseAccountStmt.length > 0 && parseAccountStmt.length > 0 && page == 0 && (
-                      <tr key={parseAccountStmt[0]._id}>
-                        <td>-</td>
-                        <td className='wnwrap'>
-                          {moment(parseAccountStmt[0].createdAt).format(betDateFormat)}
-                        </td>
-                        <td>-</td>
-                        <td>-</td>
-                        <td className='wnwrap'>{openBalance}</td>
-                        <td className='wnwrap'>Opening Balance</td>
-                      </tr>
-                    )}
+                      )}
 
                     {getAcHtml()}
                   </tbody>
                 </table>
               </div>
               <ReactPaginate
-                breakLabel='...'
-                nextLabel='Next'
+                breakLabel="..."
+                nextLabel="Next"
                 onPageChange={handlePageClick}
                 pageRangeDisplayed={5}
                 pageCount={pageCount}
-                containerClassName={'pagination'}
-                activeClassName={'active'}
-                previousLabel={'Prev'}
-                breakClassName={'break-me'}
+                containerClassName={"pagination"}
+                activeClassName={"active"}
+                previousLabel={"Prev"}
+                breakClassName={"break-me"}
               />
             </div>
-
-            
           </div>
         </div>
       </div>

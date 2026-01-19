@@ -85,16 +85,16 @@ const ClientBetsLedger = () => {
 
   React.useEffect(() => {
     accountService.matchdetail2().then((res: AxiosResponse) => {
-      // console.log(res, "marketffffff data");
+      // //console.log(res, "marketffffff data");
       const allms = res.data.data.matches;
 
       const filtered = allms.filter((m: any) => m.matchId == maid);
-      console.log(filtered, "filttreddd");
+      //console.log(filtered, "filttreddd");
 
       const bmbets = filtered[0].bets.filter(
         (b: any) => b.bet_on === "MATCH_ODDS" && b.marketName === "Bookmaker"
       );
-      console.log(bmbets, "book aker bets");
+      //console.log(bmbets, "book aker bets");
       setMarketonlymatch(bmbets);
       const bmbetf = filtered[0].bets.filter(
         (b: any) => b.bet_on !== "MATCH_ODDS" && b.marketName !== "Bookmaker"
@@ -103,7 +103,7 @@ const ClientBetsLedger = () => {
       setMarketonlyf(bmbetf);
 
       const runners = bmbets[0]?.runners || [];
-      console.log(runners, "mathced bets");
+      //console.log(runners, "mathced bets");
 
       const result = runners.map((runner: any) => {
         const { selectionId, runnerName } = runner;
@@ -114,7 +114,9 @@ const ClientBetsLedger = () => {
         );
 
         // Match bets for opposite team
-        const oppositeBets = bmbets.filter((bet: any) => bet.selectionId !== selectionId);
+        const oppositeBets = bmbets.filter(
+          (bet: any) => bet.selectionId !== selectionId
+        );
 
         // Step 5: Sum up the stack values
         // const totalStack = matchedBets.reduce(
@@ -122,7 +124,7 @@ const ClientBetsLedger = () => {
         //   0
         // );
 
-        console.log(matchedBets, "matched bets for this selection");
+        //console.log(matchedBets, "matched bets for this selection");
 
         const totalStack = matchedBets?.reduce(
           (sum: number, bet: any) =>
@@ -131,18 +133,15 @@ const ClientBetsLedger = () => {
               ? -((bet?.stack || 0) * (1 - bet?.odds))
               : (bet?.stack || 0) * (1 - bet?.odds)),
           0
-
         );
 
         const oppositeProfitLoss = oppositeBets.reduce(
           (sum: number, bet: any) =>
-            sum + (bet?.isBack ? ((-bet?.stack) || 0) : (bet?.stack || 0)),
+            sum + (bet?.isBack ? -bet?.stack || 0 : bet?.stack || 0),
           0
         );
 
-
-
-        console.log(totalStack, "sum of stack")
+        //console.log(totalStack, "sum of stack")
 
         // Step 6: Return structured object
         return {
@@ -153,7 +152,7 @@ const ClientBetsLedger = () => {
         };
       });
 
-      console.log(result, "resulllttttt");
+      //console.log(result, "resulllttttt");
       setStack(result);
 
       setmarketData(filtered[0].bets);
@@ -162,12 +161,12 @@ const ClientBetsLedger = () => {
     });
   }, [maid]);
 
-  // console.log(marketData, "fmsjnsdjfksgdfjgksd");
+  // //console.log(marketData, "fmsjnsdjfksgdfjgksd");
 
   const [ledgerData, setLedgerData] = React.useState([]);
 
   const userState = useAppSelector(selectUserData);
-  console.log(userState, "isususus");
+  //console.log(userState, "isususus");
 
   const [shared, setShared] = React.useState<any>();
 
@@ -175,10 +174,10 @@ const ClientBetsLedger = () => {
     // const userState = useAppSelector<{ user: User }>(selectUserData);
     const username: any = userState?.user?.username;
 
-    console.log(username, "testagentmaster");
+    //console.log(username, "testagentmaster");
     UserService.getParentUserDetail(username).then(
       (res: AxiosResponse<any>) => {
-        console.log(res, "check balance for parent");
+        //console.log(res, "check balance for parent");
         const thatb = res.data?.data[0];
         // setDetail(thatb)
         // setNewbalance(thatb.balance.balance);
@@ -193,13 +192,13 @@ const ClientBetsLedger = () => {
   const handleDateFilter = async (isFilterApplied = false) => {
     try {
       const res = await accountService.matchdetail2();
-      // console.log(res, "maatchh commsion report");
+      // //console.log(res, "maatchh commsion report");
 
       const allms = res.data.data.matches;
 
       const filtered = allms.filter((m: any) => m.matchId == maid);
-      // console.log(filtered,"filterretedbets")
-      // console.log(filtered[0].ledgers);
+      // //console.log(filtered,"filterretedbets")
+      // //console.log(filtered[0].ledgers);
 
       // setmarketData(filtered[0].ledgers);
       const rawData = filtered[0].ledgers.filter(
@@ -258,7 +257,7 @@ const ClientBetsLedger = () => {
 
       const finalLedger: any = Object.entries(grouped).map(
         ([ChildId, values]) => {
-          console.log("value", values)
+          //console.log("value", values)
           // const match = values.matchPlusMinus;
           // const session = values.sessionPlusMinus;
           const match = values.matchPlusMinus;
@@ -298,7 +297,7 @@ const ClientBetsLedger = () => {
           };
         }
       );
-      console.log(finalLedger, "heloo world final ledger is here");
+      //console.log(finalLedger, "heloo world final ledger is here");
 
       setLedgerTotal(finalTotals);
 
@@ -361,21 +360,14 @@ const ClientBetsLedger = () => {
           {/* ( {new Date(marketData2[0]?.matchDateTime).toLocaleTimeString()} ) */}
           {moment(marketData2[0]?.matchDateTime).format(betDateFormat)}
         </span>
-
-
       </h6>
-
 
       <h6 style={{ fontSize: "20px" }} className="text-center mt-3">
         <span className="text-center small bg-secondary  text-white p-1">
-          <i className="fas fa-trophy"></i>  {(marketData2[0]?.resultstring ? marketData2[0]?.resultstring : "")}
+          <i className="fas fa-trophy"></i>{" "}
+          {marketData2[0]?.resultstring ? marketData2[0]?.resultstring : ""}
         </span>
       </h6>
-
-
-
-
-
 
       <div className="container">
         <div className="res-table d-none"></div>
@@ -464,14 +456,21 @@ const ClientBetsLedger = () => {
                       <tr key={index}>
                         <td className="pt-1 pb-1">{team?.runnerName}</td>
                         <td
-                          className={`pt-1 pb-1 ${(((team?.totalStack || 0) + (team?.profitLoss || 0)) * (shared * 0.01)) > 0
-                            ? "text-red-500"
-                            : "text-green-500"
-                            }`}
+                          className={`pt-1 pb-1 ${
+                            ((team?.totalStack || 0) +
+                              (team?.profitLoss || 0)) *
+                              (shared * 0.01) >
+                            0
+                              ? "text-red-500"
+                              : "text-green-500"
+                          }`}
                         >
                           {/* <p>{team?.profitLoss}</p> */}
-                          {(((team?.totalStack || 0) + (team?.profitLoss || 0)) * (shared * 0.01)).toFixed(2)}
-
+                          {(
+                            ((team?.totalStack || 0) +
+                              (team?.profitLoss || 0)) *
+                            (shared * 0.01)
+                          ).toFixed(2)}
                         </td>{" "}
                         {/* Or any amount if available */}
                       </tr>
@@ -483,11 +482,8 @@ const ClientBetsLedger = () => {
           </div>
         </div>
 
-
-
         <div className="md:flex grid gap-2 md:mb-40 mb-2 ">
           <div className="card md:mt-0 ">
-
             {isMobile ? (
               <button
                 onClick={() => {
@@ -509,7 +505,6 @@ const ClientBetsLedger = () => {
                   setShowmatch(false);
                   setPlus(false);
                 }}
-
                 className="card-header p-0 text-center w-100 mb-2"
               >
                 Display Session Bet
@@ -525,7 +520,6 @@ const ClientBetsLedger = () => {
                   setShowmatch(false);
                   setPlus(!plus);
                 }}
-
                 className="card-header p-0 text-center w-100 mb-2"
               >
                 Match & Session Plus Minus
@@ -536,7 +530,7 @@ const ClientBetsLedger = () => {
 
             {showmatch ? (
               <div
-                style={{ height: "100vh", backgroundColor:"#F4EED0" }}
+                style={{ height: "100vh", backgroundColor: "#F4EED0" }}
                 className="card-body p-0 overflow-x-scroll overflow-y-scroll"
               >
                 <table className="table table-striped table-bordered table-hover">
@@ -549,36 +543,43 @@ const ClientBetsLedger = () => {
                       {/* <th className="pt-0 pb-0">PnL</th> */}
 
                       <th className="pt-0 pb-0">Date</th>
-                     { userState?.user?.role == "admin" && <th className="pt-0 pb-0">IP</th>}
+                      {userState?.user?.role == "admin" && (
+                        <th className="pt-0 pb-0">IP</th>
+                      )}
                     </tr>
                   </thead>
                   <tbody className="small">
                     {marketonlymatch?.map((bet, index) => (
                       <tr key={index}>
-                        <td style={{
-                          fontSize: "10px",
-                          minWidth: "180px",
-                          whiteSpace: "normal",
-                          wordBreak: "break-word",
-                        }} className="p-1 pt-2">
-                          {
-                            bet?.parentData
-                              ?.slice(
-                                bet?.parentData.indexOf(userState.user.username) + 1
-                              )
-                              .join("/")
-                          }
+                        <td
+                          style={{
+                            fontSize: "10px",
+                            minWidth: "180px",
+                            whiteSpace: "normal",
+                            wordBreak: "break-word",
+                          }}
+                          className="p-1 pt-2"
+                        >
+                          {bet?.parentData
+                            ?.slice(
+                              bet?.parentData.indexOf(userState.user.username) +
+                                1
+                            )
+                            .join("/")}
                           /{bet?.userName}({bet?.userCode})
                         </td>
                         <td
-                          className={`pt-2 pb-1 ${bet?.profitLoss < 0
-                            ? "text-red-500"
-                            : "text-green-500"
-                            }`}
+                          className={`pt-2 pb-1 ${
+                            bet?.profitLoss < 0
+                              ? "text-red-500"
+                              : "text-green-500"
+                          }`}
                         >
                           {bet?.stack}
                         </td>
-                        <td className="pt-2 pb-1">{(bet?.odds * 100 - 100).toFixed(2)}</td>
+                        <td className="pt-2 pb-1">
+                          {(bet?.odds * 100 - 100).toFixed(2)}
+                        </td>
                         <td className="pt-2 pb-1">
                           {bet?.isBack ? (
                             <button
@@ -646,15 +647,18 @@ const ClientBetsLedger = () => {
                           className="pt-2 pb-1 text-nowrap"
                           style={{ fontSize: "xx-small" }}
                         >
-                          {moment.utc(bet?.betClickTime).format("MMMM Do, h:mm:ss A")}
-
+                          {moment
+                            .utc(bet?.betClickTime)
+                            .format("MMMM Do, h:mm:ss A")}
                         </td>
-                        {userState?.user?.role == "admin" && <td
-                          className="pt-2 pb-1"
-                          style={{ fontSize: "xx-small" }}
-                        >
-                          {bet?.userIp}
-                        </td>}
+                        {userState?.user?.role == "admin" && (
+                          <td
+                            className="pt-2 pb-1"
+                            style={{ fontSize: "xx-small" }}
+                          >
+                            {bet?.userIp}
+                          </td>
+                        )}
                       </tr>
                     ))}
                   </tbody>
@@ -666,20 +670,17 @@ const ClientBetsLedger = () => {
           </div>
 
           <div>
-
-
             {session ? (
-              <div className="card-heade p-0 mb-20 " id="headig" >
+              <div className="card-heade p-0 mb-20 " id="headig">
                 {[
                   //@ts-expect-error
                   ...new Map(
                     marketonlyf?.map((item) => [item?.selectionId, item])
                   ).values(),
                 ].map((bet, index) => {
-
                   // ⭐ ADD — Total P/L Code
                   const totalPL = marketonlyf
-                    ?.filter(x => x.selectionId === bet?.selectionId)
+                    ?.filter((x) => x.selectionId === bet?.selectionId)
                     ?.reduce((acc, curr) => acc + (curr?.profitLoss || 0), 0);
 
                   return (
@@ -688,12 +689,13 @@ const ClientBetsLedger = () => {
                         <button
                           onClick={() =>
                             setSendid((prev) =>
-                              prev === bet?.selectionId ? null : bet?.selectionId
+                              prev === bet?.selectionId
+                                ? null
+                                : bet?.selectionId
                             )
                           }
                           className="p-2 small badge navbar-bet99 w-100 text-left border text-dark ng-binding"
                         >
-
                           {/* ⭐ Selection Name */}
                           {bet?.selectionName}
 
@@ -711,9 +713,10 @@ const ClientBetsLedger = () => {
                           {/* ⭐ Existing Result Badge — unchanged */}
                           <span className="badge badge-light float-right ng-binding ng-scope">
                             <i className="fas fa-trophy"></i>
-                            {bet?.fancy?.result ? bet?.fancy?.result : bet?.oppsiteVol}
+                            {bet?.fancy?.result
+                              ? bet?.fancy?.result
+                              : bet?.oppsiteVol}
                           </span>
-
                         </button>
                       </h6>
 
@@ -730,7 +733,9 @@ const ClientBetsLedger = () => {
                                   {/* <th className="pt-0 pb-0">PnL</th> */}
 
                                   <th className="pt-0 pb-0">Date</th>
-                                  {userState?.user?.role == "admin" && <th className="pt-0 pb-0">IP</th>}
+                                  {userState?.user?.role == "admin" && (
+                                    <th className="pt-0 pb-0">IP</th>
+                                  )}
                                 </tr>
                               </thead>
 
@@ -748,15 +753,13 @@ const ClientBetsLedger = () => {
                                         }}
                                         className="p-1 pt-2"
                                       >
-                                        {
-                                          bet?.parentData
-                                            ?.slice(
-                                              bet?.parentData.indexOf(
-                                                userState.user.username
-                                              ) + 1
-                                            )
-                                            .join("/")
-                                        }
+                                        {bet?.parentData
+                                          ?.slice(
+                                            bet?.parentData.indexOf(
+                                              userState.user.username
+                                            ) + 1
+                                          )
+                                          .join("/")}
                                         /{bet?.userName}({bet?.userCode})
                                       </td>
 
@@ -803,17 +806,25 @@ const ClientBetsLedger = () => {
                                                 style={{ fontSize: "14px" }}
                                               >
                                                 YES
-
                                               </div>
-
                                             </button>
-                                            <span style={{ fontSize: "12px", marginLeft: "5px" }}>{bet?.volume}</span>
+                                            <span
+                                              style={{
+                                                fontSize: "12px",
+                                                marginLeft: "5px",
+                                              }}
+                                            >
+                                              {bet?.volume}
+                                            </span>
                                           </>
                                         ) : (
                                           <>
                                             <button
                                               className="btn-not btn btn-sm p-1 ng-scope"
-                                              style={{ fontSize: "xx-small", backgroundColor: "red" }}
+                                              style={{
+                                                fontSize: "xx-small",
+                                                backgroundColor: "red",
+                                              }}
                                             >
                                               <span
                                                 className="badge badge-light"
@@ -822,16 +833,24 @@ const ClientBetsLedger = () => {
                                                 NOT
                                               </span>
                                             </button>
-                                            <span style={{ fontSize: "12px", marginLeft: "5px" }}>{bet?.volume}</span>
+                                            <span
+                                              style={{
+                                                fontSize: "12px",
+                                                marginLeft: "5px",
+                                              }}
+                                            >
+                                              {bet?.volume}
+                                            </span>
                                           </>
                                         )}
                                       </td>
 
                                       <td
-                                        className={`pt-2 pb-1 ${bet?.profitLoss < 0
-                                          ? "text-red-500"
-                                          : "text-green-500"
-                                          }`}
+                                        className={`pt-2 pb-1 ${
+                                          bet?.profitLoss < 0
+                                            ? "text-red-500"
+                                            : "text-green-500"
+                                        }`}
                                       >
                                         {bet?.stack}
                                       </td>
@@ -854,16 +873,19 @@ const ClientBetsLedger = () => {
                                           wordBreak: "break-word",
                                         }}
                                       >
-                                        {moment.utc(bet?.betClickTime).format("DD/MM/YY, h:mm:ss A")}
-
+                                        {moment
+                                          .utc(bet?.betClickTime)
+                                          .format("DD/MM/YY, h:mm:ss A")}
                                       </td>
 
-                                      {userState?.user?.role == "admin" &&<td
-                                        className="pt-2 pb-1"
-                                        style={{ fontSize: "xx-small" }}
-                                      >
-                                        {bet?.userIp}
-                                      </td>}
+                                      {userState?.user?.role == "admin" && (
+                                        <td
+                                          className="pt-2 pb-1"
+                                          style={{ fontSize: "xx-small" }}
+                                        >
+                                          {bet?.userIp}
+                                        </td>
+                                      )}
                                     </tr>
                                   ))}
                               </tbody>
@@ -878,14 +900,10 @@ const ClientBetsLedger = () => {
             ) : (
               ""
             )}
-
-
           </div>
         </div>
 
         <div>
-
-
           {plus ? (
             <div>
               <div className="container-fluidh mt-2">
@@ -1287,7 +1305,10 @@ const ClientBetsLedger = () => {
                           ng-class="totalPandL.net_amt > 0 ? 'text-success' : 'text-danger'"
                           className="ng-binding text-danger"
                         >
-                          {(ledgerTotal?.balance?.toFixed(2) - ledgerTotal?.upDownShare?.toFixed(2)).toFixed(2)}
+                          {(
+                            ledgerTotal?.balance?.toFixed(2) -
+                            ledgerTotal?.upDownShare?.toFixed(2)
+                          ).toFixed(2)}
                         </span>
                       </td>
                     </tr>

@@ -4,11 +4,10 @@ import betService from "../../../services/bet.service";
 
 // ✅ DUMMY MATKA LIST
 
-
 // ✅ DUMMY API
 const betserver = {
-  matkaResult: (item:any) => {
-    console.log("API HIT → betserver.matkaResult", item);
+  matkaResult: (item: any) => {
+    //console.log("API HIT → betserver.matkaResult", item);
     return Promise.resolve({ success: true });
   },
 };
@@ -19,46 +18,43 @@ export default function MatkaResult() {
   const [result, setResult] = React.useState("");
   const [rows, setRows] = React.useState<any>([]);
 
-    const [matkaList, setMatkaList] = React.useState<any>([])
-  
+  const [matkaList, setMatkaList] = React.useState<any>([]);
 
-   React.useEffect(() => {
-      const fetchMatkaList = async () => {
-        try {
-          const res = await accountService.matkagamelist();
-          console.log(res?.data?.data, "ffff");
-          setMatkaList(res?.data?.data);
-        } catch (err) {
-          console.error("Matka list error:", err);
-        }
-      };
-    
-      fetchMatkaList();
-    }, []);
+  React.useEffect(() => {
+    const fetchMatkaList = async () => {
+      try {
+        const res = await accountService.matkagamelist();
+        //console.log(res?.data?.data, "ffff");
+        setMatkaList(res?.data?.data);
+      } catch (err) {
+        console.error("Matka list error:", err);
+      }
+    };
+
+    fetchMatkaList();
+  }, []);
 
   // ✅ SUBMIT HANDLER
-  const handleSubmit = async (e:any) => {
+  const handleSubmit = async (e: any) => {
     e.preventDefault();
 
-    const selectedGame = matkaList.find(
-      (m:any) => m.id === selectedMatchId
-    );
+    const selectedGame = matkaList.find((m: any) => m.id === selectedMatchId);
 
     if (!selectedGame) return;
 
     const payload = {
       matchId: selectedGame.id,
       name: selectedGame.gamename,
-      roundid:selectedGame.roundid,
+      roundid: selectedGame.roundid,
       result,
       date,
     };
 
-    console.log(payload,"bv")
+    //console.log(payload,"bv")
 
     try {
       const res = await betService.matkaresult(payload);
-  
+
       // success ke baad hi UI update
       setRows((prev: any) => [...prev, payload]);
       setResult("");
@@ -66,18 +62,19 @@ export default function MatkaResult() {
       console.error("Result submit error:", err);
       alert("Result submit failed");
     }
-
-    
   };
 
   return (
     <div className="container p-3">
-
-<h2 className="ledger-title rounded mb-2 " style={{background:"black" , color:"white"}}>Matka Result</h2>
+      <h2
+        className="ledger-title rounded mb-2 "
+        style={{ background: "black", color: "white" }}
+      >
+        Matka Result
+      </h2>
 
       {/* ===== FORM ===== */}
       <form onSubmit={handleSubmit} className="row g-3 mb-4">
-
         {/* DATE */}
         <div className="col-md-3">
           <label className="form-label fw-bold">Date</label>
@@ -100,7 +97,7 @@ export default function MatkaResult() {
             required
           >
             <option value="">Select Market</option>
-            {matkaList.map((item:any) => (
+            {matkaList.map((item: any) => (
               <option key={item.matchId} value={item.id}>
                 {item.gamename}
               </option>
@@ -146,13 +143,12 @@ export default function MatkaResult() {
           </thead>
           <tbody>
             {matkaList.length > 0 ? (
-              matkaList.map((row:any, idx:any) => (
+              matkaList.map((row: any, idx: any) => (
                 <tr key={idx}>
                   <td>{idx + 1}</td>
                   <td>{row?.gamename}</td>
                   <td>{row?.result}</td>
                   <td>{row?.roundid}</td>
-
                 </tr>
               ))
             ) : (
@@ -163,7 +159,6 @@ export default function MatkaResult() {
           </tbody>
         </table>
       </div>
-
     </div>
   );
 }

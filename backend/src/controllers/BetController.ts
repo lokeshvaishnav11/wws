@@ -2940,6 +2940,85 @@ marketDetails = async (req: Request, res: Response): Promise<Response> => {
   };
 
 
+  marketMatka = async (req: Request, res: Response): Promise<Response> => {
+    
+
+    try {
+      const user: any = req.user;
+      // const bets = await Bet.find({bet_on! === "CASINO"})
+
+      // Step 1: Find users whose parentStr contains current user ID and have role "user"
+      const usersWithThisAsParent = await User.find({
+        parentStr: ObjectId(user._id),
+        role: "user" as RoleType,
+      });
+
+      // Step 2: Extract their _id into an array
+      const userIds = usersWithThisAsParent.map((u) => u._id);
+     
+
+      const bets = await Matkabet.aggregate([
+        {
+          $match: {
+            userId: { $in: userIds },
+            bet_on: "MATKA",
+            status: { $ne: "deleted" },
+          },
+        },
+        {
+          $lookup: {
+            from: "users",
+            let: {
+              parentIds: { $ifNull: ["$parentstr", []] } // ✅ null-safe
+            },
+            pipeline: [
+              {
+                $match: {
+                  $expr: {
+                    $in: [
+                      "$_id",
+                      {
+                        $map: {
+                          input: "$$parentIds",
+                          as: "id",
+                          in: { $toObjectId: "$$id" },
+                        },
+                      },
+                    ],
+                  },
+                },
+              },
+              { $project: { _id: 0, username: 1 } },
+            ],
+            as: "parentData",
+          },
+        },
+        {
+          $addFields: {
+            parentData: {
+              $map: { input: "$parentData", as: "p", in: "$$p.username" },
+            },
+          },
+        },
+        // 👇 Add this to sort newest first
+        { $sort: { createdAt: 1 } },
+      ]);
+
+
+
+ 
+
+      return this.success(res, {
+        status: true,
+     
+        bets,
+      });
+
+     
+    } catch (e: any) {
+      return this.fail(res, e);
+    }
+  };
 
 
 

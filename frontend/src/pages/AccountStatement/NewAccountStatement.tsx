@@ -364,7 +364,7 @@ const NewAccountStatement = () => {
 
   const getAcHtml = () => {
     let grouped: any = {};
-    console.log(currentItems, "drrerer");
+    //console.log(currentItems, "drrerer");
 
     currentItems?.forEach((stmt: any) => {
       if (!stmt?.narration || !stmt?.stmt?.allBets) return;
@@ -468,11 +468,13 @@ const NewAccountStatement = () => {
 
       if (stmt.narration.length === 0) return null;
 
-      console.log(filteredItems, "filtered itemss");
+      //console.log(filteredItems, "filtered itemss");
 
       return (
         <tr key={`${stmt._id}${index}`}>
-          <td>{stmt?.stmt?.allBets ? stmt?.stmt?.selectionId : stmt?.narration}</td>
+          <td>
+            {stmt?.stmt?.allBets ? stmt?.stmt?.selectionId : stmt?.narration}
+          </td>
           <td>
             {stmt?.stmt?.allBets
               ? stmt?.stmt?.allBets[0]?.result[0]?.marketName
@@ -552,11 +554,12 @@ const NewAccountStatement = () => {
           </div>
 
           <div className="">
-         
-
-      <div className="back-main-menu my-3" style={{background:"#3b394a"}}>
-            <a style={{background:"#3b394a"}}>MY LEDGER</a>
-          </div>
+            <div
+              className="back-main-menu my-3"
+              style={{ background: "#3b394a" }}
+            >
+              <a style={{ background: "#3b394a" }}>MY LEDGER</a>
+            </div>
 
             <div className="card-body p0">
               {/* <form
@@ -642,37 +645,83 @@ const NewAccountStatement = () => {
                     <table className="text-center" id="customers1">
                       <thead>
                         <tr>
-                          <th style={{ width: "45%", textAlign: "center", background:"#888399" }}>
+                          <th
+                            style={{
+                              width: "45%",
+                              textAlign: "center",
+                              background: "#888399",
+                            }}
+                          >
                             Event ID
                           </th>
 
-                          <th style={{ width: "45%", textAlign: "center", background:"#888399" }}>
+                          <th
+                            style={{
+                              width: "45%",
+                              textAlign: "center",
+                              background: "#888399",
+                            }}
+                          >
                             Number
                           </th>
 
-                          <th style={{ width: "45%", textAlign: "center", background:"#888399" }}>
+                          <th
+                            style={{
+                              width: "45%",
+                              textAlign: "center",
+                              background: "#888399",
+                            }}
+                          >
                             Rate
                           </th>
 
-                          <th style={{ width: "45%", textAlign: "center", background:"#888399" }}>
+                          <th
+                            style={{
+                              width: "45%",
+                              textAlign: "center",
+                              background: "#888399",
+                            }}
+                          >
                             Amount
                           </th>
 
-                          <th style={{ width: "45%", textAlign: "center", background:"#888399" }}>
+                          <th
+                            style={{
+                              width: "45%",
+                              textAlign: "center",
+                              background: "#888399",
+                            }}
+                          >
                             Status
                           </th>
 
-                          <th style={{ width: "45%", textAlign: "center", background:"#888399" }}>
+                          <th
+                            style={{
+                              width: "45%",
+                              textAlign: "center",
+                              background: "#888399",
+                            }}
+                          >
                             Result
                           </th>
 
-                          <th style={{ width: "10%", textAlign: "center", background:"#888399" }}>
+                          <th
+                            style={{
+                              width: "10%",
+                              textAlign: "center",
+                              background: "#888399",
+                            }}
+                          >
                             PL{" "}
                           </th>
 
                           <th
                             className="d-none"
-                            style={{ width: "10%", textAlign: "center" , background:"#888399" }}
+                            style={{
+                              width: "10%",
+                              textAlign: "center",
+                              background: "#888399",
+                            }}
                           >
                             BALANCE
                           </th>
@@ -721,26 +770,60 @@ const NewAccountStatement = () => {
                     </th> */}
                         <th
                           className="d-none"
-                          style={{ width: "45%", textAlign: "center" , background:"#888399" }}
+                          style={{
+                            width: "45%",
+                            textAlign: "center",
+                            background: "#888399",
+                          }}
                         >
                           MATCH NAMEk
                         </th>
 
-                        <th style={{ width: "45%", textAlign: "center" , background:"#888399" }}>
+                        <th
+                          style={{
+                            width: "45%",
+                            textAlign: "center",
+                            background: "#888399",
+                          }}
+                        >
                           MATCH NAME
                         </th>
 
-                        <th style={{ width: "45%", textAlign: "center" , background:"#888399" }}>
+                        <th
+                          style={{
+                            width: "45%",
+                            textAlign: "center",
+                            background: "#888399",
+                          }}
+                        >
                           WON BY
                         </th>
 
-                        <th style={{ width: "10%", textAlign: "center" , background:"#888399" }}>
+                        <th
+                          style={{
+                            width: "10%",
+                            textAlign: "center",
+                            background: "#888399",
+                          }}
+                        >
                           WON{" "}
                         </th>
-                        <th style={{ width: "10%", textAlign: "center", background:"#888399" }}>
+                        <th
+                          style={{
+                            width: "10%",
+                            textAlign: "center",
+                            background: "#888399",
+                          }}
+                        >
                           LOST
                         </th>
-                        <th style={{ width: "10%", textAlign: "center", background:"#888399" }}>
+                        <th
+                          style={{
+                            width: "10%",
+                            textAlign: "center",
+                            background: "#888399",
+                          }}
+                        >
                           BALANCE
                         </th>
                       </tr>

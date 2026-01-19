@@ -8,7 +8,11 @@ import { betDateFormat, dateFormat } from "../../../utils/helper";
 import moment from "moment-timezone";
 import { isMobile } from "react-device-detect";
 import UserService from "../../../services/user.service";
-import { FancyBook, selectBookFancy, setBookFancy } from "../../../redux/actions/bet/betSlice";
+import {
+  FancyBook,
+  selectBookFancy,
+  setBookFancy,
+} from "../../../redux/actions/bet/betSlice";
 import bookService from "../../../services/book.service";
 import Item from "antd/es/list/Item";
 
@@ -16,416 +20,403 @@ import Item from "antd/es/list/Item";
 //
 
 interface LedgerItem {
-    parentName: string;
-    updown?: number;
-    profit?: number;
+  parentName: string;
+  updown?: number;
+  profit?: number;
 }
 
 interface MatchItem {
-    userCode: any;
-    parentData: any;
-    parentNameStr: any;
-    volume: any;
-    profitLoss: any;
-    matchDateTime: any;
-    isBack: any;
-    selectionId: any;
-    ledgers: LedgerItem[];
-    name: string;
-    client: any;
-    amount: any;
-    rate: any;
-    action: any;
-    userName: any;
-    userIp: any;
-    stack: any;
-    odds: any;
-    betClickTime: any;
-    selectionName: any;
-    matchedDate: any;
-    resultstring: any;
-    status: any;
+  userCode: any;
+  parentData: any;
+  parentNameStr: any;
+  volume: any;
+  profitLoss: any;
+  matchDateTime: any;
+  isBack: any;
+  selectionId: any;
+  ledgers: LedgerItem[];
+  name: string;
+  client: any;
+  amount: any;
+  rate: any;
+  action: any;
+  userName: any;
+  userIp: any;
+  stack: any;
+  odds: any;
+  betClickTime: any;
+  selectionName: any;
+  matchedDate: any;
+  resultstring: any;
+  status: any;
 }
 
 type GroupedLedger = {
-    username: string;
-    cname: string;
-    ss: number;
+  username: string;
+  cname: string;
+  ss: number;
 
-    matchPlusMinus: number;
-    sessionPlusMinus: number;
-    matchcommision: number;
-    fancycommmision: number;
+  matchPlusMinus: number;
+  sessionPlusMinus: number;
+  matchcommision: number;
+  fancycommmision: number;
 };
 
 type FinalLedgerRow = {
-    client: string;
-    match: number;
-    session: number;
-    total: number;
-    mCom: number;
-    sCom: number;
-    tCom: number;
-    gTotal: number;
-    upDownShare: number;
-    balance: number;
-    // finalLedger: any;
+  client: string;
+  match: number;
+  session: number;
+  total: number;
+  mCom: number;
+  sCom: number;
+  tCom: number;
+  gTotal: number;
+  upDownShare: number;
+  balance: number;
+  // finalLedger: any;
 };
 
 interface ReportModalProps {
-    data: any; // or be more specific if you know the type, e.g., `string` or `User`
+  data: any; // or be more specific if you know the type, e.g., `string` or `User`
 }
 
 const ClientBetsUser = () => {
-    const [marketData, setmarketData] = React.useState<MatchItem[]>([]);
-    const [marketonlymatch, setMarketonlymatch] = React.useState<MatchItem[]>([]);
-    const [marketonlyf, setMarketonlyf] = React.useState<MatchItem[]>([]);
+  const [marketData, setmarketData] = React.useState<MatchItem[]>([]);
+  const [marketonlymatch, setMarketonlymatch] = React.useState<MatchItem[]>([]);
+  const [marketonlyf, setMarketonlyf] = React.useState<MatchItem[]>([]);
 
-    const [marketData2, setmarketData2] = React.useState<MatchItem[]>([]);
-    const [sendid, setSendid] = React.useState(null);
-    const [stack, setStack] = React.useState<any[]>([]);
-    //  const userState = useAppSelector(selectUserData)
+  const [marketData2, setmarketData2] = React.useState<MatchItem[]>([]);
+  const [sendid, setSendid] = React.useState(null);
+  const [stack, setStack] = React.useState<any[]>([]);
+  //  const userState = useAppSelector(selectUserData)
 
-    const dispatch = useAppDispatch()
+  const dispatch = useAppDispatch();
 
-    const maid = useParams().matchId;
+  const maid = useParams().matchId;
 
-    React.useEffect(() => {
-        accountService.matchdetail2().then((res: AxiosResponse) => {
-            console.log(res, "marketffffff data");
-            const allms = res?.data?.data?.matches;
+  React.useEffect(() => {
+    accountService.matchdetail2().then((res: AxiosResponse) => {
+      //console.log(res, "marketffffff data");
+      const allms = res?.data?.data?.matches;
 
-            console.log(maid, "match id from param");
+      //console.log(maid, "match id from param");
 
-            const filtered = allms?.filter((m: any) => m.matchId == maid);
-            console.log(filtered, "filttreddd");
+      const filtered = allms?.filter((m: any) => m.matchId == maid);
+      //console.log(filtered, "filttreddd");
 
-            const bmbets = filtered[0]?.bets?.filter(
-                (b: any) => b.bet_on === "MATCH_ODDS" && b.marketName === "Bookmaker"
-            );
-            console.log(bmbets, "book aker bets");
-            setMarketonlymatch(bmbets);
-            const bmbetf = filtered[0]?.bets?.filter(
-                (b: any) => b.bet_on !== "MATCH_ODDS" && b.marketName !== "Bookmaker"
-            );
+      const bmbets = filtered[0]?.bets?.filter(
+        (b: any) => b.bet_on === "MATCH_ODDS" && b.marketName === "Bookmaker"
+      );
+      //console.log(bmbets, "book aker bets");
+      setMarketonlymatch(bmbets);
+      const bmbetf = filtered[0]?.bets?.filter(
+        (b: any) => b.bet_on !== "MATCH_ODDS" && b.marketName !== "Bookmaker"
+      );
 
-            setMarketonlyf(bmbetf);
+      setMarketonlyf(bmbetf);
 
-            console.log(bmbetf, "book aker bets fancy");
+      //console.log(bmbetf, "book aker bets fancy");
 
-            const runners = bmbets[0]?.runners || [];
-            console.log(runners, "mathced bets");
+      const runners = bmbets[0]?.runners || [];
+      //console.log(runners, "mathced bets");
 
-            const result = runners?.map((runner: any) => {
-                const { selectionId, runnerName } = runner;
+      const result = runners?.map((runner: any) => {
+        const { selectionId, runnerName } = runner;
 
-                // Step 4: Filter bets for this selectionId
-                const matchedBets = bmbets?.filter(
-                    (bet: any) => bet?.selectionId === selectionId
-                );
-
-                // Match bets for opposite team
-                const oppositeBets = bmbets?.filter((bet: any) => bet?.selectionId !== selectionId);
-
-                // Step 5: Sum up the stack values
-                // const totalStack = matchedBets.reduce(
-                //   (sum: number, bet: any) => sum + (bet.stack || 0),
-                //   0
-                // );
-
-                console.log(matchedBets, "matched bets for this selection");
-
-                const totalStack = matchedBets?.reduce(
-                    (sum: number, bet: any) =>
-                        sum +
-                        (bet?.isBack
-                            ? -((bet?.stack || 0) * (1 - bet?.odds))
-                            : (bet?.stack || 0) * (1 - bet?.odds)),
-                    0
-
-                );
-
-                const oppositeProfitLoss = oppositeBets.reduce(
-                    (sum: number, bet: any) =>
-                        sum + (bet?.isBack ? ((-bet?.stack) || 0) : (bet?.stack || 0)),
-                    0
-                );
-
-
-
-                console.log(totalStack, "sum of stack")
-
-                // Step 6: Return structured object
-                return {
-                    selectionId,
-                    runnerName,
-                    totalStack,
-                    profitLoss: oppositeProfitLoss,
-                };
-            });
-
-            console.log(result, "resulllttttt");
-            setStack(result);
-
-            setmarketData(filtered[0]?.bets);
-
-            setmarketData2(filtered);
-        });
-    }, [maid]);
-
-    // console.log(marketData, "fmsjnsdjfksgdfjgksd");
-
-    const [ledgerData, setLedgerData] = React.useState([]);
-
-    const userState = useAppSelector(selectUserData);
-    // console.log(userState, "isususus");
-
-    const [shared, setShared] = React.useState<any>();
-
-    React.useEffect(() => {
-        // const userState = useAppSelector<{ user: User }>(selectUserData);
-        const username: any = userState?.user?.username;
-
-        console.log(username, "testagentmaster");
-        UserService.getParentUserDetail(username).then(
-            (res: AxiosResponse<any>) => {
-                console.log(res, "check balance for parent");
-                const thatb = res?.data?.data[0];
-                // setDetail(thatb)
-                // setNewbalance(thatb.balance.balance);
-                setShared(thatb?.share);
-            }
+        // Step 4: Filter bets for this selectionId
+        const matchedBets = bmbets?.filter(
+          (bet: any) => bet?.selectionId === selectionId
         );
-    }, [userState]);
 
-    const [startDate, setStartDate] = React.useState<string>("");
-    const [endDate, setEndDate] = React.useState<string>("");
+        // Match bets for opposite team
+        const oppositeBets = bmbets?.filter(
+          (bet: any) => bet?.selectionId !== selectionId
+        );
 
-    const handleDateFilter = async (isFilterApplied = false) => {
-        try {
-            const res = await accountService.matchdetail2();
-            // console.log(res, "maatchh commsion report");
+        // Step 5: Sum up the stack values
+        // const totalStack = matchedBets.reduce(
+        //   (sum: number, bet: any) => sum + (bet.stack || 0),
+        //   0
+        // );
 
-            const allms = res?.data?.data?.matches;
+        //console.log(matchedBets, "matched bets for this selection");
 
-            const filtered = allms.filter((m: any) => m.matchId == maid);
-            // console.log(filtered,"filterretedbets")
-            // console.log(filtered[0].ledgers);
+        const totalStack = matchedBets?.reduce(
+          (sum: number, bet: any) =>
+            sum +
+            (bet?.isBack
+              ? -((bet?.stack || 0) * (1 - bet?.odds))
+              : (bet?.stack || 0) * (1 - bet?.odds)),
+          0
+        );
 
-            // setmarketData(filtered[0].ledgers);
-            const rawData = filtered[0]?.ledgers?.filter(
-                (m: any) => m.parentName == userState?.user?.username
-            );
+        const oppositeProfitLoss = oppositeBets.reduce(
+          (sum: number, bet: any) =>
+            sum + (bet?.isBack ? -bet?.stack || 0 : bet?.stack || 0),
+          0
+        );
 
-            const filteredData = filtered[0]?.ledgers;
+        //console.log(totalStack, "sum of stack")
 
-            const grouped: Record<string, GroupedLedger & { updownTotal: number }> =
-                {};
+        // Step 6: Return structured object
+        return {
+          selectionId,
+          runnerName,
+          totalStack,
+          profitLoss: oppositeProfitLoss,
+        };
+      });
 
-            filteredData.forEach((item: any) => {
-                const childId: string = item?.ChildId ? item?.ChildId : item?.ParentId;
-                //               const childId: string | null = item.ChildId ? item.ChildId : item.ParentId;
+      //console.log(result, "resulllttttt");
+      setStack(result);
 
-                //   // ✅ Skip entry if childId is missing/null/undefined
-                //   if (!childId) return;
-                const isFancy: boolean = item.Fancy;
-                const money: number = Number(item.fammount) || 0;
-                const commissionn: any = Number(item.commissiondega) || 0;
-                const updown: number = Number(item.umoney) || 0;
+      setmarketData(filtered[0]?.bets);
 
-                if (!grouped[childId]) {
-                    grouped[childId] = {
-                        username: item.username,
-                        cname: item.cname,
-                        ss: item.superShare,
-                        matchPlusMinus: 0,
-                        sessionPlusMinus: 0,
-                        matchcommision: 0,
-                        fancycommmision: 0,
-                        updownTotal: 0,
-                    };
-                }
-
-                if (isFancy) {
-                    grouped[childId].sessionPlusMinus += money;
-                    grouped[childId].fancycommmision += commissionn;
-                } else {
-                    grouped[childId].matchPlusMinus += money;
-                    grouped[childId].matchcommision += commissionn;
-                }
-                grouped[childId].updownTotal += updown;
-            });
-
-            const finalTotals = {
-                match: 0,
-                session: 0,
-                mCom: 0,
-                sCom: 0,
-                tCom: 0,
-                gTotal: 0,
-                upDownShare: 0,
-                balance: 0,
-            };
-
-            const finalLedger: any = Object.entries(grouped).map(
-                ([ChildId, values]) => {
-                    console.log("value", values)
-                    // const match = values.matchPlusMinus;
-                    // const session = values.sessionPlusMinus;
-                    const match = values.matchPlusMinus;
-                    const session = values.sessionPlusMinus;
-                    const matchc = values.matchcommision;
-                    const fancyc = values.fancycommmision;
-                    const ctotal: any = matchc + fancyc;
-                    const totall = match + session;
-                    const total = totall - ctotal;
-
-                    // ✅ Accumulate totals here
-                    // finalTotals.match += match;
-                    // finalTotals.session += session;
-                    finalTotals.match += match;
-                    finalTotals.session += session;
-                    finalTotals.mCom += matchc;
-                    finalTotals.sCom += fancyc;
-                    finalTotals.tCom += ctotal;
-                    finalTotals.gTotal += total;
-                    finalTotals.upDownShare += (total * values.ss) / 100;
-                    finalTotals.balance += total;
-
-                    return {
-                        client: values.username,
-                        cname: values.cname,
-                        ss: values.ss,
-                        match,
-                        session,
-                        totall,
-                        mCom: matchc,
-                        sCom: fancyc,
-                        tCom: ctotal,
-                        gTotal: total,
-                        upDownShare: (total * values.ss) / 100,
-                        balance: values.updownTotal,
-                        FinalBal: total - (total * values.ss) / 100,
-                    };
-                }
-            );
-            console.log(finalLedger, "heloo world final ledger is here");
-
-            setLedgerTotal(finalTotals);
-
-            setLedgerData(finalLedger);
-        } catch (err) {
-            console.error("Error filtering ledger by date:", err);
-        }
-    };
-
-    React.useEffect(() => {
-        handleDateFilter(false); // no date filter
-    }, [maid]);
-
-    const [selectedUser, setSelectedUser] = React.useState<string | null>(null);
-
-    const [optionuser, setOptionuser] = React.useState<string>("all");
-
-    const [searchTerm, setSearchTerm] = React.useState("");
-
-    const [ledgerTotal, setLedgerTotal] = React.useState<any>({});
-
-
-
-    const showModal = (username: string) => {
-        setSelectedUser(username);
-    };
-
-    const closeModal = () => {
-        setSelectedUser(null);
-    };
-
-    const filteredLedgerData = ledgerData?.filter((row: any) => {
-        const matchOptionUser = optionuser === "all" || row.client === optionuser;
-        const matchSearch = row.client
-            .toLowerCase()
-            .includes(searchTerm.toLowerCase());
-        return matchOptionUser && matchSearch;
+      setmarketData2(filtered);
     });
+  }, [maid]);
 
-    const [showmatch, setShowmatch] = React.useState(false);
-    const [session, setSession] = React.useState(true);
-    const [plus, setPlus] = React.useState(false);
+  // //console.log(marketData, "fmsjnsdjfksgdfjgksd");
 
-    React.useEffect(() => {
-        if (!isMobile) {
-            setShowmatch(true);
-            setSession(true);
-            setPlus(true);
+  const [ledgerData, setLedgerData] = React.useState([]);
+
+  const userState = useAppSelector(selectUserData);
+  // //console.log(userState, "isususus");
+
+  const [shared, setShared] = React.useState<any>();
+
+  React.useEffect(() => {
+    // const userState = useAppSelector<{ user: User }>(selectUserData);
+    const username: any = userState?.user?.username;
+
+    //console.log(username, "testagentmaster");
+    UserService.getParentUserDetail(username).then(
+      (res: AxiosResponse<any>) => {
+        //console.log(res, "check balance for parent");
+        const thatb = res?.data?.data[0];
+        // setDetail(thatb)
+        // setNewbalance(thatb.balance.balance);
+        setShared(thatb?.share);
+      }
+    );
+  }, [userState]);
+
+  const [startDate, setStartDate] = React.useState<string>("");
+  const [endDate, setEndDate] = React.useState<string>("");
+
+  const handleDateFilter = async (isFilterApplied = false) => {
+    try {
+      const res = await accountService.matchdetail2();
+      // //console.log(res, "maatchh commsion report");
+
+      const allms = res?.data?.data?.matches;
+
+      const filtered = allms.filter((m: any) => m.matchId == maid);
+      // //console.log(filtered,"filterretedbets")
+      // //console.log(filtered[0].ledgers);
+
+      // setmarketData(filtered[0].ledgers);
+      const rawData = filtered[0]?.ledgers?.filter(
+        (m: any) => m.parentName == userState?.user?.username
+      );
+
+      const filteredData = filtered[0]?.ledgers;
+
+      const grouped: Record<string, GroupedLedger & { updownTotal: number }> =
+        {};
+
+      filteredData.forEach((item: any) => {
+        const childId: string = item?.ChildId ? item?.ChildId : item?.ParentId;
+        //               const childId: string | null = item.ChildId ? item.ChildId : item.ParentId;
+
+        //   // ✅ Skip entry if childId is missing/null/undefined
+        //   if (!childId) return;
+        const isFancy: boolean = item.Fancy;
+        const money: number = Number(item.fammount) || 0;
+        const commissionn: any = Number(item.commissiondega) || 0;
+        const updown: number = Number(item.umoney) || 0;
+
+        if (!grouped[childId]) {
+          grouped[childId] = {
+            username: item.username,
+            cname: item.cname,
+            ss: item.superShare,
+            matchPlusMinus: 0,
+            sessionPlusMinus: 0,
+            matchcommision: 0,
+            fancycommmision: 0,
+            updownTotal: 0,
+          };
         }
-    }, [isMobile]);
 
-    const bookFancy: FancyBook = useAppSelector(selectBookFancy)
-    const [book, setBook] = React.useState<Record<string, number>>({})
-    const [isOpen, setIsOpen] = React.useState(false)
-
-    React.useEffect(() => {
-        if (bookFancy.matchId) {
-            bookService.getFancyBook(bookFancy).then((res: AxiosResponse) => {
-                setBook(res.data.data)
-                setIsOpen(true)
-            })
+        if (isFancy) {
+          grouped[childId].sessionPlusMinus += money;
+          grouped[childId].fancycommmision += commissionn;
+        } else {
+          grouped[childId].matchPlusMinus += money;
+          grouped[childId].matchcommision += commissionn;
         }
-    }, [bookFancy])
-    const close = () => {
-        dispatch(setBookFancy({} as FancyBook))
-        setIsOpen(false)
+        grouped[childId].updownTotal += updown;
+      });
+
+      const finalTotals = {
+        match: 0,
+        session: 0,
+        mCom: 0,
+        sCom: 0,
+        tCom: 0,
+        gTotal: 0,
+        upDownShare: 0,
+        balance: 0,
+      };
+
+      const finalLedger: any = Object.entries(grouped).map(
+        ([ChildId, values]) => {
+          //console.log("value", values)
+          // const match = values.matchPlusMinus;
+          // const session = values.sessionPlusMinus;
+          const match = values.matchPlusMinus;
+          const session = values.sessionPlusMinus;
+          const matchc = values.matchcommision;
+          const fancyc = values.fancycommmision;
+          const ctotal: any = matchc + fancyc;
+          const totall = match + session;
+          const total = totall - ctotal;
+
+          // ✅ Accumulate totals here
+          // finalTotals.match += match;
+          // finalTotals.session += session;
+          finalTotals.match += match;
+          finalTotals.session += session;
+          finalTotals.mCom += matchc;
+          finalTotals.sCom += fancyc;
+          finalTotals.tCom += ctotal;
+          finalTotals.gTotal += total;
+          finalTotals.upDownShare += (total * values.ss) / 100;
+          finalTotals.balance += total;
+
+          return {
+            client: values.username,
+            cname: values.cname,
+            ss: values.ss,
+            match,
+            session,
+            totall,
+            mCom: matchc,
+            sCom: fancyc,
+            tCom: ctotal,
+            gTotal: total,
+            upDownShare: (total * values.ss) / 100,
+            balance: values.updownTotal,
+            FinalBal: total - (total * values.ss) / 100,
+          };
+        }
+      );
+      //console.log(finalLedger, "heloo world final ledger is here");
+
+      setLedgerTotal(finalTotals);
+
+      setLedgerData(finalLedger);
+    } catch (err) {
+      console.error("Error filtering ledger by date:", err);
     }
+  };
 
-    return (
-        <>
+  React.useEffect(() => {
+    handleDateFilter(false); // no date filter
+  }, [maid]);
 
+  const [selectedUser, setSelectedUser] = React.useState<string | null>(null);
 
+  const [optionuser, setOptionuser] = React.useState<string>("all");
 
+  const [searchTerm, setSearchTerm] = React.useState("");
 
+  const [ledgerTotal, setLedgerTotal] = React.useState<any>({});
 
+  const showModal = (username: string) => {
+    setSelectedUser(username);
+  };
 
+  const closeModal = () => {
+    setSelectedUser(null);
+  };
 
+  const filteredLedgerData = ledgerData?.filter((row: any) => {
+    const matchOptionUser = optionuser === "all" || row.client === optionuser;
+    const matchSearch = row.client
+      .toLowerCase()
+      .includes(searchTerm.toLowerCase());
+    return matchOptionUser && matchSearch;
+  });
 
+  const [showmatch, setShowmatch] = React.useState(false);
+  const [session, setSession] = React.useState(true);
+  const [plus, setPlus] = React.useState(false);
 
+  React.useEffect(() => {
+    if (!isMobile) {
+      setShowmatch(true);
+      setSession(true);
+      setPlus(true);
+    }
+  }, [isMobile]);
 
-            <div className="container" style={{ marginBottom: "150px" }}>
-                <div className="res-table d-none"></div>
+  const bookFancy: FancyBook = useAppSelector(selectBookFancy);
+  const [book, setBook] = React.useState<Record<string, number>>({});
+  const [isOpen, setIsOpen] = React.useState(false);
 
-                <div className="control-group mt-2 selectize-control single">
-                    <div className="row p-2 d-none">
-                        <div className="col-4 mt-1">
-                            <label className="small"> Start Date</label>
-                            <input
-                                type="date"
-                                className="form-control start_date"
-                                name="start_date"
-                                value={startDate}
-                                onChange={(e) => setStartDate(e.target.value)}
-                            />
-                        </div>
-                        <div className="col-4 mt-1">
-                            <label className="small"> End Date</label>
-                            <input
-                                type="date"
-                                className="form-control end_date"
-                                name="end_date"
-                                value={endDate}
-                                onChange={(e) => setEndDate(e.target.value)}
-                            />
-                        </div>
-                        <div className="col-4 mt-2" style={{ paddingTop: 20 }}>
-                            <button
-                                className="btn btn-info"
-                                onClick={() => handleDateFilter(true)}
-                            >
-                                Submit
-                            </button>
-                        </div>
-                    </div>
+  React.useEffect(() => {
+    if (bookFancy.matchId) {
+      bookService.getFancyBook(bookFancy).then((res: AxiosResponse) => {
+        setBook(res.data.data);
+        setIsOpen(true);
+      });
+    }
+  }, [bookFancy]);
+  const close = () => {
+    dispatch(setBookFancy({} as FancyBook));
+    setIsOpen(false);
+  };
 
-                    {/* <select
+  return (
+    <>
+      <div className="container" style={{ marginBottom: "150px" }}>
+        <div className="res-table d-none"></div>
+
+        <div className="control-group mt-2 selectize-control single">
+          <div className="row p-2 d-none">
+            <div className="col-4 mt-1">
+              <label className="small"> Start Date</label>
+              <input
+                type="date"
+                className="form-control start_date"
+                name="start_date"
+                value={startDate}
+                onChange={(e) => setStartDate(e.target.value)}
+              />
+            </div>
+            <div className="col-4 mt-1">
+              <label className="small"> End Date</label>
+              <input
+                type="date"
+                className="form-control end_date"
+                name="end_date"
+                value={endDate}
+                onChange={(e) => setEndDate(e.target.value)}
+              />
+            </div>
+            <div className="col-4 mt-2" style={{ paddingTop: 20 }}>
+              <button
+                className="btn btn-info"
+                onClick={() => handleDateFilter(true)}
+              >
+                Submit
+              </button>
+            </div>
+          </div>
+
+          {/* <select
             id="select-tools-sa"
             className="selectized selectize-input ng-valid ng-not-empty ng-dirty ng-valid-parse ng-touched d-non"
             value={optionuser}
@@ -439,196 +430,208 @@ const ClientBetsUser = () => {
             ))}
           </select> */}
 
-                    <div className="row mt-2 d-none">
-                        <div className="col-sm-12 col-md-6"></div>
-                        <div className="col-sm-12 col-md-6">
-                            <div id="DataTables_Table_0_filter" className="dataTables_filter">
-                                <label>
-                                    Search:
-                                    <input
-                                        type="search"
-                                        className="form-control form-control-sm"
-                                        placeholder=""
-                                        value={searchTerm}
-                                        onChange={(e) => setSearchTerm(e.target.value)}
-                                    />
-                                </label>
-                            </div>
-                        </div>
-                    </div>
-                </div>
+          <div className="row mt-2 d-none">
+            <div className="col-sm-12 col-md-6"></div>
+            <div className="col-sm-12 col-md-6">
+              <div id="DataTables_Table_0_filter" className="dataTables_filter">
+                <label>
+                  Search:
+                  <input
+                    type="search"
+                    className="form-control form-control-sm"
+                    placeholder=""
+                    value={searchTerm}
+                    onChange={(e) => setSearchTerm(e.target.value)}
+                  />
+                </label>
+              </div>
+            </div>
+          </div>
+        </div>
 
-                <div className="row d-none">
-                    <div className="col-md-6">
-                        <table
-                            className="table table-striped table-bordered"
-                            style={{ width: "100%" }}
+        <div className="row d-none">
+          <div className="col-md-6">
+            <table
+              className="table table-striped table-bordered"
+              style={{ width: "100%" }}
+            >
+              <thead>
+                <tr>
+                  <th className="pt-1 pb-1">Team</th>
+                  <th className="pt-1 pb-1">Amount</th>
+                </tr>
+              </thead>
+              <tbody>
+                {stack && (
+                  <>
+                    {stack?.map((team, index) => (
+                      <tr key={index}>
+                        <td className="pt-1 pb-1">{team?.runnerName}</td>
+                        <td
+                          className={`pt-1 pb-1 ${
+                            ((team?.totalStack || 0) +
+                              (team?.profitLoss || 0)) *
+                              (shared * 0.01) >
+                            0
+                              ? "text-red-500"
+                              : "text-green-500"
+                          }`}
                         >
-                            <thead>
-                                <tr>
-                                    <th className="pt-1 pb-1">Team</th>
-                                    <th className="pt-1 pb-1">Amount</th>
-                                </tr>
-                            </thead>
-                            <tbody>
-                                {stack && (
-                                    <>
-                                        {stack?.map((team, index) => (
-                                            <tr key={index}>
-                                                <td className="pt-1 pb-1">{team?.runnerName}</td>
-                                                <td
-                                                    className={`pt-1 pb-1 ${(((team?.totalStack || 0) + (team?.profitLoss || 0)) * (shared * 0.01)) > 0
-                                                        ? "text-red-500"
-                                                        : "text-green-500"
-                                                        }`}
-                                                >
-                                                    {/* <p>{team?.profitLoss}</p> */}
-                                                    {(((team?.totalStack || 0) + (team?.profitLoss || 0)) * (shared * 0.01)).toFixed(2)}
+                          {/* <p>{team?.profitLoss}</p> */}
+                          {(
+                            ((team?.totalStack || 0) +
+                              (team?.profitLoss || 0)) *
+                            (shared * 0.01)
+                          ).toFixed(2)}
+                        </td>{" "}
+                        {/* Or any amount if available */}
+                      </tr>
+                    ))}
+                  </>
+                )}
+              </tbody>
+            </table>
+          </div>
+        </div>
 
-                                                </td>{" "}
-                                                {/* Or any amount if available */}
-                                            </tr>
-                                        ))}
-                                    </>
-                                )}
-                            </tbody>
-                        </table>
-                    </div>
-                </div>
+        <div className="md:flex grid gap-2 md:mb-40 mb-2 ">
+          <div className="card md:mt-0 ">
+            {isMobile ? (
+              <button
+                onClick={() => {
+                  setSession(false);
+                  setShowmatch(!showmatch);
+                  setPlus(false);
+                }}
+                className="card-header p-0 text-center mb-2"
+              >
+                Display Match Bet
+              </button>
+            ) : (
+              <div className="card-header p-0 text-center">MATCH</div>
+            )}
+            {isMobile ? (
+              <button
+                onClick={() => {
+                  setSession(!session);
+                  setShowmatch(false);
+                  setPlus(false);
+                }}
+                className="card-header p-0 text-center w-100 mb-2"
+              >
+                Display Session Bet
+              </button>
+            ) : (
+              ""
+            )}
 
-                <div className="md:flex grid gap-2 md:mb-40 mb-2 ">
-                    <div className="card md:mt-0 ">
-                        {isMobile ? (
+            {isMobile ? (
+              <button
+                onClick={() => {
+                  setSession(false);
+                  setShowmatch(false);
+                  setPlus(!plus);
+                }}
+                className="card-header p-0 text-center w-100 mb-2"
+              >
+                Match & Session Plus Minus
+              </button>
+            ) : (
+              ""
+            )}
+            {showmatch ? (
+              <div
+                style={{ height: "100vh", backgroundColor: "#F4EED0" }}
+                className="card-body p-0 overflow-x-scroll overflow-y-scroll"
+              >
+                <table className="table table-striped table-bordered table-hover">
+                  <thead className="small">
+                    <tr>
+                      <th className="pt-0 pb-0">Client</th>
+                      <th className="pt-0 pb-0">Amount</th>
+                      <th className="pt-0 pb-0">Rate</th>
+                      <th className="pt-0 pb-0">-</th>
+                      {/* <th className="pt-0 pb-0">PnL</th> */}
+
+                      <th className="pt-0 pb-0">Date</th>
+                      {userState?.user?.role == "admin" && (
+                        <th className="pt-0 pb-0">IP</th>
+                      )}
+                    </tr>
+                  </thead>
+                  <tbody className="small">
+                    {marketonlymatch?.map((bet, index) => (
+                      <tr key={index}>
+                        <td
+                          style={{
+                            fontSize: "10px",
+                            minWidth: "180px",
+                            whiteSpace: "normal",
+                            wordBreak: "break-word",
+                          }}
+                          className="p-1 pt-2"
+                        >
+                          {bet?.parentData
+                            ?.slice(
+                              bet?.parentData.indexOf(userState.user.username) +
+                                1
+                            )
+                            .join("/")}
+                          /{bet?.userName}/({bet?.userCode})
+                        </td>
+                        <td
+                          className={`pt-2 pb-1 ${
+                            bet?.profitLoss < 0
+                              ? "text-black-500"
+                              : "text-black-500"
+                          }`}
+                        >
+                          {bet?.stack}
+                        </td>
+                        <td className="pt-2 pb-1">
+                          {(bet?.odds * 100 - 100).toFixed(2)}
+                        </td>
+                        <td className="pt-2 pb-1">
+                          {bet?.isBack ? (
                             <button
-                                onClick={() => {
-                                    setSession(false);
-                                    setShowmatch(!showmatch);
-                                    setPlus(false);
-                                }}
-                                className="card-header p-0 text-center mb-2"
+                              className="btn-yes btn btn-sm p-1 ng-scope gap-1 d-flex"
+                              style={{ fontSize: "xx-small" }}
                             >
-                                Display Match Bet
+                              <span
+                                className="badge badge-light"
+                                style={{ fontSize: "xx-small" }}
+                              >
+                                L
+                              </span>
+                              <span
+                                className="badge badge-light"
+                                style={{ fontSize: "xx-small" }}
+                              >
+                                {bet.selectionName}
+                              </span>
                             </button>
-                        ) : (
-                            <div className="card-header p-0 text-center">MATCH</div>
-                        )}
-                        {isMobile ? (
+                          ) : (
                             <button
-                                onClick={() => {
-                                    setSession(!session);
-                                    setShowmatch(false);
-                                    setPlus(false);
-                                }}
-
-                                className="card-header p-0 text-center w-100 mb-2"
+                              className="btn-not btn btn-sm p-1 gap-1 d-flex"
+                              style={{ fontSize: "xx-small" }}
                             >
-                                Display Session Bet
+                              <span
+                                className="badge badge-light"
+                                style={{ fontSize: "xx-small" }}
+                              >
+                                K
+                              </span>
+                              <span
+                                className="badge badge-light"
+                                style={{ fontSize: "xx-small" }}
+                              >
+                                {bet.selectionName}
+                              </span>{" "}
                             </button>
-                        ) : (
-                            ""
-                        )}
+                          )}
+                        </td>
 
-                        {isMobile ? (
-                            <button
-                                onClick={() => {
-                                    setSession(false);
-                                    setShowmatch(false);
-                                    setPlus(!plus);
-                                }}
-
-                                className="card-header p-0 text-center w-100 mb-2"
-                            >
-                                Match & Session Plus Minus
-                            </button>
-                        ) : (
-                            ""
-                        )}
-                        {showmatch ? (
-                            <div
-                                style={{ height: "100vh", backgroundColor: "#F4EED0" }}
-                                className="card-body p-0 overflow-x-scroll overflow-y-scroll"
-                            >
-                                <table className="table table-striped table-bordered table-hover">
-                                    <thead className="small">
-                                        <tr>
-                                            <th className="pt-0 pb-0">Client</th>
-                                            <th className="pt-0 pb-0">Amount</th>
-                                            <th className="pt-0 pb-0">Rate</th>
-                                            <th className="pt-0 pb-0">-</th>
-                                            {/* <th className="pt-0 pb-0">PnL</th> */}
-
-                                            <th className="pt-0 pb-0">Date</th>
-                                           {userState?.user?.role == "admin" && <th className="pt-0 pb-0">IP</th>}
-                                        </tr>
-                                    </thead>
-                                    <tbody className="small">
-                                        {marketonlymatch?.map((bet, index) => (
-                                            <tr key={index}>
-                                                <td style={{
-                                                    fontSize: "10px",
-                                                    minWidth: "180px",
-                                                    whiteSpace: "normal",
-                                                    wordBreak: "break-word",
-                                                }} className="p-1 pt-2">
-                                                    {
-                                                        bet?.parentData
-                                                            ?.slice(
-                                                                bet?.parentData.indexOf(userState.user.username) + 1
-                                                            )
-                                                            .join("/")
-                                                    }
-                                                    /{bet?.userName}/({bet?.userCode})
-                                                </td>
-                                                <td
-                                                    className={`pt-2 pb-1 ${bet?.profitLoss < 0
-                                                        ? "text-black-500"
-                                                        : "text-black-500"
-                                                        }`}
-                                                >
-                                                    {bet?.stack}
-                                                </td>
-                                                <td className="pt-2 pb-1">{(bet?.odds * 100 - 100).toFixed(2)}</td>
-                                                <td className="pt-2 pb-1">
-                                                    {bet?.isBack ? (
-                                                        <button
-                                                            className="btn-yes btn btn-sm p-1 ng-scope gap-1 d-flex"
-                                                            style={{ fontSize: "xx-small" }}
-                                                        >
-                                                            <span
-                                                                className="badge badge-light"
-                                                                style={{ fontSize: "xx-small" }}
-                                                            >
-                                                                L
-                                                            </span>
-                                                            <span
-                                                                className="badge badge-light"
-                                                                style={{ fontSize: "xx-small" }}
-                                                            >
-                                                                {bet.selectionName}
-                                                            </span>
-                                                        </button>
-                                                    ) : (
-                                                        <button
-                                                            className="btn-not btn btn-sm p-1 gap-1 d-flex"
-                                                            style={{ fontSize: "xx-small" }}
-                                                        >
-                                                            <span
-                                                                className="badge badge-light"
-                                                                style={{ fontSize: "xx-small" }}
-                                                            >
-                                                                K
-                                                            </span>
-                                                            <span
-                                                                className="badge badge-light"
-                                                                style={{ fontSize: "xx-small" }}
-                                                            >
-                                                                {bet.selectionName}
-                                                            </span>{" "}
-                                                        </button>
-                                                    )}
-                                                </td>
-
-                                                {/* <td className="text-center pt-1 pb-1">
+                        {/* <td className="text-center pt-1 pb-1">
               {bet.action === 0 && (
                 <button className="btn-yes btn btn-sm p-1" style={{ fontSize: 'xx-small' }}>
                   <span className="badge badge-action" style={{ fontSize: 'xx-small' }}>L</span>
@@ -643,7 +646,7 @@ const ClientBetsUser = () => {
               )}
             </td> */}
 
-                                                {/* <td
+                        {/* <td
                                                     className={`pt-2 pb-1 ${bet?.profitLoss < 0
                                                         ? "text-red-500"
                                                         : "text-green-500"
@@ -651,32 +654,35 @@ const ClientBetsUser = () => {
                                                 >
                                                     {(bet?.profitLoss)?.toFixed()}
                                                 </td> */}
-                                                <td
-                                                    className="pt-2 pb-1 text-nowrap"
-                                                    style={{ fontSize: "xx-small" }}
-                                                >
-                                                    {/* {moment(bet?.betClickTime).format(betDateFormat)} */}
-                                                    {moment.utc(bet?.betClickTime).format("MMMM Do, h:mm:ss A")}
-
-                                                </td>
-                                               {userState?.user?.role == "admin" && <td
-                                                    className="pt-2 pb-1"
-                                                    style={{ fontSize: "xx-small" }}
-                                                >
-                                                    {bet?.userIp?.split(":")}
-                                                </td>}
-                                            </tr>
-                                        ))}
-                                    </tbody>
-                                </table>
-                            </div>
-                        ) : (
-                            ""
+                        <td
+                          className="pt-2 pb-1 text-nowrap"
+                          style={{ fontSize: "xx-small" }}
+                        >
+                          {/* {moment(bet?.betClickTime).format(betDateFormat)} */}
+                          {moment
+                            .utc(bet?.betClickTime)
+                            .format("MMMM Do, h:mm:ss A")}
+                        </td>
+                        {userState?.user?.role == "admin" && (
+                          <td
+                            className="pt-2 pb-1"
+                            style={{ fontSize: "xx-small" }}
+                          >
+                            {bet?.userIp?.split(":")}
+                          </td>
                         )}
-                    </div>
+                      </tr>
+                    ))}
+                  </tbody>
+                </table>
+              </div>
+            ) : (
+              ""
+            )}
+          </div>
 
-                    <div>
-                        {/* {isMobile ? (
+          <div>
+            {/* {isMobile ? (
                             <button
                                 onClick={() => setSession(!session)}
                                 className="card-header p-0 text-center w-100"
@@ -687,145 +693,174 @@ const ClientBetsUser = () => {
                             ""
                         )} */}
 
-                        {session ? (
-                            <div className="card-heade p-0 mb-20 " id="headig">
-                                {[
-                                    //@ts-expect-error
-                                    ...new Map(
-                                        marketonlyf?.map((item) => [item?.selectionId, item])
-                                    ).values(),
-                                ]
-                                    // ⭐ RESULT WALI FANCY NEECHHE, BINA RESULT WALI UPAR
-                                    .sort((a: any, b: any) => {
-                                        const aHasResult = a?.fancy?.result ? 1 : 0;
-                                        const bHasResult = b?.fancy?.result ? 1 : 0;
-                                        return aHasResult - bHasResult;
-                                    }).map((bet, index) => {
+            {session ? (
+              <div className="card-heade p-0 mb-20 " id="headig">
+                {[
+                  //@ts-expect-error
+                  ...new Map(
+                    marketonlyf?.map((item) => [item?.selectionId, item])
+                  ).values(),
+                ]
+                  // ⭐ RESULT WALI FANCY NEECHHE, BINA RESULT WALI UPAR
+                  .sort((a: any, b: any) => {
+                    const aHasResult = a?.fancy?.result ? 1 : 0;
+                    const bHasResult = b?.fancy?.result ? 1 : 0;
+                    return aHasResult - bHasResult;
+                  })
+                  .map((bet, index) => {
+                    // ⭐ ADD — Total P/L Code
+                    const totalPL = marketonlyf
+                      ?.filter((x) => x.selectionId === bet?.selectionId)
+                      ?.reduce((acc, curr) => acc + (curr?.profitLoss || 0), 0);
 
-                                        // ⭐ ADD — Total P/L Code
-                                        const totalPL = marketonlyf
-                                            ?.filter(x => x.selectionId === bet?.selectionId)
-                                            ?.reduce((acc, curr) => acc + (curr?.profitLoss || 0), 0);
+                    return (
+                      <>
+                        <h6 className="mb-2" key={bet?.selectionId}>
+                          <button
+                            onClick={() => {
+                              setSendid((prev) =>
+                                prev === bet?.selectionId
+                                  ? null
+                                  : bet?.selectionId
+                              );
 
-                                        return (
-                                            <>
-                                                <h6 className="mb-2" key={bet?.selectionId}>
-                                                    <button
-                                                        onClick={() => {
-                                                            setSendid((prev) =>
-                                                                prev === bet?.selectionId ? null : bet?.selectionId
-                                                            );
+                              dispatch(
+                                setBookFancy({
+                                  matchId: bet?.matchId,
+                                  selectionId: bet?.selectionId,
+                                  marketName: bet?.selectionName,
+                                })
+                              );
+                            }}
+                            className="p-2 small badge navbar-bet99 w-100 text-left border text-dark ng-binding"
+                          >
+                            {bet?.selectionName}
+                            <span
+                              className="badge float-right ml-2"
+                              style={{
+                                background: totalPL < 0 ? "green" : "red",
+                                color: "white",
+                              }}
+                            >
+                              {totalPL}
+                            </span>
+                            <span className="badge badge-light float-right ng-binding ng-scope">
+                              {/* {bet?.declared === 1 && ( */}
+                              <i className="fas fa-trophy"></i>
+                              {bet?.fancy?.result ? bet?.fancy?.result : ""}
+                              {/* // )} */}
+                            </span>
+                          </button>
+                        </h6>
+                        {sendid === bet?.selectionId && (
+                          <>
+                            <div className="card mb-2">
+                              <div className="card-body p-0">
+                                <table className="table table-striped table-bordered table-hover">
+                                  <thead className="small">
+                                    <tr>
+                                      <th className="pt-0 pb-0">Client</th>
+                                      <th className="pt-0 pb-0">-</th>
+                                      {/* <th className="pt-0 pb-0">Rate</th> */}
 
-                                                            dispatch(
-                                                                setBookFancy({
-                                                                    matchId: bet?.matchId,
-                                                                    selectionId: bet?.selectionId,
-                                                                    marketName: bet?.selectionName,
-                                                                })
-                                                            );
-                                                        }}
+                                      <th className="pt-0 pb-0">-</th>
+                                      {bet?.status == "pending" && (
+                                        <th className="pt-0 pb-0">Amount</th>
+                                      )}
+                                      {bet?.status == "completed" && (
+                                        <th className="pt-0 pb-0">PnL</th>
+                                      )}
 
-                                                        className="p-2 small badge navbar-bet99 w-100 text-left border text-dark ng-binding"
-                                                    >
-                                                        {bet?.selectionName}
-                                                        <span
-                                                            className="badge float-right ml-2"
-                                                            style={{
-                                                                background: totalPL < 0 ? "green" : "red",
-                                                                color: "white",
-                                                            }}
-                                                        >
-                                                            {totalPL}
-                                                        </span>
-                                                        <span className="badge badge-light float-right ng-binding ng-scope">
-                                                            {/* {bet?.declared === 1 && ( */}
-                                                            <i className="fas fa-trophy"></i>
-                                                            {bet?.fancy?.result
-                                                                ? bet?.fancy?.result
-                                                                : ''}
-                                                            {/* // )} */}
-                                                        </span>
-                                                    </button>
-                                                </h6>
-                                                {sendid === bet?.selectionId && (
-                                                    <>
-                                                        <div className="card mb-2">
-                                                            <div className="card-body p-0">
-                                                                <table className="table table-striped table-bordered table-hover">
-                                                                    <thead className="small">
-                                                                        <tr>
-                                                                            <th className="pt-0 pb-0">Client</th>
-                                                                            <th className="pt-0 pb-0">-</th>
-                                                                            {/* <th className="pt-0 pb-0">Rate</th> */}
+                                      <th className="pt-0 pb-0">Created</th>
+                                      {userState?.user?.role == "admin" && (
+                                        <th className="pt-0 pb-0">IP</th>
+                                      )}
+                                    </tr>
+                                  </thead>
+                                  <tbody className="small">
+                                    {marketonlyf
+                                      ?.filter(
+                                        (bet) => bet?.selectionId === sendid
+                                      )
+                                      .map((bet, index) => (
+                                        <tr key={index}>
+                                          <td
+                                            style={{
+                                              fontSize: "10px",
+                                              minWidth: "180px",
+                                              whiteSpace: "normal",
+                                              wordBreak: "break-word",
+                                            }}
+                                            className="p-1 pt-2"
+                                          >
+                                            {bet?.parentData
+                                              ?.slice(
+                                                bet?.parentData.indexOf(
+                                                  userState.user.username
+                                                ) + 1
+                                              )
+                                              .join("/")}
+                                            /{bet?.userName}/({bet?.userCode})
+                                          </td>
+                                          <td className="pt-2 pb-1">
+                                            {bet?.odds}
+                                          </td>
+                                          {/* <td className="pt-2 pb-1">{bet?.volume}</td> */}
 
-                                                                            <th className="pt-0 pb-0">-</th>
-                                                                            {bet?.status == "pending" && <th className="pt-0 pb-0">Amount</th>}
-                                                                            {bet?.status == "completed" && <th className="pt-0 pb-0">PnL</th>}
+                                          <td className="pt-2 pb-1">
+                                            {bet?.isBack ? (
+                                              <>
+                                                <button
+                                                  className="btn-yes btn btn-sm p-1 ng-scope d-flex"
+                                                  style={{
+                                                    fontSize: "xx-small",
+                                                  }}
+                                                >
+                                                  <div
+                                                    className="badge badge-light"
+                                                    style={{ fontSize: "14px" }}
+                                                  >
+                                                    YES
+                                                  </div>
+                                                </button>
+                                                <span
+                                                  style={{
+                                                    fontSize: "12px",
+                                                    marginLeft: "5px",
+                                                  }}
+                                                >
+                                                  {bet?.volume}
+                                                </span>
+                                              </>
+                                            ) : (
+                                              <>
+                                                <button
+                                                  className="btn-not btn btn-sm p-1 ng-scope"
+                                                  style={{
+                                                    fontSize: "xx-small",
+                                                    backgroundColor: "red",
+                                                  }}
+                                                >
+                                                  <span
+                                                    className="badge badge-light"
+                                                    style={{ fontSize: "14px" }}
+                                                  >
+                                                    NOT
+                                                  </span>
+                                                </button>
+                                                <span
+                                                  style={{
+                                                    fontSize: "12px",
+                                                    marginLeft: "5px",
+                                                  }}
+                                                >
+                                                  {bet?.volume}
+                                                </span>
+                                              </>
+                                            )}
+                                          </td>
 
-                                                                            <th className="pt-0 pb-0">Created</th>
-                                                                            {userState?.user?.role == "admin" &&<th className="pt-0 pb-0">IP</th>}
-                                                                        </tr>
-                                                                    </thead>
-                                                                    <tbody className="small">
-                                                                        {marketonlyf
-                                                                            ?.filter((bet) => bet?.selectionId === sendid)
-                                                                            .map((bet, index) => (
-                                                                                <tr key={index}>
-                                                                                    <td style={{
-                                                                                        fontSize: "10px",
-                                                                                        minWidth: "180px",
-                                                                                        whiteSpace: "normal",
-                                                                                        wordBreak: "break-word",
-                                                                                    }} className="p-1 pt-2">
-                                                                                        {
-                                                                                            bet?.parentData
-                                                                                                ?.slice(
-                                                                                                    bet?.parentData.indexOf(userState.user.username) + 1
-                                                                                                )
-                                                                                                .join("/")
-                                                                                        }
-                                                                                        /{bet?.userName}/({bet?.userCode})
-                                                                                    </td>
-                                                                                    <td className="pt-2 pb-1">{bet?.odds}</td>
-                                                                                    {/* <td className="pt-2 pb-1">{bet?.volume}</td> */}
-
-                                                                                    <td className="pt-2 pb-1">
-                                                                                        {bet?.isBack ? (
-                                                                                            <>
-                                                                                                <button
-                                                                                                    className="btn-yes btn btn-sm p-1 ng-scope d-flex"
-                                                                                                    style={{ fontSize: "xx-small" }}
-                                                                                                >
-                                                                                                    <div
-                                                                                                        className="badge badge-light"
-                                                                                                        style={{ fontSize: "14px" }}
-                                                                                                    >
-                                                                                                        YES
-
-                                                                                                    </div>
-
-                                                                                                </button>
-                                                                                                <span style={{ fontSize: "12px", marginLeft: "5px" }}>{bet?.volume}</span>
-                                                                                            </>
-                                                                                        ) : (
-                                                                                            <>
-                                                                                                <button
-                                                                                                    className="btn-not btn btn-sm p-1 ng-scope"
-                                                                                                    style={{ fontSize: "xx-small", backgroundColor: "red" }}
-                                                                                                >
-                                                                                                    <span
-                                                                                                        className="badge badge-light"
-                                                                                                        style={{ fontSize: "14px" }}
-                                                                                                    >
-                                                                                                        NOT
-                                                                                                    </span>
-                                                                                                </button>
-                                                                                                <span style={{ fontSize: "12px", marginLeft: "5px" }}>{bet?.volume}</span>
-                                                                                            </>
-                                                                                        )}
-                                                                                    </td>
-
-                                                                                    {/* <td className="text-center pt-1 pb-1">
+                                          {/* <td className="text-center pt-1 pb-1">
       {bet.action === 0 && (
         <button className="btn-yes btn btn-sm p-1" style={{ fontSize: 'xx-small' }}>
           <span className="badge badge-action" style={{ fontSize: 'xx-small' }}>L</span>
@@ -839,50 +874,60 @@ const ClientBetsUser = () => {
         </button>
       )}
     </td> */}
-                                                                                    {bet?.status == "pending" && <td
-                                                                                        className={`pt-2 pb-1 ${bet?.profitLoss < 0
-                                                                                            ? "text-black-500"
-                                                                                            : "text-black-500"
-                                                                                            }`}
-                                                                                    >
-                                                                                        {bet?.stack}
-                                                                                    </td>}
+                                          {bet?.status == "pending" && (
+                                            <td
+                                              className={`pt-2 pb-1 ${
+                                                bet?.profitLoss < 0
+                                                  ? "text-black-500"
+                                                  : "text-black-500"
+                                              }`}
+                                            >
+                                              {bet?.stack}
+                                            </td>
+                                          )}
 
-                                                                                    {bet?.status == "completed" && <td
-                                                                                        className={`pt-2 pb-1 ${bet?.profitLoss < 0
-                                                                                            ? "text-red-500"
-                                                                                            : "text-green-500"
-                                                                                            }`}
-                                                                                    >
-                                                                                        {bet?.profitLoss}
-                                                                                    </td>}
+                                          {bet?.status == "completed" && (
+                                            <td
+                                              className={`pt-2 pb-1 ${
+                                                bet?.profitLoss < 0
+                                                  ? "text-red-500"
+                                                  : "text-green-500"
+                                              }`}
+                                            >
+                                              {bet?.profitLoss}
+                                            </td>
+                                          )}
 
-                                                                                    <td
-                                                                                        className="pt-2 pb-1"
-                                                                                        style={{
-                                                                                            fontSize: "10px",
-                                                                                            minWidth: "30px",
-                                                                                            whiteSpace: "normal",
-                                                                                            wordBreak: "break-word",
-                                                                                        }}
-                                                                                    >
-                                                                                        {moment.utc(bet?.betClickTime).format("DD/MM/YY, h:mm:ss A")}
-
-                                                                                    </td>
-                                                                                    {userState?.user?.role == "admin" &&<td
-                                                                                        className="pt-2 pb-1"
-                                                                                        style={{ fontSize: "xx-small" }}
-                                                                                    >
-                                                                                        {bet?.userIp
-                                                                                            // ?.split(":")
-                                                                                            // ?.slice(0, 4)
-                                                                                            // ?.join(":")
-                                                                                        }
-                                                                                    </td>}
-                                                                                </tr>
-                                                                            ))}
-                                                                    </tbody>
-                                                                    {/* <div className="book-badges">
+                                          <td
+                                            className="pt-2 pb-1"
+                                            style={{
+                                              fontSize: "10px",
+                                              minWidth: "30px",
+                                              whiteSpace: "normal",
+                                              wordBreak: "break-word",
+                                            }}
+                                          >
+                                            {moment
+                                              .utc(bet?.betClickTime)
+                                              .format("DD/MM/YY, h:mm:ss A")}
+                                          </td>
+                                          {userState?.user?.role == "admin" && (
+                                            <td
+                                              className="pt-2 pb-1"
+                                              style={{ fontSize: "xx-small" }}
+                                            >
+                                              {
+                                                bet?.userIp
+                                                // ?.split(":")
+                                                // ?.slice(0, 4)
+                                                // ?.join(":")
+                                              }
+                                            </td>
+                                          )}
+                                        </tr>
+                                      ))}
+                                  </tbody>
+                                  {/* <div className="book-badges">
                                                             {Object.keys(book).length > 0 &&
                                                                 Object.keys(book).map((itemKey) => {
                                                                     const value = book[itemKey];
@@ -903,60 +948,60 @@ const ClientBetsUser = () => {
                                                                     );
                                                                 })}
                                                         </div> */}
-                                                                </table>
-
-                                                            </div>
-
-                                                        </div>
-                                                        <div
-                                                            className="book-badges d-flex flex-wrap gap-2 overflow-auto mt-2 p-2 border rounded"
-                                                        // style={{ maxHeight: "70px" }}
-                                                        >
-                                                            {Object.keys(book).length > 0 &&
-                                                                Object.keys(book).map((itemKey) => {
-                                                                    const value = book[itemKey];
-                                                                    const isLay = value < 0;
-
-                                                                    return (
-                                                                        <div
-                                                                            key={itemKey}
-                                                                            className={`book-badge d-flex align-items-center justify-content-between`}
-                                                                            style={{
-                                                                                minWidth: "60px",
-                                                                                padding: "4px 8px",
-                                                                                borderRadius: "6px", // #dc3545"
-                                                                                fontSize: "12px",
-                                                                                // fontWeight: "500",
-                                                                                color: isLay ? "#141313ff" : "#090909ff",
-                                                                                backgroundColor: isLay ? "#28a745" : "red",
-                                                                            }}
-                                                                        >
-                                                                            <span className="badge-label">{itemKey}</span>
-                                                                            <span className={`badge-value ms-1 `}>
-                                                                                {- value}
-                                                                            </span>
-                                                                        </div>
-                                                                    );
-                                                                })}
-                                                        </div>
-
-
-                                                    </>
-                                                )}
-
-                                            </>
-                                        );
-                                    })}
+                                </table>
+                              </div>
                             </div>
-                        ) : (
-                            ""
+                            <div
+                              className="book-badges d-flex flex-wrap gap-2 overflow-auto mt-2 p-2 border rounded"
+                              // style={{ maxHeight: "70px" }}
+                            >
+                              {Object.keys(book).length > 0 &&
+                                Object.keys(book).map((itemKey) => {
+                                  const value = book[itemKey];
+                                  const isLay = value < 0;
+
+                                  return (
+                                    <div
+                                      key={itemKey}
+                                      className={`book-badge d-flex align-items-center justify-content-between`}
+                                      style={{
+                                        minWidth: "60px",
+                                        padding: "4px 8px",
+                                        borderRadius: "6px", // #dc3545"
+                                        fontSize: "12px",
+                                        // fontWeight: "500",
+                                        color: isLay
+                                          ? "#141313ff"
+                                          : "#090909ff",
+                                        backgroundColor: isLay
+                                          ? "#28a745"
+                                          : "red",
+                                      }}
+                                    >
+                                      <span className="badge-label">
+                                        {itemKey}
+                                      </span>
+                                      <span className={`badge-value ms-1 `}>
+                                        {-value}
+                                      </span>
+                                    </div>
+                                  );
+                                })}
+                            </div>
+                          </>
                         )}
+                      </>
+                    );
+                  })}
+              </div>
+            ) : (
+              ""
+            )}
+          </div>
+        </div>
 
-                    </div>
-                </div>
-
-                <div>
-                    {/* {isMobile ? (
+        <div>
+          {/* {isMobile ? (
                         <button
                             onClick={() => setPlus(!plus)}
                             className="card-header p-0 text-center w-100"
@@ -967,103 +1012,103 @@ const ClientBetsUser = () => {
                         ""
                     )} */}
 
-                    {plus ? (
-                        <div>
-                            <div className="container-fluidh mt-2">
-                                <div className="row">
-                                    <div
-                                        style={{ height: "200px" }}
-                                        className="col-sm-12 overflow-auto "
-                                    >
-                                        <table
-                                            className="table table-striped table-bordered ledger-list downlinepandl dataTable no-footer"
-                                            style={{ width: "100%" }}
-                                            id="DataTables_Table_3"
-                                            role="grid"
-                                        >
-                                            <thead className="small">
-                                                <tr role="row">
-                                                    <th
-                                                        className="navbar-bet99 text-dark pt-2 pb-2 small ng-binding sorting_disabled"
-                                                        rowSpan={1}
-                                                        colSpan={1}
-                                                        style={{ width: "93px" }}
-                                                    >
-                                                        Client
-                                                    </th>
-                                                    <th
-                                                        className="navbar-bet99 text-dark pt-2 pb-2 small sorting_disabled"
-                                                        rowSpan={1}
-                                                        colSpan={1}
-                                                        style={{ width: "59px" }}
-                                                    >
-                                                        Match (+/-)
-                                                    </th>
-                                                    <th
-                                                        className="navbar-bet99 text-dark pt-2 pb-2 small sorting_disabled"
-                                                        rowSpan={1}
-                                                        colSpan={1}
-                                                        style={{ width: "61px" }}
-                                                    >
-                                                        Session (+/-)
-                                                    </th>
-                                                    <th
-                                                        className="navbar-bet99 text-dark pt-2 pb-2 small sorting_disabled"
-                                                        rowSpan={1}
-                                                        colSpan={1}
-                                                        style={{ width: "55px" }}
-                                                    >
-                                                        Total
-                                                    </th>
-                                                    <th
-                                                        className="navbar-bet99 text-dark pt-2 pb-2 small sorting_disabled"
-                                                        rowSpan={1}
-                                                        colSpan={1}
-                                                        style={{ width: "36px" }}
-                                                    >
-                                                        M.Com
-                                                    </th>
-                                                    <th
-                                                        className="navbar-bet99 text-dark pt-2 pb-2 small sorting_disabled"
-                                                        rowSpan={1}
-                                                        colSpan={1}
-                                                        style={{ width: "34px" }}
-                                                    >
-                                                        S.Com
-                                                    </th>
-                                                    <th
-                                                        className="navbar-bet99 text-dark pt-2 pb-2 small sorting_disabled"
-                                                        rowSpan={1}
-                                                        colSpan={1}
-                                                        style={{ width: "33px" }}
-                                                    >
-                                                        T.Com
-                                                    </th>
-                                                    <th
-                                                        className="navbar-bet99 text-dark pt-2 pb-2 small sorting_disabled"
-                                                        rowSpan={1}
-                                                        colSpan={1}
-                                                        style={{ width: "55px" }}
-                                                    >
-                                                        G.Total
-                                                    </th>
-                                                    <th
-                                                        className="navbar-bet99 text-dark pt-2 pb-2 small sorting_disabled"
-                                                        rowSpan={1}
-                                                        colSpan={1}
-                                                        style={{ width: "55px" }}
-                                                    >
-                                                        Up/Down
-                                                    </th>
-                                                    <th
-                                                        className="navbar-bet99 text-dark pt-2 pb-2 small sorting_disabled"
-                                                        rowSpan={1}
-                                                        colSpan={1}
-                                                        style={{ width: "55px" }}
-                                                    >
-                                                        Final
-                                                    </th>
-                                                    {/* <th
+          {plus ? (
+            <div>
+              <div className="container-fluidh mt-2">
+                <div className="row">
+                  <div
+                    style={{ height: "200px" }}
+                    className="col-sm-12 overflow-auto "
+                  >
+                    <table
+                      className="table table-striped table-bordered ledger-list downlinepandl dataTable no-footer"
+                      style={{ width: "100%" }}
+                      id="DataTables_Table_3"
+                      role="grid"
+                    >
+                      <thead className="small">
+                        <tr role="row">
+                          <th
+                            className="navbar-bet99 text-dark pt-2 pb-2 small ng-binding sorting_disabled"
+                            rowSpan={1}
+                            colSpan={1}
+                            style={{ width: "93px" }}
+                          >
+                            Client
+                          </th>
+                          <th
+                            className="navbar-bet99 text-dark pt-2 pb-2 small sorting_disabled"
+                            rowSpan={1}
+                            colSpan={1}
+                            style={{ width: "59px" }}
+                          >
+                            Match (+/-)
+                          </th>
+                          <th
+                            className="navbar-bet99 text-dark pt-2 pb-2 small sorting_disabled"
+                            rowSpan={1}
+                            colSpan={1}
+                            style={{ width: "61px" }}
+                          >
+                            Session (+/-)
+                          </th>
+                          <th
+                            className="navbar-bet99 text-dark pt-2 pb-2 small sorting_disabled"
+                            rowSpan={1}
+                            colSpan={1}
+                            style={{ width: "55px" }}
+                          >
+                            Total
+                          </th>
+                          <th
+                            className="navbar-bet99 text-dark pt-2 pb-2 small sorting_disabled"
+                            rowSpan={1}
+                            colSpan={1}
+                            style={{ width: "36px" }}
+                          >
+                            M.Com
+                          </th>
+                          <th
+                            className="navbar-bet99 text-dark pt-2 pb-2 small sorting_disabled"
+                            rowSpan={1}
+                            colSpan={1}
+                            style={{ width: "34px" }}
+                          >
+                            S.Com
+                          </th>
+                          <th
+                            className="navbar-bet99 text-dark pt-2 pb-2 small sorting_disabled"
+                            rowSpan={1}
+                            colSpan={1}
+                            style={{ width: "33px" }}
+                          >
+                            T.Com
+                          </th>
+                          <th
+                            className="navbar-bet99 text-dark pt-2 pb-2 small sorting_disabled"
+                            rowSpan={1}
+                            colSpan={1}
+                            style={{ width: "55px" }}
+                          >
+                            G.Total
+                          </th>
+                          <th
+                            className="navbar-bet99 text-dark pt-2 pb-2 small sorting_disabled"
+                            rowSpan={1}
+                            colSpan={1}
+                            style={{ width: "55px" }}
+                          >
+                            Up/Down
+                          </th>
+                          <th
+                            className="navbar-bet99 text-dark pt-2 pb-2 small sorting_disabled"
+                            rowSpan={1}
+                            colSpan={1}
+                            style={{ width: "55px" }}
+                          >
+                            Final
+                          </th>
+                          {/* <th
                     className="navbar-bet99 text-dark pt-2 pb-2 small sorting_disabled"
                     rowSpan={1}
                     colSpan={1}
@@ -1079,109 +1124,109 @@ const ClientBetsUser = () => {
                   >
                     FINAL
                   </th> */}
-                                                </tr>
-                                            </thead>
+                        </tr>
+                      </thead>
 
-                                            <tbody className="small">
-                                                {filteredLedgerData.length > 0 ? (
-                                                    filteredLedgerData.map((row: any, index) => (
-                                                        <tr
-                                                            role="row"
-                                                            className={index % 2 === 0 ? "even" : "odd"}
-                                                            key={index}
-                                                        >
-                                                            <td className="ng-scope">
-                                                                {row.client}
-                                                                {`(${row.cname})`}
-                                                            </td>
+                      <tbody className="small">
+                        {filteredLedgerData.length > 0 ? (
+                          filteredLedgerData.map((row: any, index) => (
+                            <tr
+                              role="row"
+                              className={index % 2 === 0 ? "even" : "odd"}
+                              key={index}
+                            >
+                              <td className="ng-scope">
+                                {row.client}
+                                {`(${row.cname})`}
+                              </td>
 
-                                                            <td className="ng-scope">
-                                                                <span
-                                                                    className={
-                                                                        row.match < 0
-                                                                            ? "text-danger"
-                                                                            : "text-success"
-                                                                    }
-                                                                >
-                                                                    {`${row.match.toFixed(2)}`}
-                                                                </span>
-                                                            </td>
+                              <td className="ng-scope">
+                                <span
+                                  className={
+                                    row.match < 0
+                                      ? "text-danger"
+                                      : "text-success"
+                                  }
+                                >
+                                  {`${row.match.toFixed(2)}`}
+                                </span>
+                              </td>
 
-                                                            <td className="ng-scope">
-                                                                <span
-                                                                    className={
-                                                                        row.session < 0
-                                                                            ? "text-danger"
-                                                                            : "text-success"
-                                                                    }
-                                                                >
-                                                                    {`${row.session.toFixed(2)}`}
-                                                                </span>
-                                                            </td>
+                              <td className="ng-scope">
+                                <span
+                                  className={
+                                    row.session < 0
+                                      ? "text-danger"
+                                      : "text-success"
+                                  }
+                                >
+                                  {`${row.session.toFixed(2)}`}
+                                </span>
+                              </td>
 
-                                                            <td className="ng-scope">
-                                                                <span
-                                                                    className={
-                                                                        row.total < 0
-                                                                            ? "text-danger"
-                                                                            : "text-success"
-                                                                    }
-                                                                >
-                                                                    {row.totall.toFixed(2)}
-                                                                </span>
-                                                            </td>
+                              <td className="ng-scope">
+                                <span
+                                  className={
+                                    row.total < 0
+                                      ? "text-danger"
+                                      : "text-success"
+                                  }
+                                >
+                                  {row.totall.toFixed(2)}
+                                </span>
+                              </td>
 
-                                                            <td className="ng-scope">
-                                                                <span className="text-danger">
-                                                                    {row.mCom.toFixed(2)}
-                                                                </span>
-                                                            </td>
-                                                            <td className="ng-scope">
-                                                                <span className="text-danger">
-                                                                    {row.sCom.toFixed(2)}
-                                                                </span>
-                                                            </td>
-                                                            <td className="ng-scope">
-                                                                <span className="text-danger">
-                                                                    {row.tCom.toFixed(2)}
-                                                                </span>
-                                                            </td>
+                              <td className="ng-scope">
+                                <span className="text-danger">
+                                  {row.mCom.toFixed(2)}
+                                </span>
+                              </td>
+                              <td className="ng-scope">
+                                <span className="text-danger">
+                                  {row.sCom.toFixed(2)}
+                                </span>
+                              </td>
+                              <td className="ng-scope">
+                                <span className="text-danger">
+                                  {row.tCom.toFixed(2)}
+                                </span>
+                              </td>
 
-                                                            <td className="ng-scope">
-                                                                <span
-                                                                    className={
-                                                                        row.gTotal < 0
-                                                                            ? "text-danger"
-                                                                            : "text-success"
-                                                                    }
-                                                                >
-                                                                    {row.gTotal.toFixed(2)}
-                                                                </span>
-                                                            </td>
-                                                            <td className="ng-scope">
-                                                                <span
-                                                                    className={
-                                                                        row.gTotal < 0
-                                                                            ? "text-danger"
-                                                                            : "text-success"
-                                                                    }
-                                                                >
-                                                                    {row.upDownShare.toFixed(2)}
-                                                                </span>
-                                                            </td>
-                                                            <td className="ng-scope">
-                                                                <span
-                                                                    className={
-                                                                        row.FinalBal < 0
-                                                                            ? "text-danger"
-                                                                            : "text-success"
-                                                                    }
-                                                                >
-                                                                    {row.FinalBal.toFixed(2)}
-                                                                </span>
-                                                            </td>
+                              <td className="ng-scope">
+                                <span
+                                  className={
+                                    row.gTotal < 0
+                                      ? "text-danger"
+                                      : "text-success"
+                                  }
+                                >
+                                  {row.gTotal.toFixed(2)}
+                                </span>
+                              </td>
+                              <td className="ng-scope">
+                                <span
+                                  className={
+                                    row.gTotal < 0
+                                      ? "text-danger"
+                                      : "text-success"
+                                  }
+                                >
+                                  {row.upDownShare.toFixed(2)}
+                                </span>
+                              </td>
+                              <td className="ng-scope">
+                                <span
+                                  className={
+                                    row.FinalBal < 0
+                                      ? "text-danger"
+                                      : "text-success"
+                                  }
+                                >
+                                  {row.FinalBal.toFixed(2)}
+                                </span>
+                              </td>
 
-                                                            {/* <td className="ng-scope">
+                              {/* <td className="ng-scope">
                         <span
                           className={
                             row.upDownShare < 0 ? "text-danger" : "text-success"
@@ -1193,7 +1238,7 @@ const ClientBetsUser = () => {
                         </span>
                       </td> */}
 
-                                                            {/* <td className="ng-scope">
+                              {/* <td className="ng-scope">
                         <span
                           className={
                             row.balance < 0 ? "text-danger" : "text-success"
@@ -1205,186 +1250,188 @@ const ClientBetsUser = () => {
                         </span>
                       </td> */}
 
-                                                            <td className="d-none">
-                                                                <button
-                                                                    onClick={() => showModal(row.client)}
-                                                                    title="Details"
-                                                                    className="btn-view-details btn btn-warning btn-sm small m-0"
-                                                                >
-                                                                    <i className="fas fa-window-maximize"></i>
-                                                                </button>
-                                                            </td>
-
-                                                            {selectedUser && (
-                                                                <div className="absolute w-full container-fluidx top-0 left-0 bg-white z-50 p-3 border shadow-lg">
-                                                                    <button
-                                                                        onClick={closeModal}
-                                                                        type="button"
-                                                                        className="close"
-                                                                        data-dismiss="modal"
-                                                                        aria-label="Close"
-                                                                    >
-                                                                        <span aria-hidden="true">×</span>
-                                                                    </button>
-                                                                    {/* <ReportModal data={selectedUser} /> */}
-                                                                </div>
-                                                            )}
-                                                        </tr>
-                                                    ))
-                                                ) : (
-                                                    <tr>
-                                                        <td colSpan={11} className="text-center text-muted">
-                                                            No user found
-                                                        </td>
-                                                    </tr>
-                                                )}
-                                            </tbody>
-                                        </table>
-                                    </div>
-                                </div>
-                            </div>
-
-                            <div
-                                className="card-body bg-light p-0"
-                                style={{
-                                    position: "fixed",
-                                    zIndex: "50",
-                                    bottom: "0px",
-                                    left: "0px",
-                                    width: "100%",
-                                    overflow: "auto",
-                                }}
-                            >
-                                <table
-                                    className="table table-striped table-bordered p-0 m-0"
-                                    style={{ width: "100%" }}
+                              <td className="d-none">
+                                <button
+                                  onClick={() => showModal(row.client)}
+                                  title="Details"
+                                  className="btn-view-details btn btn-warning btn-sm small m-0"
                                 >
-                                    <thead className="small">
-                                        <tr>
-                                            <th className="navbar-bet99 text-dark pt-1 pb-1 small">
-                                                -
-                                            </th>
-                                            <th className="navbar-bet99 text-dark pt-1 pb-1 small">
-                                                Match (+/-)
-                                            </th>
-                                            <th className="navbar-bet99 text-dark pt-1 pb-1 small">
-                                                Session (+/-)
-                                            </th>
-                                            <th className="navbar-bet99 text-dark pt-1 pb-1 small">
-                                                Total
-                                            </th>
-                                            <th className="navbar-bet99 text-dark pt-1 pb-1 small">
-                                                M.Com
-                                            </th>
-                                            <th className="navbar-bet99 text-dark pt-1 pb-1 small">
-                                                S.Com
-                                            </th>
-                                            <th className="navbar-bet99 text-dark pt-1 pb-1 small">
-                                                T.Com
-                                            </th>
-                                            <th className="navbar-bet99 text-dark pt-1 pb-1 small">
-                                                G. Total
-                                            </th>
-                                            <th className="navbar-bet99 text-dark pt-1 pb-1 small">
-                                                Up/Down
-                                            </th>
-                                            <th className="navbar-bet99 text-dark pt-1 pb-1 small">
-                                                Final
-                                            </th>
-                                        </tr>
-                                    </thead>
-                                    <tbody>
-                                        <tr>
-                                            <td className="pt-1 pb-1">
-                                                <strong>TOTAL</strong>
-                                            </td>
-                                            <td className="pt-1 pb-1">
-                                                <span
-                                                    ng-class="totalPandL.net_p_l_odds > 0 ? 'text-success' : 'text-danger'"
-                                                    className="ng-binding text-success"
-                                                >
-                                                    {ledgerTotal?.match?.toFixed(2)}
-                                                </span>
-                                            </td>
-                                            <td className="pt-1 pb-1">
-                                                <span
-                                                    ng-class="totalPandL.net_p_l_session > 0 ? 'text-success' : 'text-danger'"
-                                                    className="ng-binding text-danger"
-                                                >
-                                                    {ledgerTotal?.session?.toFixed(2)}
-                                                </span>
-                                            </td>
-                                            <td className="pt-1 pb-1">
-                                                <span
-                                                    ng-class="totalPandL.total_pandl > 0 ? 'text-success' : 'text-danger'"
-                                                    className="ng-binding text-success"
-                                                >
-                                                    {(ledgerTotal?.match + ledgerTotal?.session).toFixed(
-                                                        2
-                                                    )}
-                                                </span>
-                                            </td>
-                                            <td className="pt-1 pb-1">
-                                                <span
-                                                    ng-class="totalPandL.match_comm > 0 ? 'text-danger' : 'text-danger'"
-                                                    className="ng-binding text-danger"
-                                                >
-                                                    {ledgerTotal?.mCom?.toFixed(2)}
-                                                </span>
-                                            </td>
-                                            <td className="pt-1 pb-1">
-                                                <span
-                                                    ng-class="totalPandL.sess_comm > 0 ? 'text-danger' : 'text-danger'"
-                                                    className="ng-binding text-danger"
-                                                >
-                                                    {ledgerTotal?.sCom?.toFixed(2)}
-                                                </span>
-                                            </td>
-                                            <td className="pt-1 pb-1">
-                                                <span
-                                                    ng-class="totalPandL.total_comm > 0 ? 'text-danger' : 'text-danger'"
-                                                    className="ng-binding text-danger"
-                                                >
-                                                    {ledgerTotal?.tCom?.toFixed(2)}
-                                                </span>
-                                            </td>
-                                            <td className="pt-1 pb-1">
-                                                <span
-                                                    ng-class="totalPandL.total_amount > 0 ? 'text-success' : 'text-danger'"
-                                                    className="ng-binding text-danger"
-                                                >
-                                                    {ledgerTotal?.gTotal?.toFixed(2)}
-                                                </span>
-                                            </td>
-                                            <td className="pt-1 pb-1">
-                                                <span
-                                                    ng-class="totalPandL.my_share > 0 ? 'text-success' : 'text-danger'"
-                                                    className="ng-binding text-danger"
-                                                >
-                                                    {ledgerTotal?.upDownShare?.toFixed(2)}
-                                                </span>
-                                            </td>
-                                            <td className="pt-1 pb-1">
-                                                <span
-                                                    ng-class="totalPandL.net_amt > 0 ? 'text-success' : 'text-danger'"
-                                                    className="ng-binding text-danger"
-                                                >
-                                                    {(ledgerTotal?.balance?.toFixed(2) - ledgerTotal?.upDownShare?.toFixed(2)).toFixed(2)}
+                                  <i className="fas fa-window-maximize"></i>
+                                </button>
+                              </td>
 
-                                                </span>
-                                            </td>
-                                        </tr>
-                                    </tbody>
-                                </table>
-                            </div>
-                        </div>
-                    ) : (
-                        ""
-                    )}
+                              {selectedUser && (
+                                <div className="absolute w-full container-fluidx top-0 left-0 bg-white z-50 p-3 border shadow-lg">
+                                  <button
+                                    onClick={closeModal}
+                                    type="button"
+                                    className="close"
+                                    data-dismiss="modal"
+                                    aria-label="Close"
+                                  >
+                                    <span aria-hidden="true">×</span>
+                                  </button>
+                                  {/* <ReportModal data={selectedUser} /> */}
+                                </div>
+                              )}
+                            </tr>
+                          ))
+                        ) : (
+                          <tr>
+                            <td colSpan={11} className="text-center text-muted">
+                              No user found
+                            </td>
+                          </tr>
+                        )}
+                      </tbody>
+                    </table>
+                  </div>
                 </div>
+              </div>
+
+              <div
+                className="card-body bg-light p-0"
+                style={{
+                  position: "fixed",
+                  zIndex: "50",
+                  bottom: "0px",
+                  left: "0px",
+                  width: "100%",
+                  overflow: "auto",
+                }}
+              >
+                <table
+                  className="table table-striped table-bordered p-0 m-0"
+                  style={{ width: "100%" }}
+                >
+                  <thead className="small">
+                    <tr>
+                      <th className="navbar-bet99 text-dark pt-1 pb-1 small">
+                        -
+                      </th>
+                      <th className="navbar-bet99 text-dark pt-1 pb-1 small">
+                        Match (+/-)
+                      </th>
+                      <th className="navbar-bet99 text-dark pt-1 pb-1 small">
+                        Session (+/-)
+                      </th>
+                      <th className="navbar-bet99 text-dark pt-1 pb-1 small">
+                        Total
+                      </th>
+                      <th className="navbar-bet99 text-dark pt-1 pb-1 small">
+                        M.Com
+                      </th>
+                      <th className="navbar-bet99 text-dark pt-1 pb-1 small">
+                        S.Com
+                      </th>
+                      <th className="navbar-bet99 text-dark pt-1 pb-1 small">
+                        T.Com
+                      </th>
+                      <th className="navbar-bet99 text-dark pt-1 pb-1 small">
+                        G. Total
+                      </th>
+                      <th className="navbar-bet99 text-dark pt-1 pb-1 small">
+                        Up/Down
+                      </th>
+                      <th className="navbar-bet99 text-dark pt-1 pb-1 small">
+                        Final
+                      </th>
+                    </tr>
+                  </thead>
+                  <tbody>
+                    <tr>
+                      <td className="pt-1 pb-1">
+                        <strong>TOTAL</strong>
+                      </td>
+                      <td className="pt-1 pb-1">
+                        <span
+                          ng-class="totalPandL.net_p_l_odds > 0 ? 'text-success' : 'text-danger'"
+                          className="ng-binding text-success"
+                        >
+                          {ledgerTotal?.match?.toFixed(2)}
+                        </span>
+                      </td>
+                      <td className="pt-1 pb-1">
+                        <span
+                          ng-class="totalPandL.net_p_l_session > 0 ? 'text-success' : 'text-danger'"
+                          className="ng-binding text-danger"
+                        >
+                          {ledgerTotal?.session?.toFixed(2)}
+                        </span>
+                      </td>
+                      <td className="pt-1 pb-1">
+                        <span
+                          ng-class="totalPandL.total_pandl > 0 ? 'text-success' : 'text-danger'"
+                          className="ng-binding text-success"
+                        >
+                          {(ledgerTotal?.match + ledgerTotal?.session).toFixed(
+                            2
+                          )}
+                        </span>
+                      </td>
+                      <td className="pt-1 pb-1">
+                        <span
+                          ng-class="totalPandL.match_comm > 0 ? 'text-danger' : 'text-danger'"
+                          className="ng-binding text-danger"
+                        >
+                          {ledgerTotal?.mCom?.toFixed(2)}
+                        </span>
+                      </td>
+                      <td className="pt-1 pb-1">
+                        <span
+                          ng-class="totalPandL.sess_comm > 0 ? 'text-danger' : 'text-danger'"
+                          className="ng-binding text-danger"
+                        >
+                          {ledgerTotal?.sCom?.toFixed(2)}
+                        </span>
+                      </td>
+                      <td className="pt-1 pb-1">
+                        <span
+                          ng-class="totalPandL.total_comm > 0 ? 'text-danger' : 'text-danger'"
+                          className="ng-binding text-danger"
+                        >
+                          {ledgerTotal?.tCom?.toFixed(2)}
+                        </span>
+                      </td>
+                      <td className="pt-1 pb-1">
+                        <span
+                          ng-class="totalPandL.total_amount > 0 ? 'text-success' : 'text-danger'"
+                          className="ng-binding text-danger"
+                        >
+                          {ledgerTotal?.gTotal?.toFixed(2)}
+                        </span>
+                      </td>
+                      <td className="pt-1 pb-1">
+                        <span
+                          ng-class="totalPandL.my_share > 0 ? 'text-success' : 'text-danger'"
+                          className="ng-binding text-danger"
+                        >
+                          {ledgerTotal?.upDownShare?.toFixed(2)}
+                        </span>
+                      </td>
+                      <td className="pt-1 pb-1">
+                        <span
+                          ng-class="totalPandL.net_amt > 0 ? 'text-success' : 'text-danger'"
+                          className="ng-binding text-danger"
+                        >
+                          {(
+                            ledgerTotal?.balance?.toFixed(2) -
+                            ledgerTotal?.upDownShare?.toFixed(2)
+                          ).toFixed(2)}
+                        </span>
+                      </td>
+                    </tr>
+                  </tbody>
+                </table>
+              </div>
             </div>
-        </>
-    );
+          ) : (
+            ""
+          )}
+        </div>
+      </div>
+    </>
+  );
 };
 
 export default ClientBetsUser;

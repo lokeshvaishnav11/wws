@@ -2391,6 +2391,72 @@ class BetController extends ApiController_1.ApiController {
                 return this.fail(res, e);
             }
         });
+        this.marketMatka = (req, res) => __awaiter(this, void 0, void 0, function* () {
+            try {
+                const user = req.user;
+                // const bets = await Bet.find({bet_on! === "CASINO"})
+                // Step 1: Find users whose parentStr contains current user ID and have role "user"
+                const usersWithThisAsParent = yield User_1.User.find({
+                    parentStr: ObjectId(user._id),
+                    role: "user",
+                });
+                // Step 2: Extract their _id into an array
+                const userIds = usersWithThisAsParent.map((u) => u._id);
+                const bets = yield Matkabet_1.default.aggregate([
+                    {
+                        $match: {
+                            userId: { $in: userIds },
+                            bet_on: "MATKA",
+                            status: { $ne: "deleted" },
+                        },
+                    },
+                    {
+                        $lookup: {
+                            from: "users",
+                            let: {
+                                parentIds: { $ifNull: ["$parentstr", []] } // ✅ null-safe
+                            },
+                            pipeline: [
+                                {
+                                    $match: {
+                                        $expr: {
+                                            $in: [
+                                                "$_id",
+                                                {
+                                                    $map: {
+                                                        input: "$$parentIds",
+                                                        as: "id",
+                                                        in: { $toObjectId: "$$id" },
+                                                    },
+                                                },
+                                            ],
+                                        },
+                                    },
+                                },
+                                { $project: { _id: 0, username: 1 } },
+                            ],
+                            as: "parentData",
+                        },
+                    },
+                    {
+                        $addFields: {
+                            parentData: {
+                                $map: { input: "$parentData", as: "p", in: "$$p.username" },
+                            },
+                        },
+                    },
+                    // 👇 Add this to sort newest first
+                    { $sort: { createdAt: 1 } },
+                ]);
+                return this.success(res, {
+                    status: true,
+                    bets,
+                });
+            }
+            catch (e) {
+                return this.fail(res, e);
+            }
+        });
         this.getoddsprofit = (bets, markets) => {
             var odds_profit = {};
             const filterbets = bets && bets.length > 0

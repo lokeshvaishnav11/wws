@@ -16,9 +16,7 @@ const MyLedger = () => {
   const [tableData, setTableData] = React.useState<LedgerItem[]>([]);
   const userState = useAppSelector(selectUserData);
 
-  console.log(userState, "myledgererr")
-
-
+  //console.log(userState, "myledgererr")
 
   React.useEffect(() => {
     betService.oneledger().then((res: AxiosResponse<any>) => {
@@ -27,7 +25,7 @@ const MyLedger = () => {
       // const dataToUse = allData[1]?.length ? allData[1] : allData[0] || [];
       setTableData(dataToUse);
       // setTabledata(res.data.data);
-      console.log(res, "res for lena dena jai hind !");
+      //console.log(res, "res for lena dena jai hind !");
     });
   }, []);
 
@@ -149,10 +147,14 @@ const MyLedger = () => {
                           })}
                         </td>
                         <td>
-                          <span className="text-success">{row.credit.toFixed(2)}</span>
+                          <span className="text-success">
+                            {row.credit.toFixed(2)}
+                          </span>
                         </td>
                         <td>
-                          <span className="text-danger">{row.debit.toFixed(2)}</span>
+                          <span className="text-danger">
+                            {row.debit.toFixed(2)}
+                          </span>
                         </td>
                         <td>
                           <span
@@ -160,10 +162,16 @@ const MyLedger = () => {
                               row.balance >= 0 ? "text-danger" : "text-danger"
                             }
                           >
-                            {(row.balance).toFixed(2)}
+                            {row.balance.toFixed(2)}
                           </span>
                         </td>
-                        <td className={row.narration === "Settlement" ? "bg-yellow-400" : ""}>
+                        <td
+                          className={
+                            row.narration === "Settlement"
+                              ? "bg-yellow-400"
+                              : ""
+                          }
+                        >
                           <span
                             className="badge badge-primary p-1"
                             style={{ fontSize: "xx-small" }}
@@ -240,12 +248,12 @@ const MyLedger = () => {
               TOTAL
             </div>
             <div
-              className={`pt-2 pr-1 pl-1 col-7 with-commission btn btn-sm ${finalBalance >= 0 ? "btn-success" : "btn-danger"
-                }`}
+              className={`pt-2 pr-1 pl-1 col-7 with-commission btn btn-sm ${
+                finalBalance >= 0 ? "btn-success" : "btn-danger"
+              }`}
             >
               {finalBalance.toFixed(2)}
             </div>
-
           </div>
 
           {/* Modal */}

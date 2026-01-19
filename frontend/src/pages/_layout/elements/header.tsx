@@ -70,7 +70,7 @@ const Header = () => {
   //   })
   // }, [])
 
-  console.log("blance is heree",balance)
+  // console.log("blance is heree",balance)
 
   React.useEffect(() => {
     setIsOpenRule(rules.open);

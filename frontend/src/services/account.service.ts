@@ -45,6 +45,10 @@ class AccountService {
   }
   
 
+  marketmatkaa() {
+    return api.get('marketmatka')
+  }
+
   getAccountList22() {
     return api.post(`account-statement-list-22`)
   }

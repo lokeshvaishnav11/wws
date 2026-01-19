@@ -11,19 +11,13 @@ interface MatchListProps {
   currentMatch: (match: any) => void;
 }
 
-const MatkaList: React.FC<MatchListProps> = ({
-  matchList,
-  currentMatch,
-}) => {
-    
-  console.log(matchList, "matchlisy",)
-
+const MatkaList: React.FC<MatchListProps> = ({ matchList, currentMatch }) => {
+  //console.log(matchList, "matchlisy",)
 
   return (
     <div className="card-content">
       <table className="table coupon-table">
-        <thead> 
-        </thead>
+        <thead></thead>
         <tbody>
           {matchList?.map((match: any, index: number) => {
             const marketId =
@@ -38,9 +32,7 @@ const MatkaList: React.FC<MatchListProps> = ({
                       onClick={() => currentMatch(match)}
                       className="text-dark"
                       href={undefined}
-                    >
-                     
-                    </a>
+                    ></a>
                   </div>
 
                   <div className="container w-100  p-0">
@@ -48,25 +40,27 @@ const MatkaList: React.FC<MatchListProps> = ({
                       <a onClick={() => currentMatch(match)}>
                         {/* <h5 className="ng-binding" style={{backgroundColor:"#FFB200",color:"white"}}>  {match.name}-{moment(match?.matchDateTime).format("DD-MM-YYYY")}</h5> */}
                         <h5
-  className="ng-binding"
-  style={{ backgroundColor: "#FFB200", color: "white" }}
->
-  {/* {match.gamename}-{moment().format("DD-MM-YYYY")} */}
-  {match?.roundid}
-</h5>
+                          className="ng-binding"
+                          style={{ backgroundColor: "#FFB200", color: "white" }}
+                        >
+                          {/* {match.gamename}-{moment().format("DD-MM-YYYY")} */}
+                          {match?.roundid}
+                        </h5>
 
-
-                                <p className="ng-binding mt-1 mb-1 " style={{fontSize:"15px", fontWeight:"bold"}}>
+                        <p
+                          className="ng-binding mt-1 mb-1 "
+                          style={{ fontSize: "15px", fontWeight: "bold" }}
+                        >
                           {/* {moment(match?.matchDateTime).format(dateFormat)} */}
-                          {moment().hour(9).minute(0).second(0).format("DD-MM-YYYY hh:mm A")}
+                          {moment()
+                            .hour(9)
+                            .minute(0)
+                            .second(0)
+                            .format("DD-MM-YYYY hh:mm A")}
                         </p>
-
-                       
                       </a>
                     </div>
                   </div>
-
-                  
                 </td>
               </tr>
             );

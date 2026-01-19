@@ -37,10 +37,16 @@ const Newhome = () => {
                 </a>
               </div>
 
-              <div className="col-md-6 col-6 text-center menu-list-item">
+              {/* <div className="col-md-6 col-6 text-center menu-list-item">
                 <a href="/">
                   <img src="/imgs/av180x180.png" />{" "}
-                  <br /> Aviator(coming soon){" "}
+                  <br /> Aviator(coming soon)k{" "}
+                </a>
+              </div> */}
+               <div className="col-md-6 col-6 text-center menu-list-item">
+                <a href="/accountstatement">
+                  <img src="/imgs/statements.png" />{" "}
+                  <br /> Statement{" "}
                 </a>
               </div>
             </div>
@@ -53,11 +59,12 @@ const Newhome = () => {
                 </a>
               </div>
               <div className="col-md-6 col-6 text-center menu-list-item">
-                <a href="/accountstatement">
-                  <img src="/imgs/statements.png" />{" "}
-                  <br /> Statement{" "}
+                <a href="/complete-games">
+                  <img src="/imgs/CG1.png" />{" "}
+                  <br /> Complete Games{" "}
                 </a>
               </div>
+             
             </div>
             <div className="row">
               <div className="col-md-6 col-6 text-center menu-list-item">
@@ -66,21 +73,16 @@ const Newhome = () => {
                   <br /> Change Password{" "}
                 </a>
               </div>
-              <div className="col-md-6 col-6 text-center menu-list-item">
-                <a href="/complete-games">
-                  <img src="/imgs/CG1.png" />{" "}
-                  <br /> Complete Games{" "}
-                </a>
-              </div>
-            </div>
-            <div className="row">
+
               <div className="col text-center menu-list-item">
                 <a href="/profile">
                   <img src="/imgs/Profile.png" />{" "}
                   <br /> My Profile{" "}
                 </a>
               </div>
+            
             </div>
+          
           </div>
         </div>
       </div>

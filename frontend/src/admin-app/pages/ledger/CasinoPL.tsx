@@ -3,7 +3,6 @@ import React from "react";
 import betService from "../../../services/bet.service";
 
 const CasinoPL = () => {
-
   const [data, setData] = React.useState<any[]>([]);
   const [totals, setTotals] = React.useState({
     money: 0,
@@ -14,13 +13,13 @@ const CasinoPL = () => {
 
   React.useEffect(() => {
     betService.oneledger().then((res: AxiosResponse) => {
-      console.log(res,"Casino pl data")
+      //console.log(res,"Casino pl data")
       const items = res.data.data[0] || [];
 
-      const filteredItems = items.filter(
-        (item: any) => item.narration?.includes("Matka Bet")
+      const filteredItems = items.filter((item: any) =>
+        item.narration?.includes("Matka Bet")
       );
-      
+
       const totalsCalc = {
         money: 0,
         commissionlega: 0,
@@ -47,7 +46,7 @@ const CasinoPL = () => {
           commissionlega,
           commissiondega,
           netpl,
-          matchId:item.matchId
+          matchId: item.matchId,
         };
       });
 
@@ -57,42 +56,52 @@ const CasinoPL = () => {
   }, []);
   return (
     <div>
-      <div  className="">
+      <div className="">
         <div className="container ng-scope">
-           <div className="row">
-      <div className="col">
-        <div style={{ textAlign: "center", padding: "10px" }}>
-          <h4>Matka Profit Loss</h4>
-          {/* <a className="btn btn-secondary btn-sm">Today P/L</a> */}
-        </div>
-        <div className="overflow-auto">
-        <table className="table table-striped table-bordered lenden len ng-scope">
-          <thead>
-            <tr className="small">
-              <th className="small" style={{ fontWeight: "bolder" }}>Title</th>
-              <th className="small" style={{ fontWeight: "bolder" }}>P&amp;L</th>
-              <th className="small" style={{ fontWeight: "bolder" }}>Comm+</th>
-              <th className="small" style={{ fontWeight: "bolder" }}>Comm-</th>
-              <th className="small" style={{ fontWeight: "bolder" }}>Net P&amp;L</th>
-              {/* <th className="small" style={{ fontWeight: "bolder" }}>Action</th> */}
-            </tr>
-          </thead>
-          <tbody>
-            {/* Total Row */}
-            <tr className="ng-scope background-black">
-              <td>Total</td>
-              <td>{totals.money.toFixed(2)}</td>
-              <td>{totals.commissionlega.toFixed(2)}</td>
-              <td>{totals.commissiondega.toFixed(2)}</td>
-              <td>{totals.netpl.toFixed(2)}</td>
-              <td></td>
-            </tr>
+          <div className="row">
+            <div className="col">
+              <div style={{ textAlign: "center", padding: "10px" }}>
+                <h4>Matka Profit Loss</h4>
+                {/* <a className="btn btn-secondary btn-sm">Today P/L</a> */}
+              </div>
+              <div className="overflow-auto">
+                <table className="table table-striped table-bordered lenden len ng-scope">
+                  <thead>
+                    <tr className="small">
+                      <th className="small" style={{ fontWeight: "bolder" }}>
+                        Title
+                      </th>
+                      <th className="small" style={{ fontWeight: "bolder" }}>
+                        P&amp;L
+                      </th>
+                      <th className="small" style={{ fontWeight: "bolder" }}>
+                        Comm+
+                      </th>
+                      <th className="small" style={{ fontWeight: "bolder" }}>
+                        Comm-
+                      </th>
+                      <th className="small" style={{ fontWeight: "bolder" }}>
+                        Net P&amp;L
+                      </th>
+                      {/* <th className="small" style={{ fontWeight: "bolder" }}>Action</th> */}
+                    </tr>
+                  </thead>
+                  <tbody>
+                    {/* Total Row */}
+                    <tr className="ng-scope background-black">
+                      <td>Total</td>
+                      <td>{totals.money.toFixed(2)}</td>
+                      <td>{totals.commissionlega.toFixed(2)}</td>
+                      <td>{totals.commissiondega.toFixed(2)}</td>
+                      <td>{totals.netpl.toFixed(2)}</td>
+                      <td></td>
+                    </tr>
 
-            {/* Mapped Data Rows */}
-            {data.map((item, index) => (
-              <React.Fragment key={index}>
-                {/* Date row */}
-                {/* <tr className="ng-scope background-yellow">
+                    {/* Mapped Data Rows */}
+                    {data.map((item, index) => (
+                      <React.Fragment key={index}>
+                        {/* Date row */}
+                        {/* <tr className="ng-scope background-yellow">
                   <td>{item.matchId}</td>
 
                   <td>{item.money.toFixed(2)}</td>
@@ -102,24 +111,26 @@ const CasinoPL = () => {
                   <td></td>
                 </tr> */}
 
-                {/* Narration row */}
-                <tr className="ng-scope">
-                  <td>{item.narration}</td>
-                  <td>{item.money.toFixed(2)}</td>
-                  <td>{item.commissionlega.toFixed(2)}</td>
-                  <td>{item.commissiondega.toFixed(2)}</td>
-                  <td>{item.netpl.toFixed(2)}</td>
-                  <td>
-                    <a className="btn hidden btn-secondary btn-sm">Details</a>
-                  </td>
-                </tr>
-              </React.Fragment>
-            ))}
-          </tbody>
-        </table>
-        </div>
-      </div>
-    </div>
+                        {/* Narration row */}
+                        <tr className="ng-scope">
+                          <td>{item.narration}</td>
+                          <td>{item.money.toFixed(2)}</td>
+                          <td>{item.commissionlega.toFixed(2)}</td>
+                          <td>{item.commissiondega.toFixed(2)}</td>
+                          <td>{item.netpl.toFixed(2)}</td>
+                          <td>
+                            <a className="btn hidden btn-secondary btn-sm">
+                              Details
+                            </a>
+                          </td>
+                        </tr>
+                      </React.Fragment>
+                    ))}
+                  </tbody>
+                </table>
+              </div>
+            </div>
+          </div>
         </div>
 
         <div

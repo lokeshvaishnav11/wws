@@ -3,14 +3,12 @@
 // import { AxiosResponse } from "axios";
 // import betService from "../../../services/bet.service";
 // const ReportModal = (data:any) => {
-//     console.log(data, "check username")
-
+//     //console.log(data, "check username")
 
 //     React.useEffect(() => {
 //         betService.oneledger().then((res: AxiosResponse<any>) => {
-//           console.log(res, "maatchh modal res")   });
+//           //console.log(res, "maatchh modal res")   });
 //         }, []);
-
 
 //   return (
 //     <>
@@ -19,7 +17,7 @@
 //             <h6 style={{ width: "100%" }} className="pt-2 ng-binding">
 //               Report Rahul (C139000)
 //             </h6>
-            
+
 //           </div>
 //           <div className="modal-body">
 //             <div
@@ -165,10 +163,6 @@
 
 // export default ReportModal;
 
-
-
-
-
 // import React, { useEffect, useState } from "react";
 // import "./ClientLedger.css";
 // import { AxiosResponse } from "axios";
@@ -276,7 +270,6 @@
 
 // export default ReportModal;
 
-
 import React, { useEffect, useState } from "react";
 import "./ClientLedger.css";
 import { AxiosResponse } from "axios";
@@ -287,16 +280,17 @@ import { selectUserData } from "../../../redux/actions/login/loginSlice";
 const ReportModal = ({ data }: any) => {
   const username = data; // passed prop
   const [userEntries, setUserEntries] = useState<any[]>([]);
-      const userState = useAppSelector(selectUserData);
-  
+  const userState = useAppSelector(selectUserData);
 
   useEffect(() => {
     betService.twoledger().then((res: AxiosResponse<any>) => {
-      const allEntries = res?.data?.data  || []; // list of entries
+      const allEntries = res?.data?.data || []; // list of entries
       if (!allEntries) return;
 
       // Filter by username
-      const filtered = allEntries.filter((entry: any) => entry.username === username);
+      const filtered = allEntries.filter(
+        (entry: any) => entry.username === username
+      );
 
       // Group by narration
       const grouped: Record<string, any> = {};
@@ -331,8 +325,6 @@ const ReportModal = ({ data }: any) => {
         ...row,
         // total: row.match + row.matchComm + row.session + row.sessionComm,
         total: row.match + row.session,
-       
-
       }));
 
       setUserEntries(result);
@@ -340,14 +332,17 @@ const ReportModal = ({ data }: any) => {
   }, [username]);
 
   return (
-    <div style={{width:"100%"}} className="modal-content">
+    <div style={{ width: "100%" }} className="modal-content">
       <div className="modal-header">
         <h6 style={{ width: "100%" }} className="ng-binding">
           Report {username}
         </h6>
       </div>
       <div className="modal-body">
-        <div className="container bg-light p-0 m-0" style={{ width: "100%", overflow: "auto" }}>
+        <div
+          className="container bg-light p-0 m-0"
+          style={{ width: "100%", overflow: "auto" }}
+        >
           <table className="small table table-striped table-bordered m-0">
             <thead>
               <tr>
@@ -369,25 +364,66 @@ const ReportModal = ({ data }: any) => {
                 <tr key={i}>
                   <td style={{ fontSize: "xx-small" }}>{entry.narration}</td>
                   <td style={{ fontSize: "xx-small" }}>{entry.startDate}</td>
-                  <td className={entry.match > 0 ? "text-success" : entry.match < 0 ? "text-danger" : "text-secondary"}>
-                  { `${(entry.match + entry.matchComm).toFixed(2)}`  }
+                  <td
+                    className={
+                      entry.match > 0
+                        ? "text-success"
+                        : entry.match < 0
+                        ? "text-danger"
+                        : "text-secondary"
+                    }
+                  >
+                    {`${(entry.match + entry.matchComm).toFixed(2)}`}
                   </td>
-                  <td className={entry.session > 0 ? "text-success" : entry.session < 0 ? "text-danger" : "text-secondary"}>
+                  <td
+                    className={
+                      entry.session > 0
+                        ? "text-success"
+                        : entry.session < 0
+                        ? "text-danger"
+                        : "text-secondary"
+                    }
+                  >
                     {/* {entry.session.toFixed(2)} */}
-                    {  `${(entry.session + entry.sessionComm).toFixed(2)}` }
-
+                    {`${(entry.session + entry.sessionComm).toFixed(2)}`}
                   </td>
-                  <td className={entry.total > 0 ? "text-success" : entry.total < 0 ? "text-danger" : "text-secondary"}>
+                  <td
+                    className={
+                      entry.total > 0
+                        ? "text-success"
+                        : entry.total < 0
+                        ? "text-danger"
+                        : "text-secondary"
+                    }
+                  >
                     {entry.total.toFixed(2)}
                   </td>
-                  <td className={entry.matchComm > 0 ? "text-danger" : "text-secondary"}>
+                  <td
+                    className={
+                      entry.matchComm > 0 ? "text-danger" : "text-secondary"
+                    }
+                  >
                     {entry.matchComm.toFixed(2)}
                   </td>
-                  <td className={entry.sessionComm > 0 ? "text-danger" : "text-secondary"}>
+                  <td
+                    className={
+                      entry.sessionComm > 0 ? "text-danger" : "text-secondary"
+                    }
+                  >
                     {entry.sessionComm.toFixed(2)}
                   </td>
-                  <td className="text-secondary">{(entry.matchComm + entry.sessionComm).toFixed(2)}</td>
-                  <td className={entry.total > 0 ? "text-success" : entry.total < 0 ? "text-danger" : "text-secondary"}>
+                  <td className="text-secondary">
+                    {(entry.matchComm + entry.sessionComm).toFixed(2)}
+                  </td>
+                  <td
+                    className={
+                      entry.total > 0
+                        ? "text-success"
+                        : entry.total < 0
+                        ? "text-danger"
+                        : "text-secondary"
+                    }
+                  >
                     {entry.total.toFixed(2)}
                   </td>
                   <td className="text-success">{entry.total.toFixed(2)}</td>
