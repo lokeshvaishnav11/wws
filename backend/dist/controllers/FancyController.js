@@ -305,7 +305,6 @@ class FancyController extends ApiController_1.ApiController {
                 const { _id } = req.user;
                 if (!data)
                     return this.fail(res, "Invalid data");
-                // ================= USER / BALANCE =================
                 const userData = yield User_1.User.findById(_id);
                 const balanceData = yield Balance_1.Balance.findOne({ userId: _id });
                 const parentData = yield User_1.User.findById(userData === null || userData === void 0 ? void 0 : userData.parentId);
@@ -313,7 +312,6 @@ class FancyController extends ApiController_1.ApiController {
                     return this.fail(res, "Invalid user data");
                 }
                 const matkaLimit = parentData.matkalimit; // 👈 agent limit
-                // ================= USER TOTAL EXPOSURE =================
                 const pendingUserBets = yield Matkabet_1.default.find({
                     userId: _id,
                     status: "pending",
@@ -353,6 +351,7 @@ class FancyController extends ApiController_1.ApiController {
                         maxLossAfterBet = totalLoss;
                     }
                 }
+                console.log(maxLossAfterBet, "cvbnjk");
                 if (maxLossAfterBet > matkaLimit) {
                     return this.fail(res, "Matka limit exceeded for this number");
                 }
@@ -411,8 +410,8 @@ class FancyController extends ApiController_1.ApiController {
         this.Matkacal = (roundid, result) => __awaiter(this, void 0, void 0, function* () {
             try {
                 const single = parseInt(result);
-                const andar = parseInt(result) / 10;
-                const bahar = parseInt(result) % 10;
+                const andar = parseInt(result[0]);
+                const bahar = parseInt(result[1]);
                 console.log(roundid, result, single, andar, bahar, "matka result cal");
                 const matkaBets = yield Matkabet_1.default.find({ roundid: roundid, status: "pending" });
                 let userIdList = [];
@@ -3228,10 +3227,10 @@ class FancyController extends ApiController_1.ApiController {
                                 multix = (p1info === null || p1info === void 0 ? void 0 : p1info.matcom) || 0;
                                 dmultixu = (userData === null || userData === void 0 ? void 0 : userData.matcom) || 0;
                             }
-                            var commissionlegaf = profit_loss > 0 && (!betstatus || !matkabetstatus)
+                            var commissionlegaf = !(betstatus || matkabetstatus) && profit_loss > 0
                                 ? 0
                                 : (commission_value * multix) / 100;
-                            let commissiondegaf = profit_loss > 0 && (!betstatus || !matkabetstatus)
+                            let commissiondegaf = !(betstatus || matkabetstatus) && profit_loss > 0
                                 ? 0
                                 : (commission_value * dmultixu) / 100;
                             // let share = -profit_loss * (p1info?.share / 100);
@@ -3265,7 +3264,7 @@ class FancyController extends ApiController_1.ApiController {
                             }, { new: true, upset: true });
                             console.log(xyz, "xyz");
                             // commission  entry in account statementes 
-                            if (bet_on != "FANCY" && commissiondegaf > 0) {
+                            if (bet_on != "FANCY" && bet_on != "MATKA" && commissiondegaf > 0) {
                                 const getAccStmt = yield AccountStatement_1.AccoutStatement.findOne({ userId: userId })
                                     .sort({ createdAt: -1 })
                                     .lean();
@@ -3329,9 +3328,9 @@ class FancyController extends ApiController_1.ApiController {
                                 ChildId: p1info._id,
                             });
                             // const currentBalancep1:any = ledgerDatap1 ? ledgerDatap1.money : 0;
-                            let ammount = profit_loss > 0 && (!betstatus || !matkabetstatus) ? -profit_loss : -profit_loss; // profit_loss - betdata.stack*multi
-                            let commissiondega = profit_loss > 0 && (!betstatus || !matkabetstatus) ? 0 : (commission_value * multi) / 100;
-                            let commissionlega = profit_loss > 0 && (!betstatus || !matkabetstatus)
+                            let ammount = !(betstatus || matkabetstatus) && profit_loss > 0 ? -profit_loss : -profit_loss; // profit_loss - betdata.stack*multi
+                            let commissiondega = !(betstatus || matkabetstatus) && profit_loss > 0 ? 0 : (commission_value * multi) / 100;
+                            let commissionlega = !(betstatus || matkabetstatus) && profit_loss > 0
                                 ? 0
                                 : (commission_value * lmulti) / 100;
                             let money = mainledgerBalance;
@@ -3386,10 +3385,10 @@ class FancyController extends ApiController_1.ApiController {
                             // const currentBalancep2:any = ledgerDatap2 ? ledgerDatap2.money : 0;
                             // let ammoun = -profit_loss - (betdata.stack * dmulti) / 100;
                             // let ammount = profit_loss > 0 && !betstatus ? -profit_loss : ammoun; // profit_loss - betdata.stack*multi
-                            let commissionlega = profit_loss > 0 && (!betstatus || !matkabetstatus)
+                            let commissionlega = !(betstatus || matkabetstatus) && profit_loss > 0
                                 ? 0
                                 : (commission_value * lmulti) / 100;
-                            let commissiondega = profit_loss > 0 && (!betstatus || !matkabetstatus)
+                            let commissiondega = !(betstatus || matkabetstatus) && profit_loss > 0
                                 ? 0
                                 : (commission_value * dmulti) / 100;
                             // let finalammount = mainledgerBalance - commissiondega - mainledgerBalance*(p2info?.share)/100;
@@ -3442,10 +3441,10 @@ class FancyController extends ApiController_1.ApiController {
                             const currentBalancep2 = ledgerDatap2 ? ledgerDatap2.money : 0;
                             // let ammoun = -profit_loss - (betdata.stack * dmulti) / 100;
                             // let ammount = profit_loss > 0 && !betstatus ? -profit_loss : ammoun; // profit_loss - betdata.stack*multi
-                            let commissionlega = profit_loss > 0 && (!betstatus || !matkabetstatus)
+                            let commissionlega = !(betstatus || matkabetstatus) && profit_loss > 0
                                 ? 0
                                 : (commission_value * lmulti) / 100;
-                            let commissiondega = profit_loss > 0 && (!betstatus || !matkabetstatus)
+                            let commissiondega = !(betstatus || matkabetstatus) && profit_loss > 0
                                 ? 0
                                 : (commission_value * dmulti) / 100;
                             let money = mainledgerBalance;
@@ -3499,10 +3498,10 @@ class FancyController extends ApiController_1.ApiController {
                             let money = mainledgerBalance;
                             // let ammoun = -profit_loss - (betdata.stack * dmulti) / 100;
                             // let ammount = profit_loss > 0 && !betstatus ? -profit_loss : ammoun; // profit_loss - betdata.stack*multi
-                            let commissionlega = profit_loss > 0 && (!betstatus || !matkabetstatus)
+                            let commissionlega = !(betstatus || matkabetstatus) && profit_loss > 0
                                 ? 0
                                 : (commission_value * lmulti) / 100;
-                            let commissiondega = profit_loss > 0 && (!betstatus || !matkabetstatus)
+                            let commissiondega = !(betstatus || matkabetstatus) && profit_loss > 0
                                 ? 0
                                 : (commission_value * dmulti) / 100;
                             //  let finalammount = mainledgerBalance - commissiondega - mainledgerBalance*(p4info?.share)/100;
@@ -3556,10 +3555,10 @@ class FancyController extends ApiController_1.ApiController {
                             let money = mainledgerBalance;
                             // let ammoun = -profit_loss - (betdata.stack * dmulti) / 100;
                             // let ammount = profit_loss > 0 && !betstatus ? -profit_loss : ammoun; // profit_loss - betdata.stack*multi
-                            let commissionlega = profit_loss > 0 && (!betstatus || !matkabetstatus)
+                            let commissionlega = !(betstatus || matkabetstatus) && profit_loss > 0
                                 ? 0
                                 : (commission_value * lmulti) / 100;
-                            let commissiondega = profit_loss > 0 && (!betstatus || !matkabetstatus)
+                            let commissiondega = !(betstatus || matkabetstatus) && profit_loss > 0
                                 ? 0
                                 : (commission_value * dmulti) / 100;
                             //  let finalammount = mainledgerBalance - commissiondega - mainledgerBalance*(p4info?.share)/100;
@@ -3605,7 +3604,7 @@ class FancyController extends ApiController_1.ApiController {
                 return "success";
             }
             catch (error) {
-                console.error("Error in allClientLedger:", error);
+                console.error("Error in allClientLedger:", error, userId, matchId, profit_loss);
                 // res.status(500).send({ error: 'Internal server error' });
                 // return this.success(res,"hello world")
                 return error;

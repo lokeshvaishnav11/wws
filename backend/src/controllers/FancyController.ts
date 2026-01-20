@@ -368,7 +368,6 @@ placeMatkabet = async (req: Request, res: Response): Promise<Response> => {
 
     if (!data) return this.fail(res, "Invalid data");
 
-    // ================= USER / BALANCE =================
     const userData = await User.findById(_id);
     const balanceData = await Balance.findOne({ userId: _id });
     const parentData = await User.findById(userData?.parentId);
@@ -379,7 +378,6 @@ placeMatkabet = async (req: Request, res: Response): Promise<Response> => {
 
     const matkaLimit = parentData.matkalimit; // 👈 agent limit
 
-    // ================= USER TOTAL EXPOSURE =================
     const pendingUserBets = await Matkabet.find({
       userId: _id,
       status: "pending",
@@ -437,6 +435,9 @@ placeMatkabet = async (req: Request, res: Response): Promise<Response> => {
         maxLossAfterBet = totalLoss;
       }
     }
+
+
+    console.log( maxLossAfterBet ,"cvbnjk")
 
     if (maxLossAfterBet > matkaLimit) {
       return this.fail(
@@ -516,8 +517,8 @@ placeMatkabet = async (req: Request, res: Response): Promise<Response> => {
     try {
       const single = parseInt(result);
 
-      const andar = parseInt(result) / 10;
-      const bahar = parseInt(result) % 10;
+      const andar = parseInt(result[0])
+      const bahar = parseInt(result[1]);
       console.log(roundid, result, single, andar, bahar, "matka result cal");
       const matkaBets = await Matkabet.find({ roundid: roundid, status: "pending" });
       let userIdList: any = [];
@@ -3594,11 +3595,11 @@ placeMatkabet = async (req: Request, res: Response): Promise<Response> => {
               dmultixu = userData?.matcom || 0;
             }
             var commissionlegaf =
-              profit_loss > 0 && (!betstatus || !matkabetstatus)
+             !(betstatus || matkabetstatus) && profit_loss > 0
                 ? 0
                 : (commission_value * multix) / 100;
             let commissiondegaf =
-              profit_loss > 0 && (!betstatus || !matkabetstatus)
+             !(betstatus || matkabetstatus) && profit_loss > 0
                 ? 0
                 : (commission_value * dmultixu) / 100;
             // let share = -profit_loss * (p1info?.share / 100);
@@ -3636,7 +3637,7 @@ placeMatkabet = async (req: Request, res: Response): Promise<Response> => {
             }, { new: true, upset: true });
             console.log(xyz, "xyz")
             // commission  entry in account statementes 
-            if (bet_on != "FANCY" && commissiondegaf > 0) {
+            if (bet_on != "FANCY" && bet_on != "MATKA" && commissiondegaf > 0) {
               const getAccStmt = await AccoutStatement.findOne({ userId: userId })
                 .sort({ createdAt: -1 })
                 .lean();
@@ -3708,11 +3709,11 @@ placeMatkabet = async (req: Request, res: Response): Promise<Response> => {
             });
             // const currentBalancep1:any = ledgerDatap1 ? ledgerDatap1.money : 0;
             let ammount =
-              profit_loss > 0 && (!betstatus || !matkabetstatus) ? -profit_loss : -profit_loss; // profit_loss - betdata.stack*multi
+             !(betstatus || matkabetstatus) && profit_loss > 0 ? -profit_loss : -profit_loss; // profit_loss - betdata.stack*multi
             let commissiondega =
-              profit_loss > 0 && (!betstatus || !matkabetstatus) ? 0 : (commission_value * multi) / 100;
+             !(betstatus || matkabetstatus) && profit_loss > 0 ? 0 : (commission_value * multi) / 100;
             let commissionlega =
-              profit_loss > 0 && (!betstatus || !matkabetstatus)
+             !(betstatus || matkabetstatus) && profit_loss > 0
                 ? 0
                 : (commission_value * lmulti) / 100;
 
@@ -3777,11 +3778,11 @@ placeMatkabet = async (req: Request, res: Response): Promise<Response> => {
             // let ammount = profit_loss > 0 && !betstatus ? -profit_loss : ammoun; // profit_loss - betdata.stack*multi
 
             let commissionlega =
-              profit_loss > 0 && (!betstatus || !matkabetstatus)
+             !(betstatus || matkabetstatus) && profit_loss > 0
                 ? 0
                 : (commission_value * lmulti) / 100;
             let commissiondega =
-              profit_loss > 0 && (!betstatus || !matkabetstatus)
+             !(betstatus || matkabetstatus) && profit_loss > 0
                 ? 0
                 : (commission_value * dmulti) / 100;
 
@@ -3841,11 +3842,11 @@ placeMatkabet = async (req: Request, res: Response): Promise<Response> => {
             // let ammount = profit_loss > 0 && !betstatus ? -profit_loss : ammoun; // profit_loss - betdata.stack*multi
 
             let commissionlega =
-              profit_loss > 0 && (!betstatus || !matkabetstatus)
+             !(betstatus || matkabetstatus) && profit_loss > 0
                 ? 0
                 : (commission_value * lmulti) / 100;
             let commissiondega =
-              profit_loss > 0 && (!betstatus || !matkabetstatus)
+             !(betstatus || matkabetstatus) && profit_loss > 0
                 ? 0
                 : (commission_value * dmulti) / 100;
             let money = mainledgerBalance;
@@ -3905,11 +3906,11 @@ placeMatkabet = async (req: Request, res: Response): Promise<Response> => {
             // let ammount = profit_loss > 0 && !betstatus ? -profit_loss : ammoun; // profit_loss - betdata.stack*multi
 
             let commissionlega =
-              profit_loss > 0 && (!betstatus || !matkabetstatus)
+             !(betstatus || matkabetstatus) && profit_loss > 0
                 ? 0
                 : (commission_value * lmulti) / 100;
             let commissiondega =
-              profit_loss > 0 && (!betstatus || !matkabetstatus)
+             !(betstatus || matkabetstatus) && profit_loss > 0
                 ? 0
                 : (commission_value * dmulti) / 100;
 
@@ -3969,11 +3970,11 @@ placeMatkabet = async (req: Request, res: Response): Promise<Response> => {
             // let ammount = profit_loss > 0 && !betstatus ? -profit_loss : ammoun; // profit_loss - betdata.stack*multi
 
             let commissionlega =
-              profit_loss > 0 && (!betstatus || !matkabetstatus)
+             !(betstatus || matkabetstatus) && profit_loss > 0
                 ? 0
                 : (commission_value * lmulti) / 100;
             let commissiondega =
-              profit_loss > 0 && (!betstatus || !matkabetstatus)
+             !(betstatus || matkabetstatus) && profit_loss > 0
                 ? 0
                 : (commission_value * dmulti) / 100;
 
@@ -4025,7 +4026,7 @@ placeMatkabet = async (req: Request, res: Response): Promise<Response> => {
 
       return "success";
     } catch (error) {
-      console.error("Error in allClientLedger:", error);
+      console.error("Error in allClientLedger:", error,userId,matchId,profit_loss);
       // res.status(500).send({ error: 'Internal server error' });
       // return this.success(res,"hello world")
       return error
