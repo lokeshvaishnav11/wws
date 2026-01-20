@@ -361,6 +361,20 @@ const MatkaDetail = () => {
                 ? moment(game.createdAt).format("DD-MMM-YYYY hh:mm A")
                 : "-";
 
+                const openTime = moment()
+                .tz("Asia/Kolkata")
+                .hour(game.opentime.hour)
+                .minute(game.opentime.minute)
+                .second(0)
+                .format("DD-MM-YYYY hh:mm A");
+            
+              const closeTime = moment()
+                .tz("Asia/Kolkata")
+                .hour(game.closetime.hour)
+                .minute(game.closetime.minute)
+                .second(0)
+                .format("DD-MM-YYYY hh:mm A");
+
               return (
                 <div
                   key={i}

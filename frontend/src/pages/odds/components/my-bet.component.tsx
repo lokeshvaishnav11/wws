@@ -298,8 +298,8 @@ const MyBetComponent = () => {
                 <td
                   colSpan={8}
                   style={{
-                    backgroundColor: "darkgoldenrod",
-                    color: "black",
+                    backgroundColor: "black",
+                    color: "white",
                     padding: "8px 10px",
                     textAlign: "left",
                   }}

@@ -24,6 +24,21 @@ const MatkaList: React.FC<MatchListProps> = ({ matchList, currentMatch }) => {
               match?.markets && match?.markets?.length > 0
                 ? match?.markets[0]?.marketId
                 : null;
+
+                const openTime = moment()
+    .tz("Asia/Kolkata")
+    .hour(match.opentime.hour)
+    .minute(match.opentime.minute)
+    .second(0)
+    .format("DD-MM-YYYY hh:mm A");
+
+  const closeTime = moment()
+    .tz("Asia/Kolkata")
+    .hour(match.closetime.hour)
+    .minute(match.closetime.minute)
+    .second(0)
+    .format("DD-MM-YYYY hh:mm A");
+                
             return (
               <tr key={match.matchId}>
                 <td>
@@ -48,7 +63,7 @@ const MatkaList: React.FC<MatchListProps> = ({ matchList, currentMatch }) => {
                         </h5>
 
                         <p
-                          className="ng-binding mt-1 mb-1 "
+                          className="ng-binding mt-1 mb-1 d-none "
                           style={{ fontSize: "15px", fontWeight: "bold" }}
                         >
                           {/* {moment(match?.matchDateTime).format(dateFormat)} */}
@@ -58,6 +73,13 @@ const MatkaList: React.FC<MatchListProps> = ({ matchList, currentMatch }) => {
                             .second(0)
                             .format("DD-MM-YYYY hh:mm A")}
                         </p>
+                        <p className="mb-1 pt-1">
+        <b>Open:</b> {openTime}
+      </p>
+
+      <p className="mb-1">
+        <b>Close:</b> {closeTime}
+      </p>
                       </a>
                     </div>
                   </div>
