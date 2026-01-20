@@ -249,6 +249,19 @@ const CasinoDetail = () => {
   };
 
   React.useEffect(() => {
+    // dono date selected hone par auto filter
+    if (startDate && endDate) {
+      handleFilter();
+    }
+  
+    // agar date clear ho jaye to full data dikhao
+    if (!startDate && !endDate) {
+      setFilteredData(casinoData);
+    }
+  }, [startDate, endDate, casinoData]);
+  
+
+  React.useEffect(() => {
     accountService.marketcasino().then((res: AxiosResponse) => {
       //console.log(res, "casinoooo data");
       const allData = res?.data?.data?.bets?.reverse() || [];
@@ -266,14 +279,14 @@ const CasinoDetail = () => {
 
   return (
     <div className="body-wrap">
-      <h2 className="ledger-title">Casino Details</h2>
+      <h2 className="ledger-title text-xl mt-2">Casino Details</h2>
 
       <div
-        style={{ fontSize: "12px" }}
-        className="d-flex gap-2 align-items-end mb-3 flex-wrap"
+       
+        className="d-flex row align-items-end mb-3 mt-3 flex-wrap"
       >
-        <div className="me-1">
-          <label className="form-label mb-1">Start Date</label>
+        <div className="me-1 col-6">
+          <label className="form-label mb-1 text-sm">Start Date</label>
           <input
             type="date"
             value={startDate}
@@ -281,8 +294,8 @@ const CasinoDetail = () => {
             onChange={(e) => setStartDate(e.target.value)}
           />
         </div>
-        <div className="me-1">
-          <label className="form-label mb-1">End Date</label>
+        <div className="me-1 col-6">
+          <label className="form-label mb-1 text-sm">End Date</label>
           <input
             type="date"
             value={endDate}
@@ -290,11 +303,11 @@ const CasinoDetail = () => {
             onChange={(e) => setEndDate(e.target.value)}
           />
         </div>
-        <div>
+        {/* <div>
           <button className="btn btn-primary" onClick={handleFilter}>
             Filter
           </button>
-        </div>
+        </div> */}
       </div>
 
       <div className="card-content">

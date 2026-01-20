@@ -2309,7 +2309,7 @@ tr.suspended-fancy {
 }
 
 .dataTables_filter {
-  text-align: right;
+  text-align: center;
 }
 
 .hv-container .tab-pane.hv-suspended {

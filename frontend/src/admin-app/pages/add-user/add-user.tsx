@@ -232,7 +232,7 @@ const AddUser = () => {
       UserService.getUserDetail(
         uplineParent ? uplineParent?.username : username
       ).then((res: AxiosResponse<any>) => {
-        setSelectedUser(res.data.data);
+        setSelectedUser(res?.data?.data);
       });
     }
   }, [username, uplineParent]);
@@ -361,9 +361,9 @@ const AddUser = () => {
         ? data.delay
         : Object.values(data.delay || {});
 
-      //console.log("minBetValue:", minBetValue);
-      //console.log("maxBetValue:", maxBetValue);
-      //console.log("delayValue:", delayValue);
+      console.log("minBetValue:", minBetValue);
+      console.log("maxBetValue:", maxBetValue);
+      console.log("delayValue:", delayValue);
 
       minBetValue.forEach((element, index) => {
         if (element !== undefined) {
@@ -566,7 +566,7 @@ const AddUser = () => {
                   <PersonAddIcon /> Create
                 </p>
               </div>
-              <form onSubmit={onSubmit}>
+              <form onSubmit={onSubmit} noValidate>
                 <div className="row">
                   <div className="col-md-6 personal-detail">
                     {/* <h4 className="m-b-20 col-md-12">Personal Detail</h4> */}

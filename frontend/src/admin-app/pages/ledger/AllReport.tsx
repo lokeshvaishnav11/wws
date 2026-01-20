@@ -296,15 +296,28 @@ const AllReport = () => {
     handleDateFilter(false); // no date filter
   }, []);
 
+  React.useEffect(() => {
+    // jab dono date selected ho tab hi filter lagao
+    if (startDate && endDate) {
+      handleDateFilter(true);
+    }
+  
+    // agar dono blank ho jaye to full data dikhao
+    if (!startDate && !endDate) {
+      handleDateFilter(false);
+    }
+  }, [startDate, endDate]);
+  
+
   return (
     <div style={{ zoom: 0.4 }}>
       <div className="relative">
-        <h2 className="ledger-title">All Client Report</h2>
+        <h2 className="ledger-title text-xl">All Client Report</h2>
       </div>
 
       <div className="control-group mt-2 container-fluid selectize-control single">
         <div className="row p-2 ng-scope">
-          <div className="col-4 mt-1">
+          <div className="col-6 mt-1">
             <label className="small"> Start Date</label>
             <input
               type="date"
@@ -314,7 +327,7 @@ const AllReport = () => {
               onChange={(e) => setStartDate(e.target.value)}
             />
           </div>
-          <div className="col-4 mt-1">
+          <div className="col-6 mt-1">
             <label className="small"> End Date</label>
             <input
               type="date"
@@ -324,14 +337,14 @@ const AllReport = () => {
               onChange={(e) => setEndDate(e.target.value)}
             />
           </div>
-          <div className="col-4 mt-2" style={{ paddingTop: 20 }}>
+          {/* <div className="col-4 mt-2" style={{ paddingTop: 20 }}>
             <button
               className="btn btn-info"
               onClick={() => handleDateFilter(true)}
             >
               Submit
             </button>
-          </div>
+          </div> */}
         </div>
 
         <select
@@ -340,7 +353,7 @@ const AllReport = () => {
           value={optionuser}
           onChange={(e) => setOptionuser(e.target.value)}
         >
-          <option value="all">All Clients</option>
+          <option value="all"></option>
           {ledgerData.map((row: any, index) => (
             <option key={index} value={row.client}>
               {row.client}
