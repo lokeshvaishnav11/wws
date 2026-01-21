@@ -47,15 +47,15 @@ const AaaCasino = (props: any) => {
     const markets = liveMatchData?.defaultMarkets?.[0]?.Runners || []
     return <div className="row row5 mt--30">
       <div className={"col-12 mb-10"}>
-      <table className="table coupon-table table table-bordered btabl-casino">
-        <thead >
-          <tr >
-            <th colSpan={3} style={{ textAlign: "left" }}>
+      <div className="table coupon-table table table-bordered btabl-casino">
+        
+       
+            <div className='py-1 mb-2'  style={{ textAlign: "right",background:"#6c757d",color:"white",fontSize:"12px" }}>
               MIN : 100 Max : 300000
-            </th>
-          </tr>
-        </thead>
-        <tbody >
+            </div>
+   
+  
+        <div className='d-flex justify-content-between' >
           {markets.map((Item: any, key: number) => {
             let runner = "A";
             runner = Item.RunnerName == "Akbar" ? 'B' : runner;
@@ -64,15 +64,15 @@ const AaaCasino = (props: any) => {
 
             const clsstatus =
             ItemMarket.gstatus == 'SUSPENDED' || ItemMarket.gstatus == 'CLOSED' ? 'suspended' : ''
-            return <tr data-title="SUSPENDED" key={key} className={clsstatus}>
-              <td className={"box-6 "}><b ><span className="tx-red">{runner}.</span> {Item.RunnerName}</b>
+            return <div data-title="SUSPENDED" className={clsstatus}>
+              <div className={"box- text-center "}><b ><span className="tx-red">{runner}.</span> {Item.RunnerName}</b>
                 <CasinoPnl sectionId={Item.SelectionId} matchId={liveMatchData.match_id} />
-              </td>
+              </div>
               <LayBackButton selectionid={Item.SelectionId} lastOdds={lastOdds} liveMatchData={liveMatchData} clsnamename={'box-2'} />
-            </tr>
+            </div>
           })}
-        </tbody>
-      </table>
+        </div>
+      </div>
     </div>
     </div>
   }
@@ -82,8 +82,8 @@ const AaaCasino = (props: any) => {
     return (
       finalMarketList.map((Item: any, key: number) => {
         const market = Item?.Runners?.[0] || {}
-        let title = market.RunnerName == 'Red' ? <span className="card-icon"> <span className={"card-red"}>{"[{"}</span> </span> : market.RunnerName;
-        title = market.RunnerName == 'Black' ? <span className="card-icon"> <span className={"card-black"}>{"]}"}</span> </span> : title;
+        let title = market.RunnerName == 'Red' ? market.RunnerName : market.RunnerName;
+        title = market.RunnerName == 'Black' ? title : title;
         return (
           <>
             {' '}
@@ -141,26 +141,26 @@ const AaaCasino = (props: any) => {
       {isMobile ? laybacklayoutmobile() : ''}
     <div className='card-content  m-t-10'>
       <div className='row m-t-10 '>
-        <div className='col-4 ' style={{paddingRight:"5px"}}>
+        <div className='col-6 ' style={{paddingRight:"5px"}}>
           <div className='aaa-content'>
             <div className='text-right'>
-             <Limitinfo nameString={'oddeven'} min={liveMatchData?.event_data?.min} max={liveMatchData?.event_data?.max} clsName={'tx-right'} />
+             {/* <Limitinfo nameString={'oddeven'} min={liveMatchData?.event_data?.min} max={liveMatchData?.event_data?.max} clsName={'tx-right'} /> */}
             </div>
             {buttonLayout('', [1])}
             {buttonLayout('', [2])}
           </div>
         </div>
-        <div className='col-4' style={{paddingRight:"5px", paddingLeft:"5px"}}>
+        <div className='col-6' style={{paddingRight:"5px", paddingLeft:"5px"}}>
           <div className='aaa-content'>
             <div className='text-right'>
-            <Limitinfo nameString={'redblack'} min={liveMatchData?.event_data?.min} max={liveMatchData?.event_data?.max} clsName={'tx-right'} />
+            {/* <Limitinfo nameString={'redblack'} min={liveMatchData?.event_data?.min} max={liveMatchData?.event_data?.max} clsName={'tx-right'} /> */}
             </div>
             {buttonLayout('', [3])}
             {buttonLayout('', [4])}
 
           </div>
         </div>
-        <div className='col-4' style={{paddingLeft:"5px"}}>
+        {/* <div className='col-4' style={{paddingLeft:"5px"}}>
           <div className='aaa-content'>
             <div className='text-right'>
             <Limitinfo nameString={'underseven'} min={liveMatchData?.event_data?.min} max={liveMatchData?.event_data?.max} clsName={'tx-right'} />
@@ -168,18 +168,18 @@ const AaaCasino = (props: any) => {
             {buttonLayout('', [5])}
             {buttonLayout('', [6])}
          </div>
-        </div>
+        </div> */}
       </div>
       </div>
       <div className='card-content aaa-content m-t-10'>
         <div className='row row5'>
           <div className='col-12'>
             <div className='text-right'>
-            <Limitinfo nameString={'limitinfo'} min={liveMatchData?.event_data?.min} max={liveMatchData?.event_data?.max} clsName={'tx-right'} /> 
+            {/* <Limitinfo nameString={'limitinfo'} min={liveMatchData?.event_data?.min} max={liveMatchData?.event_data?.max} clsName={'tx-right'} />  */}
             </div>
           </div>
         </div>
-        <div className='row row5 m-t-10'>{singleCard('', cardMarketIndex)}</div>
+        {/* <div className='row row5 m-t-10'>{singleCard('', cardMarketIndex)}</div> */}
       </div> 
     </div>
   )

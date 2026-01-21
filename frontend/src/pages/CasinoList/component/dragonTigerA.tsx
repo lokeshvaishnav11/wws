@@ -143,7 +143,7 @@ const DragonTigerA = (props: any) => {
           <Minmax min={liveMatchData?.min} max={liveMatchData?.max} />
         </div>
       </div>
-      {isMobile ? (
+      {/* {isMobile ? (
         <div className="home_mobile">
           <div className="mobile-header-for-casino">
             <ul className="nav nav-tabs">
@@ -176,8 +176,8 @@ const DragonTigerA = (props: any) => {
         </div>
       ) : (
         ""
-      )}
-      <div className="row row5">
+      )} */}
+      <div className="row row5 d-none">
         {(isMobile && activeTab === "dragon") || !isMobile ? (
           <div className="col-lg-6 col-12">
             <div className="d-t-box m-b-10 buttonsuspended">
@@ -211,7 +211,7 @@ const DragonTigerA = (props: any) => {
           ""
         )}
       </div>
-      <div className="row row5">
+      <div className="row row5 d-none">
         {(isMobile && activeTab === "dragon") || !isMobile ? (
           <div className="col-lg-6 col-12">
             <div className="d-t-box m-b-10 buttonsuspended">

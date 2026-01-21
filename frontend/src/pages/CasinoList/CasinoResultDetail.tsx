@@ -74,33 +74,41 @@ const CasinoResultDetail = (props: any) => {
           //   className={popupdata.slug}
           // /> old one 
 
-          <div className={`card bg-gray shadow-m mb-3 p-2 small ${popupdata.slug}`} style={{ maxWidth: "" }}>
+          <div className={`carddf bg-grayc shadow-m mb-3 small ${popupdata.slug}`} style={{ maxWidth: "" }}>
             <div className="card-bod">
-              <h6 className="card-title mb-2 text-muted">Result Summary</h6>
+              {/* <h6 className="card-title mb-2 text-muted">Result Summary</h6> */}
 
-              <div className='d-flex justify-content-between '>
-                <div className='borderr'>
+              <div className='d-flex flex-column align-items-center'>
+             
+                <div className='bord'>
+                <div className="bg-danger mb-10 p-2">
+					      		<p style={{fontSize:"28px"}}  className="text-white">{casinoResult?.html?.gameType} - Result</p>
+					      	</div>
+
                   <ul className="list-unstyled mb-0">
-                    <li><strong>Winner:</strong> {casinoResult?.html?.winnerName}</li>
-                    <li><strong>Odd/Even:</strong> {casinoResult?.html?.winnersString?.includes('Even') ? 'Even' : 'Odd'}</li>
-                    <li><strong>Color:</strong> {casinoResult?.html?.winnersString?.includes('Black') ? 'Black' : 'Red'}</li>
-                    <li><strong>Card:</strong> {casinoResult?.html?.result}</li>
+                    <li style={{fontSize:"19px"}} className='text-center mb-10 '><strong>RoundID:</strong> {casinoResult?.html?.mid}</li>
+                    {/* <li><strong>Odd/Even:</strong> {casinoResult?.html?.winnersString?.includes('Even') ? 'Even' : 'Odd'}</li> */}
+                    {/* <li><strong>Color:</strong> {casinoResult?.html?.winnersString?.includes('Black') ? 'Black' : 'Red'}</li> */}
+                    {/* <li><strong>Card:</strong> {casinoResult?.html?.result}</li> */}
                     {/* <li><strong>Line:</strong> {casinoResult?.html?.resultsids?.replace(/SID/g, '').split(',').join(' ')}</li> */}
                     {/* <li><strong>Status:</strong> {casinoResult?.html?.status}</li> */}
 
                   </ul></div>
 
-                <div className="d-grid" style={{ display: "grid", gridTemplateColumns: "repeat(3, auto)", gap: "6px" }}>
-                {casinoResult?.html?.C1 ?  <img style={{height:"35px", width:"auto", marginInlineEnd:"1px"}} src={`/imgs/casino/cards/${casinoResult?.html?.C1}.png`}/> : ""} 
-                {casinoResult?.html?.C3 ?  <img style={{height:"35px", width:"auto", marginInlineEnd:"1px"}} src={`/imgs/casino/cards/${casinoResult?.html?.C3}.png`}/> : ""} 
-                {casinoResult?.html?.C5 ?  <img style={{height:"35px", width:"auto", marginInlineEnd:"1px"}} src={`/imgs/casino/cards/${casinoResult?.html?.C5}.png`}/> : ""}  
-                {casinoResult?.html?.C2 ?  <img style={{height:"35px", width:"auto", marginInlineEnd:"1px"}} src={`/imgs/casino/cards/${casinoResult?.html?.C2}.png`}/> : ""} 
-                {casinoResult?.html?.C4 ?  <img style={{height:"35px", width:"auto", marginInlineEnd:"1px"}} src={`/imgs/casino/cards/${casinoResult?.html?.C4}.png`}/> : ""} 
-                {casinoResult?.html?.C6 ?  <img style={{height:"35px", width:"auto", marginInlineEnd:"1px"}} src={`/imgs/casino/cards/${casinoResult?.html?.C6}.png`}/> : ""} 
+                <div className="d-grid mb-10" style={{ display: "grid", gridTemplateColumns: "repeat(3, auto)", gap: "6px" }}>
+                {casinoResult?.html?.C1 ?  <img style={{height:"80px", width:"auto", marginInlineEnd:"1px"}} src={`/imgs/casino/cards/${casinoResult?.html?.C1}.png`}/> : ""} 
+                {casinoResult?.html?.C3 ?  <img style={{height:"80px", width:"auto", marginInlineEnd:"1px"}} src={`/imgs/casino/cards/${casinoResult?.html?.C3}.png`}/> : ""} 
+                {casinoResult?.html?.C5 ?  <img style={{height:"80px", width:"auto", marginInlineEnd:"1px"}} src={`/imgs/casino/cards/${casinoResult?.html?.C5}.png`}/> : ""}  
+                {casinoResult?.html?.C2 ?  <img style={{height:"80px", width:"auto", marginInlineEnd:"1px"}} src={`/imgs/casino/cards/${casinoResult?.html?.C2}.png`}/> : ""} 
+                {casinoResult?.html?.C4 ?  <img style={{height:"80px", width:"auto", marginInlineEnd:"1px"}} src={`/imgs/casino/cards/${casinoResult?.html?.C4}.png`}/> : ""} 
+                {casinoResult?.html?.C6 ?  <img style={{height:"80px", width:"auto", marginInlineEnd:"1px"}} src={`/imgs/casino/cards/${casinoResult?.html?.C6}.png`}/> : ""} 
 
 
 
                   
+                  </div>
+                  <div style={{fontSize:"19px"}}>
+                    <span className='text-success'>Result :</span> {casinoResult?.html?.winnerName}
                   </div>
                 
               </div>

@@ -11,6 +11,8 @@ const ButtonItem = (props: any) => {
     const dispatch = useAppDispatch()
     const userState = useAppSelector(selectUserData)
 
+    
+
     const onBet = (isBack = false, item: any) => {
         const ipAddress = authService.getIpAddress()
         if (userState.user.role === RoleType.user) {

@@ -22,7 +22,7 @@ const gameWiseResultStyle: any = {
     },
     '3': {
       clsname: 'ball-runs playerc last-result',
-      shortName: 'T',
+      shortName: 'TE',
     },
   },
   Tp1Day: {
@@ -42,7 +42,7 @@ const gameWiseResultStyle: any = {
   lucky7B: {
     '0': {
       clsname: 'ball-runs playerc last-result',
-      shortName: 'T',
+      shortName: '7',
     },
     '1': {
       clsname: 'ball-runs playera last-result',
@@ -55,11 +55,11 @@ const gameWiseResultStyle: any = {
   },
   aaa: {
     '3': {
-      clsname: 'ball-runs playerb last-result',
+      clsname: 'ball-runs playerc last-result',
       shortName: 'C',
     },
     '1': {
-      clsname: 'ball-runs playerb last-result',
+      clsname: 'ball-runs playera last-result',
       shortName: 'A',
     },
     '2': {
@@ -346,8 +346,9 @@ const LastResults = (props: any) => {
   const [popupstatus, setPopStatus] = useState<any>(false)
   const getCurrentMatch = useAppSelector(selectCasinoCurrentMatch)
 
-  const getShortName = ({ shortName, result }: any) => {
-    return <span className={`player${result}`}>{shortName}</span>
+  const getShortName = ({ shortName, rs }: any) => {
+    
+    return <span className={`player${rs}`}>{shortName}</span>
   }
   const handleResultsClick = (Item: any) => {
 
@@ -358,6 +359,8 @@ const LastResults = (props: any) => {
   const datamapItem = (Item: any, key: number) => {
     let clsname = ''
     let shortName = ''
+    const rs = Item.result
+    
     if (!Item.result) return
     try {
       switch (gameId) {
@@ -486,7 +489,7 @@ const LastResults = (props: any) => {
         }}
         className={`${clsname} ${clsscolor}`}
       >
-        {getShortName({ shortName })}
+        {getShortName({ shortName  ,rs})}
       </span>
     )
   }
@@ -521,7 +524,7 @@ const LastResults = (props: any) => {
             </span>
           </h6>
         </div>
-        <div className='card-body' style={{ padding: '5px', textAlign: 'right' }}>
+        <div className='card-body' style={{ padding: '5px', textAlign: 'center' }}>
           {lastResult && lastResult.results && lastResult.results.data && datamap()}
           {lastResult && lastResult.results && !lastResult.results.data && datamapnew()}
         </div>

@@ -605,7 +605,7 @@ const CasinoWrapper = (props: any) => {
                 )}
               {renderUiData(gameCode)}
 
-              {(liveMatchData?.remark != "" &&
+              {/* {(liveMatchData?.remark != "" &&
                 liveMatchData?.slug != "Superover" &&
                 liveMatchData?.slug != "fivewicket") ||
               (liveMatchData?.event_data?.remark != "" &&
@@ -621,7 +621,7 @@ const CasinoWrapper = (props: any) => {
                 </div>
               ) : (
                 ""
-              )}
+              )} */}
             </div>
           
           </div>
@@ -665,16 +665,17 @@ const CasinoWrapper = (props: any) => {
         </div>
       ) : (
         <div className="prelative casino-container-box">
-          <Tabs>
-            <Tab eventKey="home" title="Game">
+          <div>
+            <div>
               <div className="card m-b-10 my-bet">
                 <div className="card-header casino" style={{background:"#525252"}}>
-                  <h6 className="card-title d-inline-block">
+                  {/* <h6 className="card-title d-inline-block">
                     {casinoMatchData?.title || ""}
                     {gameCode == "race2020" &&
                       casinoMatchData &&
                       race2020Mobile()}
-                  </h6>
+                  </h6> */}
+                  <span>Round ID: {casinoMatchData?.match_id}</span>
                 </div>
                 <div
                   className={`card-body ${gameCode}`}
@@ -742,7 +743,7 @@ const CasinoWrapper = (props: any) => {
               >
                 <LastResults lastResult={casinoMatchData} gameId={gameCode} />
                 {renderUiData(gameCode)}
-                {(liveMatchData?.remark != "" && gameCode != "Cards3J") ||
+                {/* {(liveMatchData?.remark != "" && gameCode != "Cards3J") ||
                 (liveMatchData?.event_data?.remark != "" &&
                   gameCode != "Cards3J") ? (
                   <div className="notice-casino-odds">
@@ -755,7 +756,7 @@ const CasinoWrapper = (props: any) => {
                   </div>
                 ) : (
                   ""
-                )}
+                )} */}
               </div>
               {marketDataList.stake && (
                 <PlaceBetBox stake={marketDataList.stake} />
@@ -766,8 +767,6 @@ const CasinoWrapper = (props: any) => {
               {gameCode == "fivewicket" && <Cricketv />}
               {/* {gameCode == "teen20" && <T20 />} */}
               {gameCode == "Superover" && <SoRules />}
-            </Tab>
-            <Tab eventKey="profile" title={`PLACED BET (${betCount})`}>
               <div className="card m-b-10 my-bet">
                 <div
                   className="card-header"
@@ -785,18 +784,12 @@ const CasinoWrapper = (props: any) => {
                   <MyBetComponent />
                 </div>
               </div>
-            </Tab>
-          </Tabs>
-          <div className="csmobileround text-light">
-            <span
-              className="fw-12 text-underlin"
-              onClick={showRules}
-              style={{ marginLeft: "10px" }}
-            >
-              RULES
-            </span>
-            <span>Round ID: {casinoMatchData?.match_id}</span>
+            </div>
+          
           </div>
+          {/* <div className="csmobileround text-light">
+            <span>Round ID: {casinoMatchData?.match_id}</span>
+          </div> */}
         </div>
       )}
       {rulesModel ? (
