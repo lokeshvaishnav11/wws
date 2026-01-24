@@ -265,6 +265,8 @@ const ListClients = () => {
       item.betLock = value;
     } else if (type === "bet2") {
       item.betLock2 = value;
+    } else if (type === "bet3") {
+      item.betLock3 = value;
     }
     // type === "user" ? (item.isLogin = value) : (item.betLock = value);
     setUserList({ ...users, items: updateListOfItems });
@@ -272,6 +274,8 @@ const ListClients = () => {
       isUserActive: item.isLogin ? item.isLogin : false,
       isUserBetActive: item.betLock ? item.betLock : false,
       isUserBet2Active: item.betLock2 ? item.betLock2 : false,
+      isUserBet3Active: item.betLock3 ? item.betLock3 : false,
+
       username: item.username,
       single: true,
     };
@@ -1524,6 +1528,31 @@ const ListClients = () => {
                                                   }`}
                                                 >
                                                   {user?.betLock2
+                                                    ? "Lock"
+                                                    : "Unlock"}
+                                                </button>
+                                              </td>
+                                            </tr>
+
+                                            <tr>
+                                              <td>3</td>
+                                              <td>Matka</td>
+                                              <td>
+                                                <button
+                                                  onClick={() =>
+                                                    updateStatus(
+                                                      index,
+                                                      !user?.betLock3,
+                                                      "bet3"
+                                                    )
+                                                  }
+                                                  className={`btn ${
+                                                    user?.betLock3
+                                                      ? "btn-primary"
+                                                      : "btn-danger"
+                                                  }`}
+                                                >
+                                                  {user?.betLock3
                                                     ? "Lock"
                                                     : "Unlock"}
                                                 </button>

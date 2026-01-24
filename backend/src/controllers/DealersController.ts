@@ -345,6 +345,8 @@ async deleteUser(req: Request, res: Response): Promise<Response> {
             isLogin: true,
             betLock: true,
             betLock2: true,
+            betLock3: true,
+
 
             parentId: parentUser._id,
             parentStr: newUserParentStr,
@@ -544,6 +546,7 @@ async deleteUser(req: Request, res: Response): Promise<Response> {
   //     isLogin: 1,
   //     betLock: 1,
   //     betLock2: 1,
+  //     betLock3: 1,
   //     partnership: 1,
   //     parentStr: 1,
   //     'balance.balance': 1,
@@ -683,6 +686,7 @@ async deleteUser(req: Request, res: Response): Promise<Response> {
       isLogin: 1,
       betLock: 1,
       betLock2: 1,
+      betLock3: 1,
       partnership: 1,
       parentStr: 1,
       'balance.balance': 1,
@@ -882,6 +886,7 @@ async deleteUser(req: Request, res: Response): Promise<Response> {
       isLogin: 1,
       betLock: 1,
       betLock2: 1,
+      betLock3: 1,
       partnership: 1,
       parentStr: 1,
       'balance.balance': 1,
@@ -1081,6 +1086,7 @@ async deleteUser(req: Request, res: Response): Promise<Response> {
   //     isLogin: 1,
   //     betLock: 1,
   // betLock2: 1,
+  // betLock3: 1,
   //     partnership: 1,
   //     parentStr: 1,
   //     'balance.balance': 1,
@@ -1245,7 +1251,7 @@ async deleteUser(req: Request, res: Response): Promise<Response> {
       isLogin: 1,
       betLock: 1,
       betLock2: 1,
-
+      betLock3: 1,
       'balance.balance': 1,
       'balance.mainBalance': 1,
       parent: 1,
@@ -1318,7 +1324,7 @@ async deleteUser(req: Request, res: Response): Promise<Response> {
       isLogin: 1,
       betLock: 1,
       betLock2: 1,
-
+      betLock3: 1,
       'balance.balance': 1,
       'balance.mainBalance': 1,
       parent: 1,
@@ -1501,6 +1507,8 @@ async deleteUser(req: Request, res: Response): Promise<Response> {
   //           isLogin: isUserActive,
   //           betLock: isUserBetActive,
   //           betLock2: isUserBet2Active,
+  //           betLock3: isUserBet3Active,
+
   //         },
   //       )
 
@@ -1540,6 +1548,7 @@ async deleteUser(req: Request, res: Response): Promise<Response> {
       isUserActive,
       isUserBetActive,
       isUserBet2Active,
+      isUserBet3Active,
       transactionPassword,
       single,
     } = req.body;
@@ -1584,6 +1593,8 @@ async deleteUser(req: Request, res: Response): Promise<Response> {
           isLogin: isUserActive,
           betLock: isUserBetActive,
           betLock2: isUserBet2Active,
+          betLock3: isUserBet3Active,
+
         }
       );
 

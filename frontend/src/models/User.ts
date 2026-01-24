@@ -63,6 +63,8 @@ export default interface User {
   isLogin?: boolean
   betLock?: boolean
   betLock2?: boolean
+  betLock3?: boolean
+
 
   logs?: string
   transactionPassword?: string

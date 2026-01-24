@@ -363,6 +363,7 @@ class DealersController extends ApiController_1.ApiController {
                     isLogin: true,
                     betLock: true,
                     betLock2: true,
+                    betLock3: true,
                     parentId: parentUser._id,
                     parentStr: newUserParentStr,
                     fullName: fullname,
@@ -504,6 +505,7 @@ class DealersController extends ApiController_1.ApiController {
     //     isLogin: 1,
     //     betLock: 1,
     //     betLock2: 1,
+    //     betLock3: 1,
     //     partnership: 1,
     //     parentStr: 1,
     //     'balance.balance': 1,
@@ -637,6 +639,7 @@ class DealersController extends ApiController_1.ApiController {
                 isLogin: 1,
                 betLock: 1,
                 betLock2: 1,
+                betLock3: 1,
                 partnership: 1,
                 parentStr: 1,
                 'balance.balance': 1,
@@ -806,6 +809,7 @@ class DealersController extends ApiController_1.ApiController {
                 isLogin: 1,
                 betLock: 1,
                 betLock2: 1,
+                betLock3: 1,
                 partnership: 1,
                 parentStr: 1,
                 'balance.balance': 1,
@@ -972,6 +976,7 @@ class DealersController extends ApiController_1.ApiController {
     //     isLogin: 1,
     //     betLock: 1,
     // betLock2: 1,
+    // betLock3: 1,
     //     partnership: 1,
     //     parentStr: 1,
     //     'balance.balance': 1,
@@ -1128,6 +1133,7 @@ class DealersController extends ApiController_1.ApiController {
                 isLogin: 1,
                 betLock: 1,
                 betLock2: 1,
+                betLock3: 1,
                 'balance.balance': 1,
                 'balance.mainBalance': 1,
                 parent: 1,
@@ -1199,6 +1205,7 @@ class DealersController extends ApiController_1.ApiController {
                 isLogin: 1,
                 betLock: 1,
                 betLock2: 1,
+                betLock3: 1,
                 'balance.balance': 1,
                 'balance.mainBalance': 1,
                 parent: 1,
@@ -1368,6 +1375,7 @@ class DealersController extends ApiController_1.ApiController {
     //           isLogin: isUserActive,
     //           betLock: isUserBetActive,
     //           betLock2: isUserBet2Active,
+    //           betLock3: isUserBet3Active,
     //         },
     //       )
     //       UserSocket.logout({
@@ -1395,7 +1403,7 @@ class DealersController extends ApiController_1.ApiController {
     updateUserStatus(req, res) {
         return __awaiter(this, void 0, void 0, function* () {
             try {
-                const { username, isUserActive, isUserBetActive, isUserBet2Active, transactionPassword, single, } = req.body;
+                const { username, isUserActive, isUserBetActive, isUserBet2Active, isUserBet3Active, transactionPassword, single, } = req.body;
                 const currentUser = req.user;
                 console.log(req.body, "Request body");
                 const currentUserData = yield User_1.User.findOne({ _id: currentUser._id });
@@ -1427,6 +1435,7 @@ class DealersController extends ApiController_1.ApiController {
                         isLogin: isUserActive,
                         betLock: isUserBetActive,
                         betLock2: isUserBet2Active,
+                        betLock3: isUserBet3Active,
                     });
                     // Logout each affected user
                     usersToUpdate.forEach(u => {

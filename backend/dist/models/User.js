@@ -33,6 +33,7 @@ exports.userSchema = new mongoose_1.Schema({
     parentStr: [],
     betLock: Boolean,
     betLock2: Boolean,
+    betLock3: Boolean,
     // isMaster: Boolean,
     isLogin: Boolean,
     isDeleted: Boolean,

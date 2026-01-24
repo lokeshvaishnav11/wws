@@ -28,6 +28,8 @@ export interface IUser {
   parentStr?: Array<string>
   betLock?: boolean
   betLock2?: boolean
+  betLock3?: boolean
+
 
   // isMaster?: boolean;
   isLogin?: boolean
@@ -72,6 +74,8 @@ export const userSchema: Schema = new Schema(
     parentStr: [],
     betLock: Boolean,
     betLock2: Boolean,
+    betLock3: Boolean,
+
 
     // isMaster: Boolean,
     isLogin: Boolean,
