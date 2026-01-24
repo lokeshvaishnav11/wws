@@ -65,14 +65,52 @@ async editComm(req: Request, res: Response): Promise<Response> {
     session.startTransaction();
     const { _id, username, code,partnership, share , mcom , scom , matcom  } = req.body; // Make sure you're sending 'ownPartnership' from frontend
 
-    console.log(req.body, "req.body")
+    // console.log(req.body, "req.body")
     const userToUpdate: any = await User.findById(_id).session(session);
-    console.log(userToUpdate,"usertoupdate")
+
+    // console.log(userToUpdate,"usertoupdate")
     if (!userToUpdate) {
       await session.abortTransaction();
       session.endSession();
       return this.fail(res, "User not found");
     }
+
+     // 🔥 FETCH PARENT
+     const parent: any = await User.findById(userToUpdate.parentId).session(session);
+     if (!parent) {
+       await session.abortTransaction();
+       session.endSession();
+       return this.fail(res, "Parent user not found");
+     }
+
+     // 🔴 MAIN COMMISSION CHECKS (PARENT BASED)
+    if (mcom > parent.mcom) {
+      await session.abortTransaction();
+      session.endSession();
+      return this.fail(
+        res,
+        `Match Commission cannot exceed parent limit (${parent.mcom}%)`
+      );
+    }
+
+    if (scom > parent.scom) {
+      await session.abortTransaction();
+      session.endSession();
+      return this.fail(
+        res,
+        `Session Commission cannot exceed parent limit (${parent.scom}%)`
+      );
+    }
+
+    if (matcom > parent.matcom) {
+      await session.abortTransaction();
+      session.endSession();
+      return this.fail(
+        res,
+        `Matka Commission cannot exceed parent limit (${parent.matcom}%)`
+      );
+    }
+
 
 
       // Only update share

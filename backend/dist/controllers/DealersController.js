@@ -160,13 +160,36 @@ class DealersController extends ApiController_1.ApiController {
             try {
                 session.startTransaction();
                 const { _id, username, code, partnership, share, mcom, scom, matcom } = req.body; // Make sure you're sending 'ownPartnership' from frontend
-                console.log(req.body, "req.body");
+                // console.log(req.body, "req.body")
                 const userToUpdate = yield User_1.User.findById(_id).session(session);
-                console.log(userToUpdate, "usertoupdate");
+                // console.log(userToUpdate,"usertoupdate")
                 if (!userToUpdate) {
                     yield session.abortTransaction();
                     session.endSession();
                     return this.fail(res, "User not found");
+                }
+                // 🔥 FETCH PARENT
+                const parent = yield User_1.User.findById(userToUpdate.parentId).session(session);
+                if (!parent) {
+                    yield session.abortTransaction();
+                    session.endSession();
+                    return this.fail(res, "Parent user not found");
+                }
+                // 🔴 MAIN COMMISSION CHECKS (PARENT BASED)
+                if (mcom > parent.mcom) {
+                    yield session.abortTransaction();
+                    session.endSession();
+                    return this.fail(res, `Match Commission cannot exceed parent limit (${parent.mcom}%)`);
+                }
+                if (scom > parent.scom) {
+                    yield session.abortTransaction();
+                    session.endSession();
+                    return this.fail(res, `Session Commission cannot exceed parent limit (${parent.scom}%)`);
+                }
+                if (matcom > parent.matcom) {
+                    yield session.abortTransaction();
+                    session.endSession();
+                    return this.fail(res, `Matka Commission cannot exceed parent limit (${parent.matcom}%)`);
                 }
                 // Only update share
                 userToUpdate.share = share;
