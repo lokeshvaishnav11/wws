@@ -159,9 +159,9 @@ export class UserBookController extends ApiController {
 
     for (const item of betlist) {
       const childId = getChildId(item.parentStr)
-      if (!childId) continue
+     // if (!childId) continue
 
-      const childShare = childShareMap[childId.toString()] || 0
+      const childShare = childShareMap[childId?.toString()] || 0
       const shareFactor = (currentShare - childShare) / 100
 
       if (shareFactor === 0) continue
