@@ -446,7 +446,9 @@ export class BetController extends ApiController {
             const markets: any = await Market.find({
               matchId: match_id,
             });
-            const profitlist = this.getoddsprofit(bets, markets);
+            const profitlist = this.getoddsprofit(bets, markets, {});
+
+
 
             const ex = exposer + +expoMain?.casinoexposer || 0;
             return this.success(
@@ -1071,6 +1073,7 @@ export class BetController extends ApiController {
       const user: any = req.user;
       const { matchId } = req.query;
       let userId: any = { userId: ObjectId(user._id) };
+      let currentuser: any = await User.findOne({ _id: ObjectId(user._id) })
       if (user.role !== RoleType.user)
         userId = { parentStr: { $in: ObjectId(user._id) } };
       const bets: Array<IBet | null> = await Bet.find({
@@ -1087,7 +1090,8 @@ export class BetController extends ApiController {
           const markets: any = await Market.find({
             matchId,
           });
-          const profitlist = this.getoddsprofit(bets, markets);
+          const profitlist = await this.getoddsprofit(bets, markets, currentuser);
+          console.log(profitlist, "profitlistprofitlistprofitlist");
           return this.success(res, { bets: bets, odds_profit: profitlist });
         } else {
           const markets: any = await Casino.findOne({
@@ -1319,7 +1323,7 @@ export class BetController extends ApiController {
           const markets: any = await Market.find({ matchId }).lean();
           console.log(markets, "marktesss");
 
-          const profitlist = this.getoddsprofit(bets, markets);
+          const profitlist = this.getoddsprofit(bets, markets, {});
           return this.success(res, { bets, odds_profit: profitlist });
         } else {
           const markets: any = await Casino.findOne({
@@ -1350,14 +1354,14 @@ export class BetController extends ApiController {
       // let userFilter: any = {
       //   userId: new ObjectId(user._id),
       // };
-  
+
       // 👇 Admin / Agent ke liye downline bets
       if (user.role !== RoleType.user) {
         userFilter = {
           parentstr: { $in: [String(user._id)] },
         };
       }
-  
+
       const bets = await Matkabet.find({
         ...userFilter,
         roundid: matchId,      // 👈 matchId = roundid
@@ -1365,7 +1369,7 @@ export class BetController extends ApiController {
       })
         .sort({ createdAt: -1 })
         .lean();
-  
+
       return this.success(res, {
         roundid: matchId,
         bets,
@@ -1374,7 +1378,7 @@ export class BetController extends ApiController {
       return this.fail(res, e);
     }
   };
-  
+
 
   betList32 = async (req: Request, res: Response): Promise<Response> => {
     console.log(req.body, "req.body");
@@ -1407,11 +1411,11 @@ export class BetController extends ApiController {
         .lean();
 
       // console.log(bets, "Pending bets fetched");
-      let allbets =  [...bets,...mtbets]
+      let allbets = [...bets, ...mtbets]
 
       return res.status(200).json({
         success: true,
-      allbets
+        allbets
       });
     } catch (e: any) {
       console.error(e);
@@ -2053,201 +2057,201 @@ export class BetController extends ApiController {
     }
   };
 
-marketDetails = async (req: Request, res: Response): Promise<Response> => {
+  marketDetails = async (req: Request, res: Response): Promise<Response> => {
 
-  // 🔹 Decimal128 → number converter
-  function convertDecimalFields(obj: any): any {
-    const converted = { ...obj };
-    for (const key in converted) {
-      const val = converted[key];
-      if (val && typeof val === "object" && val._bsontype === "Decimal128") {
-        converted[key] = parseFloat(val.toString());
+    // 🔹 Decimal128 → number converter
+    function convertDecimalFields(obj: any): any {
+      const converted = { ...obj };
+      for (const key in converted) {
+        const val = converted[key];
+        if (val && typeof val === "object" && val._bsontype === "Decimal128") {
+          converted[key] = parseFloat(val.toString());
+        }
       }
+      return converted;
     }
-    return converted;
-  }
 
-  try {
-    const user: any = req.user;
+    try {
+      const user: any = req.user;
 
-    // 🔹 Pagination params (MATCH based)
-    const page = parseInt(req.query.page as string) || 2;
-    const limit = parseInt(req.query.limit as string) || 10;
-    const skip = (page - 1) * limit;
+      // 🔹 Pagination params (MATCH based)
+      const page = parseInt(req.query.page as string) || 2;
+      const limit = parseInt(req.query.limit as string) || 10;
+      const skip = (page - 1) * limit;
 
-    // 🔹 Get child users
-    const usersWithThisAsParent = await User.find({
-      parentStr: ObjectId(user._id),
-      role: "user" as RoleType,
-    }).lean();
+      // 🔹 Get child users
+      const usersWithThisAsParent = await User.find({
+        parentStr: ObjectId(user._id),
+        role: "user" as RoleType,
+      }).lean();
 
-    const userIds = usersWithThisAsParent.map(u => u._id);
+      const userIds = usersWithThisAsParent.map(u => u._id);
 
-    // 🔹 STEP 1: Paginated MATCHES
-    const [matches, totalMatches] = await Promise.all([
-      Match.find({})
-        .sort({ createdAt: -1 })   // change if needed
-        .skip(skip)
-        .limit(limit)
-        .lean(),
+      // 🔹 STEP 1: Paginated MATCHES
+      const [matches, totalMatches] = await Promise.all([
+        Match.find({})
+          .sort({ createdAt: -1 })   // change if needed
+          .skip(skip)
+          .limit(limit)
+          .lean(),
 
-      Match.countDocuments({}),
-    ]);
+        Match.countDocuments({}),
+      ]);
 
-    const matchIds = matches.map((m: any) => m.matchId);
+      const matchIds = matches.map((m: any) => m.matchId);
 
-    // 🔹 STEP 2: ALL bets of these matches
-    const bets = await Bet.aggregate([
-      {
-        $match: {
-          matchId: { $in: matchIds },
-          userId: { $in: userIds },
-          bet_on: { $ne: "CASINO" },
-          status: { $ne: "deleted" },
-        },
-      },
-
-      { $sort: { createdAt: -1 } },
-
-      // ===== PARENT LOOKUP =====
-      {
-        $lookup: {
-          from: "users",
-          let: { parentIds: "$parentStr" },
-          pipeline: [
-            {
-              $match: {
-                $expr: {
-                  $in: [
-                    "$_id",
-                    {
-                      $map: {
-                        input: "$$parentIds",
-                        as: "id",
-                        in: { $toObjectId: "$$id" },
-                      },
-                    },
-                  ],
-                },
-              },
-            },
-            { $project: { username: 1, _id: 0 } },
-          ],
-          as: "parentData",
-        },
-      },
-
-      {
-        $addFields: {
-          parentData: {
-            $map: { input: "$parentData", as: "p", in: "$$p.username" },
+      // 🔹 STEP 2: ALL bets of these matches
+      const bets = await Bet.aggregate([
+        {
+          $match: {
+            matchId: { $in: matchIds },
+            userId: { $in: userIds },
+            bet_on: { $ne: "CASINO" },
+            status: { $ne: "deleted" },
           },
         },
-      },
 
-      // ===== USER CODE =====
-      {
-        $lookup: {
-          from: "users",
-          localField: "userId",
-          foreignField: "_id",
-          as: "userInfo",
+        { $sort: { createdAt: -1 } },
+
+        // ===== PARENT LOOKUP =====
+        {
+          $lookup: {
+            from: "users",
+            let: { parentIds: "$parentStr" },
+            pipeline: [
+              {
+                $match: {
+                  $expr: {
+                    $in: [
+                      "$_id",
+                      {
+                        $map: {
+                          input: "$$parentIds",
+                          as: "id",
+                          in: { $toObjectId: "$$id" },
+                        },
+                      },
+                    ],
+                  },
+                },
+              },
+              { $project: { username: 1, _id: 0 } },
+            ],
+            as: "parentData",
+          },
         },
-      },
-      { $addFields: { userInfo: { $arrayElemAt: ["$userInfo", 0] } } },
-      { $addFields: { userCode: "$userInfo.code" } },
-      { $project: { userInfo: 0 } },
-    ]);
 
-    // 🔹 STEP 3: Fancy + Ledger
-    const allFancyNames = bets.map(b => b.selectionName).filter(Boolean);
+        {
+          $addFields: {
+            parentData: {
+              $map: { input: "$parentData", as: "p", in: "$$p.username" },
+            },
+          },
+        },
 
-    const [fancyResults, ledgerRaw] = await Promise.all([
-      Fancy.find({
-        matchId: { $in: matchIds },
-        fancyName: { $in: allFancyNames },
-      }).lean(),
+        // ===== USER CODE =====
+        {
+          $lookup: {
+            from: "users",
+            localField: "userId",
+            foreignField: "_id",
+            as: "userInfo",
+          },
+        },
+        { $addFields: { userInfo: { $arrayElemAt: ["$userInfo", 0] } } },
+        { $addFields: { userCode: "$userInfo.code" } },
+        { $project: { userInfo: 0 } },
+      ]);
 
-      ledger.find({
-        matchId: { $in: matchIds },
-      }).lean(),
-    ]);
+      // 🔹 STEP 3: Fancy + Ledger
+      const allFancyNames = bets.map(b => b.selectionName).filter(Boolean);
 
-    // 🔹 Share map
-    const shareMap = new Map(
-      usersWithThisAsParent.map(c => [c._id.toString(), c.share || 0])
-    );
+      const [fancyResults, ledgerRaw] = await Promise.all([
+        Fancy.find({
+          matchId: { $in: matchIds },
+          fancyName: { $in: allFancyNames },
+        }).lean(),
 
-    // 🔹 Ledger + superShare
-    const ledgerData = ledgerRaw.map(l => ({
-      ...l,
-      superShare: shareMap.get(l.ChildId?.toString()) || 0,
-    }));
+        ledger.find({
+          matchId: { $in: matchIds },
+        }).lean(),
+      ]);
 
-    // 🔹 Maps
-    const betsByMatch = new Map<string, any[]>();
-    const ledgersByBetId = new Map<string, any[]>();
-    const fancyMap = new Map<string, any>();
-
-    bets.forEach(bet => {
-      const mId = bet.matchId?.toString();
-      if (!betsByMatch.has(mId)) betsByMatch.set(mId, []);
-      betsByMatch.get(mId)!.push(bet);
-    });
-
-    ledgerData.forEach(l => {
-      const betId = l.betId?.toString();
-      if (!ledgersByBetId.has(betId)) ledgersByBetId.set(betId, []);
-      ledgersByBetId.get(betId)!.push(l);
-    });
-
-    fancyResults.forEach((f:any) => {
-      fancyMap.set(
-        `${f.matchId}_${f.fancyName}`,
-        convertDecimalFields(f)
+      // 🔹 Share map
+      const shareMap = new Map(
+        usersWithThisAsParent.map(c => [c._id.toString(), c.share || 0])
       );
-    });
 
-    // 🔹 STEP 4: Merge everything match-wise
-    const matchesWithBets = matches.map((match: any) => {
-      const relatedBets = betsByMatch.get(match.matchId?.toString()) || [];
+      // 🔹 Ledger + superShare
+      const ledgerData = ledgerRaw.map(l => ({
+        ...l,
+        superShare: shareMap.get(l.ChildId?.toString()) || 0,
+      }));
 
-      const enrichedBets = relatedBets.map(bet => {
-        const cleaned = convertDecimalFields(bet);
-        const fancyKey = `${cleaned.matchId}_${cleaned.selectionName}`;
+      // 🔹 Maps
+      const betsByMatch = new Map<string, any[]>();
+      const ledgersByBetId = new Map<string, any[]>();
+      const fancyMap = new Map<string, any>();
+
+      bets.forEach(bet => {
+        const mId = bet.matchId?.toString();
+        if (!betsByMatch.has(mId)) betsByMatch.set(mId, []);
+        betsByMatch.get(mId)!.push(bet);
+      });
+
+      ledgerData.forEach(l => {
+        const betId = l.betId?.toString();
+        if (!ledgersByBetId.has(betId)) ledgersByBetId.set(betId, []);
+        ledgersByBetId.get(betId)!.push(l);
+      });
+
+      fancyResults.forEach((f: any) => {
+        fancyMap.set(
+          `${f.matchId}_${f.fancyName}`,
+          convertDecimalFields(f)
+        );
+      });
+
+      // 🔹 STEP 4: Merge everything match-wise
+      const matchesWithBets = matches.map((match: any) => {
+        const relatedBets = betsByMatch.get(match.matchId?.toString()) || [];
+
+        const enrichedBets = relatedBets.map(bet => {
+          const cleaned = convertDecimalFields(bet);
+          const fancyKey = `${cleaned.matchId}_${cleaned.selectionName}`;
+          return {
+            ...cleaned,
+            fancy: fancyMap.get(fancyKey),
+          };
+        });
+
+        const relatedBetIds = relatedBets.map(b => b._id?.toString());
+        const ledgers = relatedBetIds.flatMap(
+          id => ledgersByBetId.get(id) || []
+        );
+
         return {
-          ...cleaned,
-          fancy: fancyMap.get(fancyKey),
+          ...match,
+          bets: enrichedBets,
+          ledgers,
         };
       });
 
-      const relatedBetIds = relatedBets.map(b => b._id?.toString());
-      const ledgers = relatedBetIds.flatMap(
-        id => ledgersByBetId.get(id) || []
-      );
+      // ✅ FINAL RESPONSE
+      return this.success(res, {
+        status: true,
+        page,
+        limit,
+        totalMatches,
+        totalPages: Math.ceil(totalMatches / limit),
+        matches: matchesWithBets.reverse(),
+      });
 
-      return {
-        ...match,
-        bets: enrichedBets,
-        ledgers,
-      };
-    });
-
-    // ✅ FINAL RESPONSE
-    return this.success(res, {
-      status: true,
-      page,
-      limit,
-      totalMatches,
-      totalPages: Math.ceil(totalMatches / limit),
-      matches: matchesWithBets.reverse(),
-    });
-
-  } catch (e: any) {
-    console.error("❌ marketDetails error:", e);
-    return this.fail(res, e);
-  }
-};
+    } catch (e: any) {
+      console.error("❌ marketDetails error:", e);
+      return this.fail(res, e);
+    }
+  };
 
 
 
@@ -2941,7 +2945,7 @@ marketDetails = async (req: Request, res: Response): Promise<Response> => {
 
 
   marketMatka = async (req: Request, res: Response): Promise<Response> => {
-    
+
 
     try {
       const user: any = req.user;
@@ -2955,7 +2959,7 @@ marketDetails = async (req: Request, res: Response): Promise<Response> => {
 
       // Step 2: Extract their _id into an array
       const userIds = usersWithThisAsParent.map((u) => u._id);
-     
+
 
       const bets = await Matkabet.aggregate([
         {
@@ -3006,15 +3010,15 @@ marketDetails = async (req: Request, res: Response): Promise<Response> => {
 
 
 
- 
+
 
       return this.success(res, {
         status: true,
-     
+
         bets,
       });
 
-     
+
     } catch (e: any) {
       return this.fail(res, e);
     }
@@ -3024,107 +3028,228 @@ marketDetails = async (req: Request, res: Response): Promise<Response> => {
 
 
 
-  getoddsprofit = (bets: any, markets: any) => {
-    var odds_profit: any = {};
+  // getoddsprofit = (bets: any, markets: any) => {
+  //   var odds_profit: any = {};
+  //   const filterbets =
+  //     bets && bets.length > 0
+  //       ? bets.filter((Item: any) => Item.bet_on == BetOn.MATCH_ODDS)
+  //       : [];
+  //   const promiseprofit = filterbets.map((Item: any) => {
+  //     const selectionIdBet = Item.selectionId;
+  //     const getBetType = Item.isBack;
+  //     const lossAmt = Item.stack;
+  //     const getOdds = Item.odds;
+
+  //     let profitAmt: number = (parseFloat(getOdds) - 1) * parseFloat(lossAmt);
+  //     let filtermarket =
+  //       markets && markets.length > 0
+  //         ? markets.filter(
+  //           (ItemMarket: any) => ItemMarket.marketId == Item.marketId
+  //         )
+  //         : [];
+  //     const filtermarketdata: any =
+  //       filtermarket && filtermarket.length > 0 ? filtermarket[0] : {};
+  //     if (filtermarketdata) {
+  //       filtermarketdata.runners.map((mData: any, mIndex: number) => {
+  //         var SelectionId = mData.selectionId;
+  //         if (
+  //           odds_profit[filtermarketdata.marketId + "_" + SelectionId] ==
+  //           undefined
+  //         ) {
+  //           odds_profit[filtermarketdata.marketId + "_" + SelectionId] = 0;
+  //         }
+
+  //         if (SelectionId == selectionIdBet) {
+  //           if (getBetType) {
+  //             odds_profit[filtermarketdata.marketId + "_" + SelectionId] =
+  //               odds_profit[filtermarketdata.marketId + "_" + SelectionId] +
+  //               profitAmt;
+  //           } else {
+  //             odds_profit[filtermarketdata.marketId + "_" + SelectionId] =
+  //               odds_profit[filtermarketdata.marketId + "_" + SelectionId] -
+  //               profitAmt;
+  //           }
+  //         } else {
+  //           if (getBetType) {
+  //             odds_profit[filtermarketdata.marketId + "_" + SelectionId] =
+  //               odds_profit[filtermarketdata.marketId + "_" + SelectionId] -
+  //               lossAmt;
+  //           } else {
+  //             odds_profit[filtermarketdata.marketId + "_" + SelectionId] =
+  //               odds_profit[filtermarketdata.marketId + "_" + SelectionId] +
+  //               lossAmt;
+  //           }
+  //         }
+  //       });
+  //     }
+  //   });
+  //   Promise.all(promiseprofit);
+  //   const filterbetsFancy =
+  //     bets && bets.length > 0
+  //       ? bets.filter((Item: any) => Item.bet_on == BetOn.FANCY)
+  //       : [];
+
+  //   var fancy_profit: any = {};
+  //   const promiseprofitFancy = filterbetsFancy.map((Item: any) => {
+  //     if (fancy_profit[Item.selectionId] == undefined) {
+  //       fancy_profit[Item.selectionId] = 0;
+  //     }
+  //     if (Item.isBack) {
+  //       if (Item["volume"] > 100) {
+  //         if (Item.gtype === "fancy1") {
+  //           //fancy_profit[Item['selectionId']] += Item.odds * Item.stack - Item.stack
+  //           fancy_profit[Item["selectionId"]] += -Item.stack;
+  //         } else {
+  //           fancy_profit[Item["selectionId"]] += -Item["stack"];
+  //         }
+  //       } else {
+  //         fancy_profit[Item["selectionId"]] += -Item["stack"];
+  //       }
+  //       ///fancy_profit[Item['selectionId']] += -(Item['stack'] * Item['volume']) / 100
+  //     } else {
+  //       if (Item["volume"] > 100) {
+  //         if (Item.gtype === "fancy1") {
+  //           fancy_profit[Item["selectionId"]] +=
+  //             -1 * (Item.odds * Item.stack - Item.stack);
+  //         } else {
+  //           let amt: any =
+  //             (parseInt(Item["stack"]) * parseInt(Item["volume"])) / 100;
+  //           fancy_profit[Item["selectionId"]] += -amt;
+  //         }
+  //       } else {
+  //         fancy_profit[Item["selectionId"]] += -Item["stack"];
+  //       }
+
+  //       /// fancy_profit[Item['selectionId']] +=
+  //       ///  -(parseInt(Item['stack']) * parseInt(Item['volume'])) / 100
+  //     }
+  //   });
+  //   Promise.all(promiseprofitFancy);
+
+  //   odds_profit = { ...odds_profit, ...fancy_profit };
+  //   return odds_profit;
+  // };
+
+  getoddsprofit = async (
+    bets: any[],
+    markets: any[],
+    currentUser: any
+  ) => {
+    let odds_profit: any = {}
+    /* -------------------------------
+       1️⃣ current user share
+    -------------------------------- */
+    const currentShare = Number(currentUser.share)
+    console.log(currentUser, "current user in getoddsprofit", currentShare)
+
+    /* -------------------------------
+       2️⃣ helper: direct childId
+    -------------------------------- */
+    const getChildId = (parentStr: any[]) => {
+      const idx = parentStr.findIndex(
+        (id) => id.toString() === currentUser._id.toString()
+      )
+      if (idx === -1) return null
+      return parentStr[idx + 1] || null
+    }
+
+    /* -------------------------------
+       3️⃣ unique childIds
+    -------------------------------- */
+    const childIds = [
+      ...new Set(
+        bets
+          .map(b => getChildId(b.parentStr))
+          .filter(Boolean)
+          .map(id => id.toString())
+      ),
+    ]
+
+    /* -------------------------------
+       4️⃣ child shares ek query me
+    -------------------------------- */
+    const childUsers = await User.find(
+      { _id: { $in: childIds } },
+      { share: 1 }
+    ).lean()
+
+    const childShareMap: any = {}
+    childUsers.forEach(u => {
+      childShareMap[u._id.toString()] = Number(u.share)
+    })
+
+    console.log(childShareMap, "child share map in getoddsprofit")
+
+    /* =====================================================
+       MATCH ODDS
+    ====================================================== */
     const filterbets =
       bets && bets.length > 0
-        ? bets.filter((Item: any) => Item.bet_on == BetOn.MATCH_ODDS)
-        : [];
-    const promiseprofit = filterbets.map((Item: any) => {
-      const selectionIdBet = Item.selectionId;
-      const getBetType = Item.isBack;
-      const lossAmt = Item.stack;
-      const getOdds = Item.odds;
+        ? bets.filter((Item: any) => Item.bet_on === BetOn.MATCH_ODDS)
+        : []
 
-      let profitAmt: number = (parseFloat(getOdds) - 1) * parseFloat(lossAmt);
-      let filtermarket =
-        markets && markets.length > 0
-          ? markets.filter(
-            (ItemMarket: any) => ItemMarket.marketId == Item.marketId
-          )
-          : [];
-      const filtermarketdata: any =
-        filtermarket && filtermarket.length > 0 ? filtermarket[0] : {};
-      if (filtermarketdata) {
-        filtermarketdata.runners.map((mData: any, mIndex: number) => {
-          var SelectionId = mData.selectionId;
-          if (
-            odds_profit[filtermarketdata.marketId + "_" + SelectionId] ==
-            undefined
-          ) {
-            odds_profit[filtermarketdata.marketId + "_" + SelectionId] = 0;
-          }
+    for (const Item of filterbets) {
+      const childId = getChildId(Item.parentStr)
+      if (!childId) continue
 
-          if (SelectionId == selectionIdBet) {
-            if (getBetType) {
-              odds_profit[filtermarketdata.marketId + "_" + SelectionId] =
-                odds_profit[filtermarketdata.marketId + "_" + SelectionId] +
-                profitAmt;
-            } else {
-              odds_profit[filtermarketdata.marketId + "_" + SelectionId] =
-                odds_profit[filtermarketdata.marketId + "_" + SelectionId] -
-                profitAmt;
-            }
-          } else {
-            if (getBetType) {
-              odds_profit[filtermarketdata.marketId + "_" + SelectionId] =
-                odds_profit[filtermarketdata.marketId + "_" + SelectionId] -
-                lossAmt;
-            } else {
-              odds_profit[filtermarketdata.marketId + "_" + SelectionId] =
-                odds_profit[filtermarketdata.marketId + "_" + SelectionId] +
-                lossAmt;
-            }
-          }
-        });
-      }
-    });
-    Promise.all(promiseprofit);
-    const filterbetsFancy =
-      bets && bets.length > 0
-        ? bets.filter((Item: any) => Item.bet_on == BetOn.FANCY)
-        : [];
+      const childShare = childShareMap[childId.toString()] || 0
+      const shareFactor = (currentShare - childShare) / 100
+      if (shareFactor === 0) continue
 
-    var fancy_profit: any = {};
-    const promiseprofitFancy = filterbetsFancy.map((Item: any) => {
-      if (fancy_profit[Item.selectionId] == undefined) {
-        fancy_profit[Item.selectionId] = 0;
-      }
-      if (Item.isBack) {
-        if (Item["volume"] > 100) {
-          if (Item.gtype === "fancy1") {
-            //fancy_profit[Item['selectionId']] += Item.odds * Item.stack - Item.stack
-            fancy_profit[Item["selectionId"]] += -Item.stack;
-          } else {
-            fancy_profit[Item["selectionId"]] += -Item["stack"];
-          }
-        } else {
-          fancy_profit[Item["selectionId"]] += -Item["stack"];
-        }
-        ///fancy_profit[Item['selectionId']] += -(Item['stack'] * Item['volume']) / 100
-      } else {
-        if (Item["volume"] > 100) {
-          if (Item.gtype === "fancy1") {
-            fancy_profit[Item["selectionId"]] +=
-              -1 * (Item.odds * Item.stack - Item.stack);
-          } else {
-            let amt: any =
-              (parseInt(Item["stack"]) * parseInt(Item["volume"])) / 100;
-            fancy_profit[Item["selectionId"]] += -amt;
-          }
-        } else {
-          fancy_profit[Item["selectionId"]] += -Item["stack"];
+      const selectionIdBet = Item.selectionId
+      const getBetType = Item.isBack
+      const lossAmt = Number(Item.stack)
+      const odds = Number(Item.odds)
+
+      const profitAmt = (odds - 1) * lossAmt * shareFactor
+      const lossWithShare = lossAmt * shareFactor
+
+      const filtermarket = markets.filter(
+        (m: any) => m.marketId === Item.marketId
+      )
+      const filtermarketdata = filtermarket[0]
+      if (!filtermarketdata) continue
+
+      filtermarketdata.runners.forEach((mData: any) => {
+        const SelectionId = mData.selectionId
+        const key = filtermarketdata.marketId + "_" + SelectionId
+
+        // ✅ THIS LINE WAS THE MAIN BUG
+        if (odds_profit[key] === undefined) {
+          odds_profit[key] = 0
         }
 
-        /// fancy_profit[Item['selectionId']] +=
-        ///  -(parseInt(Item['stack']) * parseInt(Item['volume'])) / 100
-      }
-    });
-    Promise.all(promiseprofitFancy);
+        if (SelectionId === selectionIdBet) {
+          if (getBetType) {
+            odds_profit[key] += profitAmt
+          } else {
+            odds_profit[key] -= profitAmt
+          }
+        } else {
+          if (getBetType) {
+            odds_profit[key] -= lossWithShare
+          } else {
+            odds_profit[key] += lossWithShare
+          }
+        }
+      })
+    }
 
-    odds_profit = { ...odds_profit, ...fancy_profit };
-    return odds_profit;
-  };
+    console.log(odds_profit, "odds profit after match odds")
+    /* =====================================================
+       FANCY
+    ====================================================== */
+    const fancy_profit: any = {}
+
+    
+
+    /* -------------------------------
+       final merge
+    -------------------------------- */
+    odds_profit = { ...odds_profit, ...fancy_profit }
+    return odds_profit
+  }
+
 
   getcasinooddsprofit = (bets: any, markets: any, matchInfo: any) => {
     var odds_profit: any = {};
@@ -3421,7 +3546,7 @@ marketDetails = async (req: Request, res: Response): Promise<Response> => {
         {
           $group: {
             _id: "$roundid",
-            id: {$first :"$id"},
+            id: { $first: "$id" },
             matchName: { $first: "$roundid" },
             myCount: { $sum: 1 },
             roundid: { $first: "$roundid" },
@@ -3477,7 +3602,7 @@ marketDetails = async (req: Request, res: Response): Promise<Response> => {
       //   },
       // ]);
 
-      return this.success(res, [...bets,...matkabets]);
+      return this.success(res, [...bets, ...matkabets]);
     } catch (e: any) {
       return this.fail(res, e);
     }
