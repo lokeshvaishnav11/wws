@@ -370,6 +370,7 @@ const MatkaDetail = () => {
             
               const closeTime = moment()
                 .tz("Asia/Kolkata")
+                .add(game.gamename === "Disawar" ? 1 : 0, "day")
                 .hour(game.closetime.hour)
                 .minute(game.closetime.minute)
                 .second(0)

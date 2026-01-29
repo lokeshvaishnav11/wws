@@ -199,6 +199,7 @@ const MatkaPlay = () => {
 const closeTime = match?.closetime
   ? moment()
       .tz("Asia/Kolkata")
+      .add(match.gamename === "Disawar" ? 1 : 0, "day")
       .hour(match.closetime.hour)
       .minute(match.closetime.minute)
       .second(0)
