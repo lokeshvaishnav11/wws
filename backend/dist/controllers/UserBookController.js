@@ -98,7 +98,7 @@ class UserBookController extends ApiController_1.ApiController {
                 const matchfilter = {
                     matchId: parseInt(body.matchId),
                     selectionId: parseInt(body.selectionId),
-                    // status: 'pending',
+                    parentStr: { $in: [user._id] }
                 };
                 const betlist = yield Bet_1.Bet.find(matchfilter, { odds: 1, pnl: 1, loss: 1, isBack: 1, parentStr: 1 }).lean();
                 if (!betlist.length) {

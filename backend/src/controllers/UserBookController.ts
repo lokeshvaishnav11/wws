@@ -87,11 +87,11 @@ export class UserBookController extends ApiController {
     /* -------------------------------
        2️⃣ bets uthao
     -------------------------------- */
-    const matchfilter = {
-      matchId: parseInt(body.matchId),
-      selectionId: parseInt(body.selectionId),
-      // status: 'pending',
-    }
+   const matchfilter = {
+  matchId: parseInt(body.matchId),
+  selectionId: parseInt(body.selectionId),
+  parentStr: { $in: [user._id] }
+}
 
     const betlist: any[] = await Bet.find(
       matchfilter,
