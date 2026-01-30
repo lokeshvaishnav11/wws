@@ -111,6 +111,15 @@ async editComm(req: Request, res: Response): Promise<Response> {
       );
     }
 
+     if (share > parent.share) {
+      await session.abortTransaction();
+      session.endSession();
+      return this.fail(
+        res,
+        `Super share cannot exceed parent limit (${parent.share}%)`
+      );
+    }
+
 
 
       // Only update share

@@ -191,6 +191,11 @@ class DealersController extends ApiController_1.ApiController {
                     session.endSession();
                     return this.fail(res, `Matka Commission cannot exceed parent limit (${parent.matcom}%)`);
                 }
+                if (share > parent.share) {
+                    yield session.abortTransaction();
+                    session.endSession();
+                    return this.fail(res, `Super share cannot exceed parent limit (${parent.share}%)`);
+                }
                 // Only update share
                 userToUpdate.share = share;
                 userToUpdate.mcom = mcom;
