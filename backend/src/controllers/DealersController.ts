@@ -298,6 +298,10 @@ async deleteUser(req: Request, res: Response): Promise<Response> {
             return this.fail(res, 'User already exixts!')
           }
 
+          if(share > pshare){
+            return this.fail(res, 'Share must be less than or equal to Parent Share')
+          }
+
           const parentUser: any = await User.findOne({ username: parent })
 
           if (!parentUser) {

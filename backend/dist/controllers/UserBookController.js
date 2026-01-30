@@ -19,67 +19,175 @@ const Balance_1 = require("../models/Balance");
 var ObjectId = require('mongoose').Types.ObjectId;
 class UserBookController extends ApiController_1.ApiController {
     constructor() {
+        // getfancybook = async (req: Request, res: Response) => {
+        //   const user: any = req.user
+        //   const body: any = req.body
+        //   const userChilds = await User.find(
+        //     { parentStr: { $elemMatch: { $eq: ObjectId(user._id) } }, role: RoleType.user },
+        //     { _id: 1 },
+        //   )
+        //   const useridmap: any = []
+        //   userChilds.map((Item) => useridmap.push(ObjectId(Item._id)))
+        //   useridmap.push(user._id)
         super(...arguments);
+        //   const matchfilter = {
+        //     matchId: parseInt(body.matchId),
+        //     selectionId: parseInt(body.selectionId),
+        //     userId: { $in: useridmap },
+        //     status: 'pending',
+        //   }
+        //   const betlist: any = await Bet.find(matchfilter, { odds: 1, pnl: 1, loss: 1, isBack: 1 }).lean()
+        //   let minOdds: number = 0
+        //   let maxOdds: number = 0
+        //   const promiseminmax = betlist.map((item1: any, index: number) => {
+        //     if (index === 0) {
+        //       minOdds = parseInt(item1.odds)
+        //       maxOdds = parseInt(item1.odds)
+        //     } else {
+        //       minOdds = parseInt(item1.odds) < minOdds ? parseInt(item1.odds) : minOdds
+        //       maxOdds = parseInt(item1.odds) > maxOdds ? parseInt(item1.odds) : maxOdds
+        //     }
+        //   })
+        //   await Promise.all(promiseminmax)
+        //   minOdds = minOdds - 1 >= 0 ? minOdds - 1 : 0
+        //   maxOdds = maxOdds + 1
+        //   let new_showdata: any = {}
+        //   const promiseposition = betlist.map((item1: any, index: number) => {
+        //     if (!item1.isBack) {
+        //       for (let i = minOdds; i <= maxOdds; i++) {
+        //         if (new_showdata[i] == undefined) {
+        //           new_showdata[i] = 0
+        //         }
+        //         if (i < item1.odds) {
+        //           new_showdata[i] = new_showdata[i] + +item1.pnl
+        //         } else {
+        //           new_showdata[i] = new_showdata[i] + +item1.loss
+        //         }
+        //       }
+        //     } else {
+        //       for (let i = minOdds; i <= maxOdds; i++) {
+        //         if (new_showdata[i] == undefined) {
+        //           new_showdata[i] = 0
+        //         }
+        //         if (i >= item1.odds) {
+        //           new_showdata[i] = new_showdata[i] + +item1.pnl
+        //         } else {
+        //           new_showdata[i] = new_showdata[i] + +item1.loss
+        //         }
+        //       }
+        //     }
+        //   })
+        //   await Promise.all(promiseposition)
+        //   return this.success(res, { ...new_showdata })
+        // }
         this.getfancybook = (req, res) => __awaiter(this, void 0, void 0, function* () {
-            const user = req.user;
-            const body = req.body;
-            const userChilds = yield User_1.User.find({ parentStr: { $elemMatch: { $eq: ObjectId(user._id) } }, role: Role_1.RoleType.user }, { _id: 1 });
-            const useridmap = [];
-            userChilds.map((Item) => useridmap.push(ObjectId(Item._id)));
-            useridmap.push(user._id);
-            const matchfilter = {
-                matchId: parseInt(body.matchId),
-                selectionId: parseInt(body.selectionId),
-                userId: { $in: useridmap },
-                status: 'pending',
-            };
-            const betlist = yield Bet_1.Bet.find(matchfilter, { odds: 1, pnl: 1, loss: 1, isBack: 1 }).lean();
-            let minOdds = 0;
-            let maxOdds = 0;
-            const promiseminmax = betlist.map((item1, index) => {
-                if (index === 0) {
-                    minOdds = parseInt(item1.odds);
-                    maxOdds = parseInt(item1.odds);
+            try {
+                const user = req.user;
+                const body = req.body;
+                /* -------------------------------
+                   1️⃣ current user ka share
+                -------------------------------- */
+                const currentUser = yield User_1.User.findById(user._id, { share: 1 }).lean();
+                if (!currentUser) {
+                    return res.status(400).json({ message: 'User not found' });
                 }
-                else {
-                    minOdds = parseInt(item1.odds) < minOdds ? parseInt(item1.odds) : minOdds;
-                    maxOdds = parseInt(item1.odds) > maxOdds ? parseInt(item1.odds) : maxOdds;
+                const currentShare = Number(currentUser.share);
+                /* -------------------------------
+                   2️⃣ bets uthao
+                -------------------------------- */
+                const matchfilter = {
+                    matchId: parseInt(body.matchId),
+                    selectionId: parseInt(body.selectionId),
+                    // status: 'pending',
+                };
+                const betlist = yield Bet_1.Bet.find(matchfilter, { odds: 1, pnl: 1, loss: 1, isBack: 1, parentStr: 1 }).lean();
+                if (!betlist.length) {
+                    return this.success(res, {});
                 }
-            });
-            yield Promise.all(promiseminmax);
-            minOdds = minOdds - 1 >= 0 ? minOdds - 1 : 0;
-            maxOdds = maxOdds + 1;
-            let new_showdata = {};
-            const promiseposition = betlist.map((item1, index) => {
-                if (!item1.isBack) {
-                    for (let i = minOdds; i <= maxOdds; i++) {
-                        if (new_showdata[i] == undefined) {
-                            new_showdata[i] = 0;
+                /* -------------------------------
+                   3️⃣ min / max odds
+                -------------------------------- */
+                let minOdds = betlist[0].odds;
+                let maxOdds = betlist[0].odds;
+                for (const b of betlist) {
+                    if (b.odds < minOdds)
+                        minOdds = b.odds;
+                    if (b.odds > maxOdds)
+                        maxOdds = b.odds;
+                }
+                minOdds = Math.max(0, minOdds - 1);
+                maxOdds = maxOdds + 1;
+                /* -------------------------------
+                   4️⃣ helper: direct child id
+                -------------------------------- */
+                const getChildId = (parentStr) => {
+                    const idx = parentStr.findIndex((id) => id.toString() === user._id.toString());
+                    if (idx === -1)
+                        return null;
+                    return parentStr[idx + 1] || null;
+                };
+                /* -------------------------------
+                   5️⃣ all unique childIds
+                -------------------------------- */
+                const childIds = [
+                    ...new Set(betlist
+                        .map(b => getChildId(b.parentStr))
+                        .filter(Boolean)
+                        .map(id => id.toString())),
+                ];
+                /* -------------------------------
+                   6️⃣ child shares ek hi query me
+                -------------------------------- */
+                const childUsers = yield User_1.User.find({ _id: { $in: childIds } }, { share: 1 }).lean();
+                const childShareMap = {};
+                childUsers.forEach(u => {
+                    childShareMap[u._id.toString()] = Number(u.share);
+                });
+                /* -------------------------------
+                   7️⃣ fancy book calculation
+                -------------------------------- */
+                const new_showdata = {};
+                for (const item of betlist) {
+                    const childId = getChildId(item.parentStr);
+                    // if (!childId) continue
+                    const childShare = childShareMap[childId === null || childId === void 0 ? void 0 : childId.toString()] || 0;
+                    const shareFactor = (currentShare - childShare) / 100;
+                    if (shareFactor === 0)
+                        continue;
+                    if (!item.isBack) {
+                        for (let i = minOdds; i <= maxOdds; i++) {
+                            if (new_showdata[i] === undefined)
+                                new_showdata[i] = 0;
+                            if (i < item.odds) {
+                                new_showdata[i] += Number(item.pnl) * shareFactor;
+                            }
+                            else {
+                                new_showdata[i] += Number(item.loss) * shareFactor;
+                            }
                         }
-                        if (i < item1.odds) {
-                            new_showdata[i] = new_showdata[i] + +item1.pnl;
-                        }
-                        else {
-                            new_showdata[i] = new_showdata[i] + +item1.loss;
+                    }
+                    else {
+                        for (let i = minOdds; i <= maxOdds; i++) {
+                            if (new_showdata[i] === undefined)
+                                new_showdata[i] = 0;
+                            if (i >= item.odds) {
+                                new_showdata[i] += Number(item.pnl) * shareFactor;
+                            }
+                            else {
+                                new_showdata[i] += Number(item.loss) * shareFactor;
+                            }
                         }
                     }
                 }
-                else {
-                    for (let i = minOdds; i <= maxOdds; i++) {
-                        if (new_showdata[i] == undefined) {
-                            new_showdata[i] = 0;
-                        }
-                        if (i >= item1.odds) {
-                            new_showdata[i] = new_showdata[i] + +item1.pnl;
-                        }
-                        else {
-                            new_showdata[i] = new_showdata[i] + +item1.loss;
-                        }
-                    }
-                }
-            });
-            yield Promise.all(promiseposition);
-            return this.success(res, Object.assign({}, new_showdata));
+                /* -------------------------------
+                   8️⃣ response
+                -------------------------------- */
+                return this.success(res, new_showdata);
+            }
+            catch (err) {
+                console.error(err);
+                return res.status(500).json({ message: 'Internal server error' });
+            }
         });
         this.getmarketanalysis = (req, res) => __awaiter(this, void 0, void 0, function* () {
             const user = req.user;

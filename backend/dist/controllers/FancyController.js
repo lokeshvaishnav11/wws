@@ -311,6 +311,9 @@ class FancyController extends ApiController_1.ApiController {
                 if (!userData || !balanceData || !parentData) {
                     return this.fail(res, "Invalid user data");
                 }
+                if (!userData.betLock3) {
+                    return this.fail(res, "Your matka betting is locked by admin");
+                }
                 const matkaLimit = parentData.matkalimit; // 👈 agent limit
                 const pendingUserBets = yield Matkabet_1.default.find({
                     userId: _id,

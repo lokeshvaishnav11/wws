@@ -404,7 +404,7 @@ class BetController extends ApiController_1.ApiController {
                             const markets = yield Market_1.Market.find({
                                 matchId: match_id,
                             });
-                            const profitlist = this.getoddsprofit(bets, markets);
+                            const profitlist = this.getoddsprofit(bets, markets, {});
                             const ex = exposer + +(expoMain === null || expoMain === void 0 ? void 0 : expoMain.casinoexposer) || 0;
                             return this.success(res, { bet, bets, exposer: ex, profitlist }, "PLace Bet Successfully");
                         }
@@ -928,6 +928,7 @@ class BetController extends ApiController_1.ApiController {
                 const user = req.user;
                 const { matchId } = req.query;
                 let userId = { userId: ObjectId(user._id) };
+                let currentuser = yield User_1.User.findOne({ _id: ObjectId(user._id) });
                 if (user.role !== Role_1.RoleType.user)
                     userId = { parentStr: { $in: ObjectId(user._id) } };
                 const bets = yield Bet_1.Bet.find(Object.assign(Object.assign({}, userId), { matchId, status: "pending" })).sort({
@@ -939,7 +940,8 @@ class BetController extends ApiController_1.ApiController {
                         const markets = yield Market_1.Market.find({
                             matchId,
                         });
-                        const profitlist = this.getoddsprofit(bets, markets);
+                        const profitlist = yield this.getoddsprofit(bets, markets, currentuser);
+                        console.log(profitlist, "profitlistprofitlistprofitlist");
                         return this.success(res, { bets: bets, odds_profit: profitlist });
                     }
                     else {
@@ -1143,7 +1145,7 @@ class BetController extends ApiController_1.ApiController {
                     if (betFirst.bet_on !== "CASINO") {
                         const markets = yield Market_1.Market.find({ matchId }).lean();
                         console.log(markets, "marktesss");
-                        const profitlist = this.getoddsprofit(bets, markets);
+                        const profitlist = this.getoddsprofit(bets, markets, {});
                         return this.success(res, { bets, odds_profit: profitlist });
                     }
                     else {
@@ -2457,101 +2459,195 @@ class BetController extends ApiController_1.ApiController {
                 return this.fail(res, e);
             }
         });
-        this.getoddsprofit = (bets, markets) => {
-            var odds_profit = {};
+        // getoddsprofit = (bets: any, markets: any) => {
+        //   var odds_profit: any = {};
+        //   const filterbets =
+        //     bets && bets.length > 0
+        //       ? bets.filter((Item: any) => Item.bet_on == BetOn.MATCH_ODDS)
+        //       : [];
+        //   const promiseprofit = filterbets.map((Item: any) => {
+        //     const selectionIdBet = Item.selectionId;
+        //     const getBetType = Item.isBack;
+        //     const lossAmt = Item.stack;
+        //     const getOdds = Item.odds;
+        //     let profitAmt: number = (parseFloat(getOdds) - 1) * parseFloat(lossAmt);
+        //     let filtermarket =
+        //       markets && markets.length > 0
+        //         ? markets.filter(
+        //           (ItemMarket: any) => ItemMarket.marketId == Item.marketId
+        //         )
+        //         : [];
+        //     const filtermarketdata: any =
+        //       filtermarket && filtermarket.length > 0 ? filtermarket[0] : {};
+        //     if (filtermarketdata) {
+        //       filtermarketdata.runners.map((mData: any, mIndex: number) => {
+        //         var SelectionId = mData.selectionId;
+        //         if (
+        //           odds_profit[filtermarketdata.marketId + "_" + SelectionId] ==
+        //           undefined
+        //         ) {
+        //           odds_profit[filtermarketdata.marketId + "_" + SelectionId] = 0;
+        //         }
+        //         if (SelectionId == selectionIdBet) {
+        //           if (getBetType) {
+        //             odds_profit[filtermarketdata.marketId + "_" + SelectionId] =
+        //               odds_profit[filtermarketdata.marketId + "_" + SelectionId] +
+        //               profitAmt;
+        //           } else {
+        //             odds_profit[filtermarketdata.marketId + "_" + SelectionId] =
+        //               odds_profit[filtermarketdata.marketId + "_" + SelectionId] -
+        //               profitAmt;
+        //           }
+        //         } else {
+        //           if (getBetType) {
+        //             odds_profit[filtermarketdata.marketId + "_" + SelectionId] =
+        //               odds_profit[filtermarketdata.marketId + "_" + SelectionId] -
+        //               lossAmt;
+        //           } else {
+        //             odds_profit[filtermarketdata.marketId + "_" + SelectionId] =
+        //               odds_profit[filtermarketdata.marketId + "_" + SelectionId] +
+        //               lossAmt;
+        //           }
+        //         }
+        //       });
+        //     }
+        //   });
+        //   Promise.all(promiseprofit);
+        //   const filterbetsFancy =
+        //     bets && bets.length > 0
+        //       ? bets.filter((Item: any) => Item.bet_on == BetOn.FANCY)
+        //       : [];
+        //   var fancy_profit: any = {};
+        //   const promiseprofitFancy = filterbetsFancy.map((Item: any) => {
+        //     if (fancy_profit[Item.selectionId] == undefined) {
+        //       fancy_profit[Item.selectionId] = 0;
+        //     }
+        //     if (Item.isBack) {
+        //       if (Item["volume"] > 100) {
+        //         if (Item.gtype === "fancy1") {
+        //           //fancy_profit[Item['selectionId']] += Item.odds * Item.stack - Item.stack
+        //           fancy_profit[Item["selectionId"]] += -Item.stack;
+        //         } else {
+        //           fancy_profit[Item["selectionId"]] += -Item["stack"];
+        //         }
+        //       } else {
+        //         fancy_profit[Item["selectionId"]] += -Item["stack"];
+        //       }
+        //       ///fancy_profit[Item['selectionId']] += -(Item['stack'] * Item['volume']) / 100
+        //     } else {
+        //       if (Item["volume"] > 100) {
+        //         if (Item.gtype === "fancy1") {
+        //           fancy_profit[Item["selectionId"]] +=
+        //             -1 * (Item.odds * Item.stack - Item.stack);
+        //         } else {
+        //           let amt: any =
+        //             (parseInt(Item["stack"]) * parseInt(Item["volume"])) / 100;
+        //           fancy_profit[Item["selectionId"]] += -amt;
+        //         }
+        //       } else {
+        //         fancy_profit[Item["selectionId"]] += -Item["stack"];
+        //       }
+        //       /// fancy_profit[Item['selectionId']] +=
+        //       ///  -(parseInt(Item['stack']) * parseInt(Item['volume'])) / 100
+        //     }
+        //   });
+        //   Promise.all(promiseprofitFancy);
+        //   odds_profit = { ...odds_profit, ...fancy_profit };
+        //   return odds_profit;
+        // };
+        this.getoddsprofit = (bets, markets, currentUser) => __awaiter(this, void 0, void 0, function* () {
+            let odds_profit = {};
+            /* -------------------------------
+               1️⃣ current user share
+            -------------------------------- */
+            const currentShare = Number(currentUser.share);
+            console.log(currentUser, "current user in getoddsprofit", currentShare);
+            /* -------------------------------
+               2️⃣ helper: direct childId
+            -------------------------------- */
+            const getChildId = (parentStr) => {
+                const idx = parentStr.findIndex((id) => id.toString() === currentUser._id.toString());
+                if (idx === -1)
+                    return null;
+                return parentStr[idx + 1] || null;
+            };
+            /* -------------------------------
+               3️⃣ unique childIds
+            -------------------------------- */
+            const childIds = [
+                ...new Set(bets
+                    .map(b => getChildId(b.parentStr))
+                    .filter(Boolean)
+                    .map(id => id.toString())),
+            ];
+            /* -------------------------------
+               4️⃣ child shares ek query me
+            -------------------------------- */
+            const childUsers = yield User_1.User.find({ _id: { $in: childIds } }, { share: 1 }).lean();
+            const childShareMap = {};
+            childUsers.forEach(u => {
+                childShareMap[u._id.toString()] = Number(u.share);
+            });
+            console.log(childShareMap, "child share map in getoddsprofit");
+            /* =====================================================
+               MATCH ODDS
+            ====================================================== */
             const filterbets = bets && bets.length > 0
-                ? bets.filter((Item) => Item.bet_on == Bet_1.BetOn.MATCH_ODDS)
+                ? bets.filter((Item) => Item.bet_on === Bet_1.BetOn.MATCH_ODDS)
                 : [];
-            const promiseprofit = filterbets.map((Item) => {
+            for (const Item of filterbets) {
+                const childId = getChildId(Item.parentStr);
+                // if (!childId) continue
+                const childShare = childShareMap[childId === null || childId === void 0 ? void 0 : childId.toString()] || 0;
+                const shareFactor = (currentShare - childShare) / 100;
+                if (shareFactor === 0)
+                    continue;
                 const selectionIdBet = Item.selectionId;
                 const getBetType = Item.isBack;
-                const lossAmt = Item.stack;
-                const getOdds = Item.odds;
-                let profitAmt = (parseFloat(getOdds) - 1) * parseFloat(lossAmt);
-                let filtermarket = markets && markets.length > 0
-                    ? markets.filter((ItemMarket) => ItemMarket.marketId == Item.marketId)
-                    : [];
-                const filtermarketdata = filtermarket && filtermarket.length > 0 ? filtermarket[0] : {};
-                if (filtermarketdata) {
-                    filtermarketdata.runners.map((mData, mIndex) => {
-                        var SelectionId = mData.selectionId;
-                        if (odds_profit[filtermarketdata.marketId + "_" + SelectionId] ==
-                            undefined) {
-                            odds_profit[filtermarketdata.marketId + "_" + SelectionId] = 0;
-                        }
-                        if (SelectionId == selectionIdBet) {
-                            if (getBetType) {
-                                odds_profit[filtermarketdata.marketId + "_" + SelectionId] =
-                                    odds_profit[filtermarketdata.marketId + "_" + SelectionId] +
-                                        profitAmt;
-                            }
-                            else {
-                                odds_profit[filtermarketdata.marketId + "_" + SelectionId] =
-                                    odds_profit[filtermarketdata.marketId + "_" + SelectionId] -
-                                        profitAmt;
-                            }
+                const lossAmt = Number(Item.stack);
+                const odds = Number(Item.odds);
+                const profitAmt = (odds - 1) * lossAmt * shareFactor;
+                const lossWithShare = lossAmt * shareFactor;
+                const filtermarket = markets.filter((m) => m.marketId === Item.marketId);
+                const filtermarketdata = filtermarket[0];
+                if (!filtermarketdata)
+                    continue;
+                filtermarketdata.runners.forEach((mData) => {
+                    const SelectionId = mData.selectionId;
+                    const key = filtermarketdata.marketId + "_" + SelectionId;
+                    // ✅ THIS LINE WAS THE MAIN BUG
+                    if (odds_profit[key] === undefined) {
+                        odds_profit[key] = 0;
+                    }
+                    if (SelectionId === selectionIdBet) {
+                        if (getBetType) {
+                            odds_profit[key] += profitAmt;
                         }
                         else {
-                            if (getBetType) {
-                                odds_profit[filtermarketdata.marketId + "_" + SelectionId] =
-                                    odds_profit[filtermarketdata.marketId + "_" + SelectionId] -
-                                        lossAmt;
-                            }
-                            else {
-                                odds_profit[filtermarketdata.marketId + "_" + SelectionId] =
-                                    odds_profit[filtermarketdata.marketId + "_" + SelectionId] +
-                                        lossAmt;
-                            }
-                        }
-                    });
-                }
-            });
-            Promise.all(promiseprofit);
-            const filterbetsFancy = bets && bets.length > 0
-                ? bets.filter((Item) => Item.bet_on == Bet_1.BetOn.FANCY)
-                : [];
-            var fancy_profit = {};
-            const promiseprofitFancy = filterbetsFancy.map((Item) => {
-                if (fancy_profit[Item.selectionId] == undefined) {
-                    fancy_profit[Item.selectionId] = 0;
-                }
-                if (Item.isBack) {
-                    if (Item["volume"] > 100) {
-                        if (Item.gtype === "fancy1") {
-                            //fancy_profit[Item['selectionId']] += Item.odds * Item.stack - Item.stack
-                            fancy_profit[Item["selectionId"]] += -Item.stack;
-                        }
-                        else {
-                            fancy_profit[Item["selectionId"]] += -Item["stack"];
+                            odds_profit[key] -= profitAmt;
                         }
                     }
                     else {
-                        fancy_profit[Item["selectionId"]] += -Item["stack"];
-                    }
-                    ///fancy_profit[Item['selectionId']] += -(Item['stack'] * Item['volume']) / 100
-                }
-                else {
-                    if (Item["volume"] > 100) {
-                        if (Item.gtype === "fancy1") {
-                            fancy_profit[Item["selectionId"]] +=
-                                -1 * (Item.odds * Item.stack - Item.stack);
+                        if (getBetType) {
+                            odds_profit[key] -= lossWithShare;
                         }
                         else {
-                            let amt = (parseInt(Item["stack"]) * parseInt(Item["volume"])) / 100;
-                            fancy_profit[Item["selectionId"]] += -amt;
+                            odds_profit[key] += lossWithShare;
                         }
                     }
-                    else {
-                        fancy_profit[Item["selectionId"]] += -Item["stack"];
-                    }
-                    /// fancy_profit[Item['selectionId']] +=
-                    ///  -(parseInt(Item['stack']) * parseInt(Item['volume'])) / 100
-                }
-            });
-            Promise.all(promiseprofitFancy);
+                });
+            }
+            console.log(odds_profit, "odds profit after match odds");
+            /* =====================================================
+               FANCY
+            ====================================================== */
+            const fancy_profit = {};
+            /* -------------------------------
+               final merge
+            -------------------------------- */
             odds_profit = Object.assign(Object.assign({}, odds_profit), fancy_profit);
             return odds_profit;
-        };
+        });
         this.getcasinooddsprofit = (bets, markets, matchInfo) => {
             var odds_profit = {};
             const filterbets = bets && bets.length > 0

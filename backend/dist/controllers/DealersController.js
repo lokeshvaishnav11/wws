@@ -327,6 +327,9 @@ class DealersController extends ApiController_1.ApiController {
                 if (user) {
                     return this.fail(res, 'User already exixts!');
                 }
+                if (share > pshare) {
+                    return this.fail(res, 'Share must be less than or equal to Parent Share');
+                }
                 const parentUser = yield User_1.User.findOne({ username: parent });
                 if (!parentUser) {
                     return this.fail(res, 'Parent User not exixts!');
