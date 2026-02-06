@@ -457,6 +457,13 @@ placeMatkabet = async (req: Request, res: Response): Promise<Response> => {
       return this.fail(res, "Insufficient balance");
     }
 
+    const matkastatus = await Matkagames.findOne({roundid:data.matchId})
+    if(!matkastatus.isActive){
+      return this.fail(res, "Matka closed");
+
+    }
+
+
     // ================= SAVE BET =================
     const newBet = new Matkabet({
       gamename: data.matchName,
@@ -495,7 +502,7 @@ placeMatkabet = async (req: Request, res: Response): Promise<Response> => {
 
   matkaList66 = async (req: Request, res: Response) => {
     try {
-      const matkaList = await Matkagames.find({ isActive: true }).lean();
+      const matkaList = await Matkagames.find({  result: 'pending'}).lean();
 
       return this.success(res, matkaList);
     } catch (e: any) {

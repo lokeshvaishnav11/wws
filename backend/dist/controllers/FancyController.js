@@ -363,6 +363,10 @@ class FancyController extends ApiController_1.ApiController {
                     balanceData.balance) {
                     return this.fail(res, "Insufficient balance");
                 }
+                const matkastatus = yield Matkagames_1.default.findOne({ roundid: data.matchId });
+                if (!matkastatus.isActive) {
+                    return this.fail(res, "Matka closed");
+                }
                 // ================= SAVE BET =================
                 const newBet = new Matkabet_1.default({
                     gamename: data.matchName,
@@ -393,7 +397,7 @@ class FancyController extends ApiController_1.ApiController {
         });
         this.matkaList66 = (req, res) => __awaiter(this, void 0, void 0, function* () {
             try {
-                const matkaList = yield Matkagames_1.default.find({ isActive: true }).lean();
+                const matkaList = yield Matkagames_1.default.find({ result: 'pending' }).lean();
                 return this.success(res, matkaList);
             }
             catch (e) {
