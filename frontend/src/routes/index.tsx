@@ -126,7 +126,7 @@ const Routers = () => {
             { path: '/withdrawstatement', element: <WithdrawStatement /> },
           ],
         },
-        ...AdminRoutes(),
+        // ...AdminRoutes(),
       ],
     },
     { path: '*', element: <Page404 /> },

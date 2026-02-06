@@ -90,18 +90,133 @@ const Matkagames_1 = __importDefault(require("../models/Matkagames"));
 //     console.error("CRON ERROR:", err);
 //   }
 // })};
-const getISTNow = () => new Date(Date.now() + 5.5 * 60 * 60 * 1000);
+// const getISTNow = () =>
+//   new Date(Date.now() + 5.5 * 60 * 60 * 1000);
+// const getISTMinutes = () => {
+//   const d = getISTNow();
+//   return d.getHours() * 60 + d.getMinutes();
+// };
+// const getISTDateOnly = () => {
+//   const d = getISTNow();
+//   d.setHours(0, 0, 0, 0);
+//   return d;
+// };
+// const getISTDateString = () => {
+//   return getISTNow().toISOString().split("T")[0];
+// };
+// export const startMatkaCron = () => {
+//   cron.schedule("* * * * *", async () => {
+//     try {
+//       console.log("⏱ Matka cron running (IST)...");
+//       const minutesNow = getISTMinutes();
+//       const today = getISTDateOnly();
+//       const todayStr = getISTDateString();
+//       const matkas = [
+//         // ✅ FARIDABAD
+//         {
+//           opentime: { hour: 9, minute: 0 },   // 09:00 AM
+//           closetime: { hour: 17, minute: 15 }, // 05:15 PM
+//           gamename: "Faridabad",
+//           id: "1",
+//           isNextDayClose: false,
+//         },
+//         // ✅ GHAZIABAD
+//         {
+//           opentime: { hour: 9, minute: 0 },   // 09:00 AM
+//           closetime: { hour: 20, minute: 15 }, // 08:15 PM
+//           gamename: "Ghaziabad",
+//           id: "2",
+//           isNextDayClose: false,
+//         },
+//         // ✅ GALI
+//         {
+//           opentime: { hour: 9, minute: 0 },   // 09:00 AM
+//           closetime: { hour: 22, minute: 30 }, // 10:30 PM
+//           gamename: "Gali",
+//           id: "3",
+//           isNextDayClose: false,
+//         },
+//         // ✅ DISAWAR (next day close)
+//         {
+//           opentime: { hour: 9, minute: 0 },   // 09:00 AM
+//           closetime: { hour: 3, minute: 0 },  // 03:00 AM (next day)
+//           gamename: "Disawar",
+//           id: "4",
+//           isNextDayClose: true,
+//         },
+//       ];
+//       for (const m of matkas) {
+//         const openMin =
+//           Number(m.opentime.hour) * 60 +
+//           Number(m.opentime.minute);
+//         let closeMin =
+//           Number(m.closetime.hour) * 60 +
+//           Number(m.closetime.minute);
+//         // 🔥 next-day close fix
+//         if (m.isNextDayClose && closeMin < openMin) {
+//           closeMin += 1440; // add 24h
+//         }
+//         let currentMin = minutesNow;
+//         if (m.isNextDayClose && minutesNow < openMin) {
+//           currentMin += 1440;
+//         }
+//         console.log(
+//           m.gamename,
+//           "NOW:", currentMin,
+//           "OPEN:", openMin,
+//           "CLOSE:", closeMin
+//         );
+//         // ---------- OPEN ----------
+//         if (currentMin === openMin) {
+//           const exists = await Matkagame.findOne({
+//             id: m.id,
+//             date: today,
+//           });
+//           if (!exists) {
+//             await Matkagame.create({
+//               id: m.id,
+//               gamename: m.gamename,
+//               date: today,
+//               opentime: m.opentime,
+//               closetime: m.closetime,
+//               isActive: true,
+//               result: "pending",
+//               roundid: `${m.gamename}-${todayStr}`, // ✅ IST
+//             });
+//             console.log(`🟢 OPENED: ${m.gamename}`);
+//           }
+//         }
+//         // ---------- CLOSE ----------
+//         if (currentMin === closeMin) {
+//           await Matkagame.updateMany(
+//             { id: m.id, isActive: true },
+//             { $set: { isActive: false } }
+//           );
+//           console.log(`🔴 CLOSED: ${m.gamename}`);
+//         }
+//       }
+//     } catch (err) {
+//       console.error("CRON ERROR:", err);
+//     }
+//   });
+// };
 const getISTMinutes = () => {
-    const d = getISTNow();
-    return d.getHours() * 60 + d.getMinutes();
+    const now = new Date();
+    const hours = now.getUTCHours();
+    const minutes = now.getUTCMinutes();
+    const istMinutes = ((hours * 60 + minutes) + 330) % 1440;
+    return istMinutes;
 };
 const getISTDateOnly = () => {
-    const d = getISTNow();
-    d.setHours(0, 0, 0, 0);
-    return d;
+    const now = new Date();
+    const ist = new Date(now.getTime() + 330 * 60 * 1000);
+    ist.setHours(0, 0, 0, 0);
+    return ist;
 };
 const getISTDateString = () => {
-    return getISTNow().toISOString().split("T")[0];
+    const now = new Date();
+    const ist = new Date(now.getTime() + 330 * 60 * 1000);
+    return ist.toISOString().split("T")[0];
 };
 const startMatkaCron = () => {
     node_cron_1.default.schedule("* * * * *", () => __awaiter(void 0, void 0, void 0, function* () {
@@ -111,7 +226,6 @@ const startMatkaCron = () => {
             const today = getISTDateOnly();
             const todayStr = getISTDateString();
             const matkas = [
-                // ✅ FARIDABAD
                 {
                     opentime: { hour: 9, minute: 0 },
                     closetime: { hour: 17, minute: 15 },
@@ -119,7 +233,6 @@ const startMatkaCron = () => {
                     id: "1",
                     isNextDayClose: false,
                 },
-                // ✅ GHAZIABAD
                 {
                     opentime: { hour: 9, minute: 0 },
                     closetime: { hour: 20, minute: 15 },
@@ -127,7 +240,6 @@ const startMatkaCron = () => {
                     id: "2",
                     isNextDayClose: false,
                 },
-                // ✅ GALI
                 {
                     opentime: { hour: 9, minute: 0 },
                     closetime: { hour: 22, minute: 30 },
@@ -135,7 +247,6 @@ const startMatkaCron = () => {
                     id: "3",
                     isNextDayClose: false,
                 },
-                // ✅ DISAWAR (next day close)
                 {
                     opentime: { hour: 9, minute: 0 },
                     closetime: { hour: 3, minute: 0 },
@@ -145,20 +256,17 @@ const startMatkaCron = () => {
                 },
             ];
             for (const m of matkas) {
-                const openMin = Number(m.opentime.hour) * 60 +
-                    Number(m.opentime.minute);
-                let closeMin = Number(m.closetime.hour) * 60 +
-                    Number(m.closetime.minute);
-                // 🔥 next-day close fix
+                const openMin = m.opentime.hour * 60 + m.opentime.minute;
+                let closeMin = m.closetime.hour * 60 + m.closetime.minute;
                 if (m.isNextDayClose && closeMin < openMin) {
-                    closeMin += 1440; // add 24h
+                    closeMin += 1440;
                 }
                 let currentMin = minutesNow;
                 if (m.isNextDayClose && minutesNow < openMin) {
                     currentMin += 1440;
                 }
                 console.log(m.gamename, "NOW:", currentMin, "OPEN:", openMin, "CLOSE:", closeMin);
-                // ---------- OPEN ----------
+                // OPEN
                 if (currentMin === openMin) {
                     const exists = yield Matkagames_1.default.findOne({
                         id: m.id,
@@ -173,12 +281,12 @@ const startMatkaCron = () => {
                             closetime: m.closetime,
                             isActive: true,
                             result: "pending",
-                            roundid: `${m.gamename}-${todayStr}`, // ✅ IST
+                            roundid: `${m.gamename}-${todayStr}`,
                         });
                         console.log(`🟢 OPENED: ${m.gamename}`);
                     }
                 }
-                // ---------- CLOSE ----------
+                // CLOSE
                 if (currentMin === closeMin) {
                     yield Matkagames_1.default.updateMany({ id: m.id, isActive: true }, { $set: { isActive: false } });
                     console.log(`🔴 CLOSED: ${m.gamename}`);

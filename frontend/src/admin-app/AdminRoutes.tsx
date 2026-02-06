@@ -85,101 +85,101 @@ const GameReportAdmin = React.lazy(() => import('./pages/GameReports/GameReportA
 const AdminRoutes = () => {
   const userState = useAppSelector<{ user: User }>(selectUserData)
 
-  return [
-    {
-      path: '/admin',
-      element: <AuthLayout />,
-      children: [
-        { path: 'login', element: <Login /> },
-        {
-          path: '/admin',
-          element: <MainAdmin />,
-          children: [
-            { index: true, element: <ListClients /> },
-            { path: 'dashbaord', element: <AdminDashboard /> },
-            { path: 'market-analysis', element: <AdminDashboard /> },
-            { path: 'odds/:matchId', element: <Odds /> },
-            { path: 'odds/:matchId/:share', element: <Odds /> },
+  // return [
+  //   {
+  //     path: '/admin',
+  //     element: <AuthLayout />,
+  //     children: [
+  //       { path: 'login', element: <Login /> },
+  //       {
+  //         path: '/admin',
+  //         element: <MainAdmin />,
+  //         children: [
+  //           { index: true, element: <ListClients /> },
+  //           { path: 'dashbaord', element: <AdminDashboard /> },
+  //           { path: 'market-analysis', element: <AdminDashboard /> },
+  //           { path: 'odds/:matchId', element: <Odds /> },
+  //           { path: 'odds/:matchId/:share', element: <Odds /> },
 
-            ...['list-clients/:username', 'list-clients/:username/:type'].map((path) => ({
-              key: 'list-client',
-              path: path,
-              element: <ListClients />,
-            })),
-            ...['add-user', 'add-user/:username','add-user/:username/:type','add-user/:type'].map((path) => ({
-              key: 'add-user',
-              path: path,
-              element: <AddUser />,
-            })),
-            ...(userState.user.role === RoleType.admin || userState.user.role === RoleType.sadmin
-              ? [
-                { path: 'sports-list/:url?', element: <SportsPage /> },
-                { path: 'series/:sportId', element: <SeriesPage /> },
-                { path: 'matches/:sportId', element: <MatchesPage /> },
-                { path: 'active-matches/:sportId/:matchType?', element: <ActiveMatches /> },
-                { path: 'active-markets/:matchId', element: <ActiveMarkets /> },
-                { path: 'active-fancies/:matchId', element: <GetAllFancy /> },
-                { path: 'messages', element: <Message /> },
-              ]
-              : []),
-            { path: 'change-password', element: <ChangePassword /> },
-            { path: 'accountstatement/:name', element: <AccountStatementAdmin /> },
-            { path: 'accountstatement-deposit/:name', element: <AccountStatementAdminDeposit /> },
+  //           ...['list-clients/:username', 'list-clients/:username/:type'].map((path) => ({
+  //             key: 'list-client',
+  //             path: path,
+  //             element: <ListClients />,
+  //           })),
+  //           ...['add-user', 'add-user/:username','add-user/:username/:type','add-user/:type'].map((path) => ({
+  //             key: 'add-user',
+  //             path: path,
+  //             element: <AddUser />,
+  //           })),
+  //           ...(userState.user.role === RoleType.admin || userState.user.role === RoleType.sadmin
+  //             ? [
+  //               { path: 'sports-list/:url?', element: <SportsPage /> },
+  //               { path: 'series/:sportId', element: <SeriesPage /> },
+  //               { path: 'matches/:sportId', element: <MatchesPage /> },
+  //               { path: 'active-matches/:sportId/:matchType?', element: <ActiveMatches /> },
+  //               { path: 'active-markets/:matchId', element: <ActiveMarkets /> },
+  //               { path: 'active-fancies/:matchId', element: <GetAllFancy /> },
+  //               { path: 'messages', element: <Message /> },
+  //             ]
+  //             : []),
+  //           { path: 'change-password', element: <ChangePassword /> },
+  //           { path: 'accountstatement/:name', element: <AccountStatementAdmin /> },
+  //           { path: 'accountstatement-deposit/:name', element: <AccountStatementAdminDeposit /> },
 
-            { path: 'operation/:uname', element: <OperationAdmin /> },
+  //           { path: 'operation/:uname', element: <OperationAdmin /> },
 
-            { path: 'profitloss', element: <ProfitLossAdmin /> },
-            { path: 'unsettledbet', element: <UnsetteleBetHistoryAdmin /> },
-            { path: 'unsettledbet/:type', element: <UnsetteleBetHistoryAdmin /> },
-            { path: 'deleted-bets', element: <DeletedAllBets /> },
+  //           { path: 'profitloss', element: <ProfitLossAdmin /> },
+  //           { path: 'unsettledbet', element: <UnsetteleBetHistoryAdmin /> },
+  //           { path: 'unsettledbet/:type', element: <UnsetteleBetHistoryAdmin /> },
+  //           { path: 'deleted-bets', element: <DeletedAllBets /> },
 
-            { path: 'casino/:gameCode', element: <CasinoWrapper /> },
-            { path: 'casino-list', element: <CasinoList /> },
-            { path: 'game-reports', element: <GameReportAdmin /> },
-            { path: 'depositstatement', element: <DepositStatementAdmin /> },
-            { path: 'withdrawstatement', element: <WithdrawStatementAdmin /> },
-            { path: 'payment-method', element: <Paymethod /> },
-            { path: "ledger-home", element: <LedgerHome/>},
-            { path: "notice", element: <Notice/>},
-            { path: "manage-odds", element: <ManageOdds />},
-            { path: "matka-results", element: <MatkaResult />},
-            { path: "matka-results-rollback", element: <MatkaResultRollback />},
+  //           { path: 'casino/:gameCode', element: <CasinoWrapper /> },
+  //           { path: 'casino-list', element: <CasinoList /> },
+  //           { path: 'game-reports', element: <GameReportAdmin /> },
+  //           { path: 'depositstatement', element: <DepositStatementAdmin /> },
+  //           { path: 'withdrawstatement', element: <WithdrawStatementAdmin /> },
+  //           { path: 'payment-method', element: <Paymethod /> },
+  //           { path: "ledger-home", element: <LedgerHome/>},
+  //           { path: "notice", element: <Notice/>},
+  //           { path: "manage-odds", element: <ManageOdds />},
+  //           { path: "matka-results", element: <MatkaResult />},
+  //           { path: "matka-results-rollback", element: <MatkaResultRollback />},
 
 
             
 
-            { path: "session-bets/:id", element: <Completedbets/>},
-            { path: "match-bets/:id", element: <SessionBets />},
-            { path: "match-bets-deleted/:id", element: <DeletedBetsMatch />},
+  //           { path: "session-bets/:id", element: <Completedbets/>},
+  //           { path: "match-bets/:id", element: <SessionBets />},
+  //           { path: "match-bets-deleted/:id", element: <DeletedBetsMatch />},
 
-            { path: "report-bets/:id", element: <ReportBets />},
-            { path: "client-bets/:id", element: <ClientBetsLedger />},
+  //           { path: "report-bets/:id", element: <ReportBets />},
+  //           { path: "client-bets/:id", element: <ClientBetsLedger />},
 
 
            
 
 
 
-            {path:"all-settlement", element: <AllClientLedger/>},
-            {path:"all-settlement/:pid", element: <SingleLedger />},
+  //           {path:"all-settlement", element: <AllClientLedger/>},
+  //           {path:"all-settlement/:pid", element: <SingleLedger />},
 
-            {path:"ledger-client", element: <ClientLedger/>},
-            {path:"total-profit", element: <TotalProfit/>},
-            {path:"commision-len-den", element: <CommisionLenden />},
-            {path: "all-client-report", element: <AllReport/>},
-            {path:"matka-pl", element:<CasinoPL/>},
-            {path: "sports-details", element: <SportsDetails/>},
+  //           {path:"ledger-client", element: <ClientLedger/>},
+  //           {path:"total-profit", element: <TotalProfit/>},
+  //           {path:"commision-len-den", element: <CommisionLenden />},
+  //           {path: "all-client-report", element: <AllReport/>},
+  //           {path:"matka-pl", element:<CasinoPL/>},
+  //           {path: "sports-details", element: <SportsDetails/>},
 
-            {path:"matka-books",  element:<MatkaDetail />},
-            {path:"detail-matka/:matchId",  element:<MatkaPlayAdmin />},
-
-            
-            {path: "casino-details", element: <CasinoDetail/>},
+  //           {path:"matka-books",  element:<MatkaDetail />},
+  //           {path:"detail-matka/:matchId",  element:<MatkaPlayAdmin />},
 
             
+  //           {path: "casino-details", element: <CasinoDetail/>},
 
-            {path: "inplay-games", element: <Inplaygames/>},
-            {path:"user-ac", element: <AdminUseras/>},
+            
+
+  //           {path: "inplay-games", element: <Inplaygames/>},
+  //           {path:"user-ac", element: <AdminUseras/>},
 
 
 
@@ -191,16 +191,16 @@ const AdminRoutes = () => {
             
 
 
-            {path:"my-ledger", element: <MyLedger/>}
+  //           {path:"my-ledger", element: <MyLedger/>}
 
             
 
 
-          ],
-        },
-      ],
-    },
-  ]
+  //         ],
+  //       },
+  //     ],
+  //   },
+  // ]
 }
 
 export default AdminRoutes
