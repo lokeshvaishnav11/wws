@@ -74,7 +74,7 @@ const MyMatkaBetComponent22 = ({ roundid }: any) => {
         if (!match?.roundid) return;
       
         accountService
-          .getMatkaBets22(match.roundid)
+          .getMatkaBets22(roundid)
           .then((res) => {
             setMyAllBet(res?.data?.data?.bets || []);
           })

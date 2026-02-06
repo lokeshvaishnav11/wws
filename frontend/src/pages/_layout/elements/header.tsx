@@ -296,7 +296,7 @@ const [userAlldata, setUserAlldata] = React.useState<{ [key: string]: any }>({})
                         onClick={() => {
                           window.location.href =
                             exposer?.sportId == 900
-                              ? `/matka-play/${exposer.id}`
+                              ? `/matka-play/${exposer.id}/${exposer.roundid}`
                               : exposer?.sportId && exposer.sportId != 5000
                               ? `/odds/${exposer._id}`
                               : `/casino/${casinoSlug}/${exposer._id}`;

@@ -324,7 +324,7 @@ const closeTime = match?.closetime
         )}
       </div>
 
-      <MyMatkaBetComponent22 roundid={match?.roundid} />
+      <MyMatkaBetComponent22 roundid={roundid} />
 
       <PlaceBetBox stake={matkastake[0]} />
     </div>
