@@ -136,7 +136,7 @@ const MatkaList: React.FC<MatchListProps> = ({ matchList, currentMatch }) => {
                   <div className="container w-100 p-0">
                     <div className="card single-match text-center my-2">
                       <a
-                        href="#!"
+                        href={undefined}
                         onClick={() => currentMatch(match)}
                         style={{ textDecoration: "none" }}
                       >

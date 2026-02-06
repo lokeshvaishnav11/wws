@@ -97,7 +97,7 @@ const Routers = () => {
             
             { path: 'match/:sportId/:status?', element: <NewDashboard /> },
             { path: 'odds/:matchId', element: <Odds /> },
-            { path: 'matka-play/:matchId', element: <MatkaPlay /> },
+            { path: 'matka-play/:matchId/:roundid', element: <MatkaPlay /> },
 
             { path: 'iframe', element: <Oddsone /> },
 

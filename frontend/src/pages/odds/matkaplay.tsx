@@ -15,7 +15,7 @@ import MyBetComponent from "./components/my-bet.component";
 import MyMatkaBetComponent22 from "./components/my-matka-bet";
 
 const MatkaPlay = () => {
-  const { matchId } = useParams(); // 👈 URL se matchId
+  const { matchId ,roundid } = useParams(); // 👈 URL se matchId
 
   const userState = useAppSelector(selectUserData);
   const dispatch = useAppDispatch();
@@ -29,7 +29,7 @@ const MatkaPlay = () => {
     const fetchMatkaList = async () => {
       try {
         const res = await accountService.matkagamelist();
-        //console.log(res?.data?.data, "ffff");
+        console.log(res?.data?.data, "ffff");
         setMatkaList(res?.data?.data);
       } catch (err) {
         console.error("Matka list error:", err);
@@ -40,7 +40,10 @@ const MatkaPlay = () => {
   }, [matchId]);
 
   // ✅ matching item nikaalo
-  const match = matkaList.find((item: any) => item.id == matchId);
+const match = matkaList.find(
+  (item: any) => item.id == matchId && item.roundid == roundid
+);
+
 
   if (!match) {
     return <div className="text-center mt-3">Match not found</div>;

@@ -212,7 +212,7 @@ const MatkaDashboard = () => {
 
   const currentMatch = (match: any) => {
     dispatch(setCurrentMatch(match));
-    navigate.go(`/matka-play/${match.id}`);
+    navigate.go(`/matka-play/${match.id}/${match.roundid}`);
   };
 
   return (
