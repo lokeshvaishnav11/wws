@@ -90,7 +90,8 @@ export class UserBookController extends ApiController {
    const matchfilter = {
   matchId: parseInt(body.matchId),
   selectionId: parseInt(body.selectionId),
-  parentStr: { $in: [user._id] }
+  parentStr: { $in: [user._id] },
+  bet_on:"FANCY"
 }
 
     const betlist: any[] = await Bet.find(
@@ -108,14 +109,18 @@ export class UserBookController extends ApiController {
     let minOdds = betlist[0].odds
     let maxOdds = betlist[0].odds
 
+          console.log(minOdds,maxOdds,"Lokesh")
+
+
     for (const b of betlist) {
       if (b.odds < minOdds) minOdds = b.odds
       if (b.odds > maxOdds) maxOdds = b.odds
+          console.log(minOdds,maxOdds,"Lokesh in")
     }
 
     minOdds = Math.max(0, minOdds - 1)
     maxOdds = maxOdds + 1
-
+      console.log(minOdds,maxOdds,"Lokesh")
     /* -------------------------------
        4️⃣ helper: direct child id
     -------------------------------- */

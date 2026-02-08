@@ -98,7 +98,8 @@ class UserBookController extends ApiController_1.ApiController {
                 const matchfilter = {
                     matchId: parseInt(body.matchId),
                     selectionId: parseInt(body.selectionId),
-                    parentStr: { $in: [user._id] }
+                    parentStr: { $in: [user._id] },
+                    bet_on: "FANCY"
                 };
                 const betlist = yield Bet_1.Bet.find(matchfilter, { odds: 1, pnl: 1, loss: 1, isBack: 1, parentStr: 1 }).lean();
                 if (!betlist.length) {
@@ -109,14 +110,17 @@ class UserBookController extends ApiController_1.ApiController {
                 -------------------------------- */
                 let minOdds = betlist[0].odds;
                 let maxOdds = betlist[0].odds;
+                console.log(minOdds, maxOdds, "Lokesh");
                 for (const b of betlist) {
                     if (b.odds < minOdds)
                         minOdds = b.odds;
                     if (b.odds > maxOdds)
                         maxOdds = b.odds;
+                    console.log(minOdds, maxOdds, "Lokesh in");
                 }
                 minOdds = Math.max(0, minOdds - 1);
                 maxOdds = maxOdds + 1;
+                console.log(minOdds, maxOdds, "Lokesh");
                 /* -------------------------------
                    4️⃣ helper: direct child id
                 -------------------------------- */
