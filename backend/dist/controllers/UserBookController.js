@@ -95,11 +95,12 @@ class UserBookController extends ApiController_1.ApiController {
                 /* -------------------------------
                    2️⃣ bets uthao
                 -------------------------------- */
+                let bet_on = Bet_1.BetOn.FANCY;
                 const matchfilter = {
                     matchId: parseInt(body.matchId),
                     selectionId: parseInt(body.selectionId),
                     parentStr: { $in: [user._id] },
-                    bet_on: "FANCY"
+                    bet_on,
                 };
                 const betlist = yield Bet_1.Bet.find(matchfilter, { odds: 1, pnl: 1, loss: 1, isBack: 1, parentStr: 1 }).lean();
                 if (!betlist.length) {

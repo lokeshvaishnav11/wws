@@ -1,6 +1,6 @@
 import { Request, Response } from 'express'
 import { ApiController } from './ApiController'
-import { Bet, BetOn } from '../models/Bet'
+import { Bet, BetOn, IBet } from '../models/Bet'
 import { User } from '../models/User'
 import { RoleType } from '../models/Role'
 import { Market } from '../models/Market'
@@ -71,139 +71,140 @@ export class UserBookController extends ApiController {
   // }
 
   getfancybook = async (req: Request, res: Response) => {
-  try {
-    const user: any = req.user
-    const body: any = req.body
+    try {
+      const user: any = req.user
+      const body: any = req.body
 
-    /* -------------------------------
-       1️⃣ current user ka share
-    -------------------------------- */
-    const currentUser = await User.findById(user._id, { share: 1 }).lean()
-    if (!currentUser) {
-      return res.status(400).json({ message: 'User not found' })
-    }
-    const currentShare = Number(currentUser.share)
+      /* -------------------------------
+         1️⃣ current user ka share
+      -------------------------------- */
+      const currentUser = await User.findById(user._id, { share: 1 }).lean()
+      if (!currentUser) {
+        return res.status(400).json({ message: 'User not found' })
+      }
+      const currentShare = Number(currentUser.share)
 
-    /* -------------------------------
-       2️⃣ bets uthao
-    -------------------------------- */
-   const matchfilter = {
-  matchId: parseInt(body.matchId),
-  selectionId: parseInt(body.selectionId),
-  parentStr: { $in: [user._id] },
-  bet_on:"FANCY"
-}
+      /* -------------------------------
+         2️⃣ bets uthao
+      -------------------------------- */
+      let bet_on = BetOn.FANCY
+      const matchfilter = {
+        matchId: parseInt(body.matchId),
+        selectionId: parseInt(body.selectionId),
+        parentStr: { $in: [user._id] },
+        bet_on,
+      }
 
-    const betlist: any[] = await Bet.find(
-      matchfilter,
-      { odds: 1, pnl: 1, loss: 1, isBack: 1, parentStr: 1 }
-    ).lean()
+      const betlist: any[] = await Bet.find(
+        matchfilter,
+        { odds: 1, pnl: 1, loss: 1, isBack: 1, parentStr: 1 }
+      ).lean()
 
-    if (!betlist.length) {
-      return this.success(res, {})
-    }
+      if (!betlist.length) {
+        return this.success(res, {})
+      }
 
-    /* -------------------------------
-       3️⃣ min / max odds
-    -------------------------------- */
-    let minOdds = betlist[0].odds
-    let maxOdds = betlist[0].odds
+      /* -------------------------------
+         3️⃣ min / max odds
+      -------------------------------- */
+      let minOdds = betlist[0].odds
+      let maxOdds = betlist[0].odds
 
-          console.log(minOdds,maxOdds,"Lokesh")
+      console.log(minOdds, maxOdds, "Lokesh")
 
 
-    for (const b of betlist) {
-      if (b.odds < minOdds) minOdds = b.odds
-      if (b.odds > maxOdds) maxOdds = b.odds
-          console.log(minOdds,maxOdds,"Lokesh in")
-    }
+      for (const b of betlist) {
+        if (b.odds < minOdds) minOdds = b.odds
+        if (b.odds > maxOdds) maxOdds = b.odds
+        console.log(minOdds, maxOdds, "Lokesh in")
+      }
 
-    minOdds = Math.max(0, minOdds - 1)
-    maxOdds = maxOdds + 1
-      console.log(minOdds,maxOdds,"Lokesh")
-    /* -------------------------------
-       4️⃣ helper: direct child id
-    -------------------------------- */
-    const getChildId = (parentStr: any[]) => {
-      const idx = parentStr.findIndex(
-        (id) => id.toString() === user._id.toString()
-      )
-      if (idx === -1) return null
-      return parentStr[idx + 1] || null
-    }
+      minOdds = Math.max(0, minOdds - 1)
+      maxOdds = maxOdds + 1
+      console.log(minOdds, maxOdds, "Lokesh")
+      /* -------------------------------
+         4️⃣ helper: direct child id
+      -------------------------------- */
+      const getChildId = (parentStr: any[]) => {
+        const idx = parentStr.findIndex(
+          (id) => id.toString() === user._id.toString()
+        )
+        if (idx === -1) return null
+        return parentStr[idx + 1] || null
+      }
 
-    /* -------------------------------
-       5️⃣ all unique childIds
-    -------------------------------- */
-    const childIds = [
-      ...new Set(
-        betlist
-          .map(b => getChildId(b.parentStr))
-          .filter(Boolean)
-          .map(id => id.toString())
-      ),
-    ]
+      /* -------------------------------
+         5️⃣ all unique childIds
+      -------------------------------- */
+      const childIds = [
+        ...new Set(
+          betlist
+            .map(b => getChildId(b.parentStr))
+            .filter(Boolean)
+            .map(id => id.toString())
+        ),
+      ]
 
-    /* -------------------------------
-       6️⃣ child shares ek hi query me
-    -------------------------------- */
-    const childUsers = await User.find(
-      { _id: { $in: childIds } },
-      { share: 1 }
-    ).lean()
+      /* -------------------------------
+         6️⃣ child shares ek hi query me
+      -------------------------------- */
+      const childUsers = await User.find(
+        { _id: { $in: childIds } },
+        { share: 1 }
+      ).lean()
 
-    const childShareMap: any = {}
-    childUsers.forEach(u => {
-      childShareMap[u._id.toString()] = Number(u.share)
-    })
+      const childShareMap: any = {}
+      childUsers.forEach(u => {
+        childShareMap[u._id.toString()] = Number(u.share)
+      })
 
-    /* -------------------------------
-       7️⃣ fancy book calculation
-    -------------------------------- */
-    const new_showdata: any = {}
+      /* -------------------------------
+         7️⃣ fancy book calculation
+      -------------------------------- */
+      const new_showdata: any = {}
 
-    for (const item of betlist) {
-      const childId = getChildId(item.parentStr)
-     // if (!childId) continue
+      for (const item of betlist) {
+        const childId = getChildId(item.parentStr)
+        // if (!childId) continue
 
-      const childShare = childShareMap[childId?.toString()] || 0
-      const shareFactor = (currentShare - childShare) / 100
+        const childShare = childShareMap[childId?.toString()] || 0
+        const shareFactor = (currentShare - childShare) / 100
 
-      if (shareFactor === 0) continue
+        if (shareFactor === 0) continue
 
-      if (!item.isBack) {
-        for (let i = minOdds; i <= maxOdds; i++) {
-          if (new_showdata[i] === undefined) new_showdata[i] = 0
+        if (!item.isBack) {
+          for (let i = minOdds; i <= maxOdds; i++) {
+            if (new_showdata[i] === undefined) new_showdata[i] = 0
 
-          if (i < item.odds) {
-            new_showdata[i] += Number(item.pnl) * shareFactor
-          } else {
-            new_showdata[i] += Number(item.loss) * shareFactor
+            if (i < item.odds) {
+              new_showdata[i] += Number(item.pnl) * shareFactor
+            } else {
+              new_showdata[i] += Number(item.loss) * shareFactor
+            }
           }
-        }
-      } else {
-        for (let i = minOdds; i <= maxOdds; i++) {
-          if (new_showdata[i] === undefined) new_showdata[i] = 0
+        } else {
+          for (let i = minOdds; i <= maxOdds; i++) {
+            if (new_showdata[i] === undefined) new_showdata[i] = 0
 
-          if (i >= item.odds) {
-            new_showdata[i] += Number(item.pnl) * shareFactor
-          } else {
-            new_showdata[i] += Number(item.loss) * shareFactor
+            if (i >= item.odds) {
+              new_showdata[i] += Number(item.pnl) * shareFactor
+            } else {
+              new_showdata[i] += Number(item.loss) * shareFactor
+            }
           }
         }
       }
+
+      /* -------------------------------
+         8️⃣ response
+      -------------------------------- */
+      return this.success(res, new_showdata)
+
+    } catch (err) {
+      console.error(err)
+      return res.status(500).json({ message: 'Internal server error' })
     }
-
-    /* -------------------------------
-       8️⃣ response
-    -------------------------------- */
-    return this.success(res, new_showdata)
-
-  } catch (err) {
-    console.error(err)
-    return res.status(500).json({ message: 'Internal server error' })
   }
-}
 
   getmarketanalysis = async (req: Request, res: Response) => {
     const user: any = req.user
@@ -214,9 +215,9 @@ export class UserBookController extends ApiController {
     )
     const useridmap: any = []
     userChilds.map((Item) => useridmap.push(ObjectId(Item._id)))
-    const matchfilter:any = {
+    const matchfilter: any = {
       $match: {
-        bet_on: {$in:[BetOn.MATCH_ODDS, BetOn.FANCY]},
+        bet_on: { $in: [BetOn.MATCH_ODDS, BetOn.FANCY] },
         userId: { $in: useridmap },
         status: 'pending',
       },
@@ -429,7 +430,7 @@ export class UserBookController extends ApiController {
     }
     return this.success(res, clientData)
   }
-  getFinalSuperParentId = async (parentId: string, parentStr: any) =>{
+  getFinalSuperParentId = async (parentId: string, parentStr: any) => {
     return ""
   }
   getUserWiseBook = async (req: Request, res: Response) => {
@@ -437,7 +438,7 @@ export class UserBookController extends ApiController {
     const body: any = req.body
     const firstUserChilds = await User.find(
       { parentId: ObjectId(user._id) },
-      { _id: 1, username: 1, role:1 },
+      { _id: 1, username: 1, role: 1 },
     ).lean()
     const finaluserdata: any = []
     let userLink: any = {}
@@ -456,7 +457,7 @@ export class UserBookController extends ApiController {
       } else {
         const userChilds = await User.find(
           { parentStr: { $elemMatch: { $eq: ObjectId(ItemUser._id) } }, role: RoleType.user },
-          { _id: 1, parentId: 1, parentStr:1 },
+          { _id: 1, parentId: 1, parentStr: 1 },
         ).lean()
 
         userChilds.map((ItemN: any) => {
@@ -466,130 +467,130 @@ export class UserBookController extends ApiController {
         })
       }
       ItemUser = { ...ItemUser, ...{ child: selfUserId } }
-    
-    console.log(finaluserdata, "finaluserdata")
-    const matchfilter = {
-      $match: {
-        bet_on: BetOn.MATCH_ODDS,
-        userId: { $in: useridmap },
-        status: 'pending',
-        matchId: body.matchId,
-        marketId: body.selectionId,
-      },
-    }
-    const groupfilter = {
-      $group: {
-        _id: '$marketId',
-        betCount: { $sum: 1 },
-        userName: { $first: '$userName' },
-        matchName: { $first: '$matchName' },
-        matchId: { $first: '$matchId' },
-       allBets: {
-          $push: {
-            userId: '$userId',
-            odds: '$odds',
-            stack: '$stack',
-            bet_on: '$bet_on',
-            isBack: '$isBack',
-            selectionName: '$selectionName',
-            marketId: '$marketId',
-            selectionId: '$selectionId',
-            ratioStr: '$ratioStr',
+
+      console.log(finaluserdata, "finaluserdata")
+      const matchfilter = {
+        $match: {
+          bet_on: BetOn.MATCH_ODDS,
+          userId: { $in: useridmap },
+          status: 'pending',
+          matchId: body.matchId,
+          marketId: body.selectionId,
+        },
+      }
+      const groupfilter = {
+        $group: {
+          _id: '$marketId',
+          betCount: { $sum: 1 },
+          userName: { $first: '$userName' },
+          matchName: { $first: '$matchName' },
+          matchId: { $first: '$matchId' },
+          allBets: {
+            $push: {
+              userId: '$userId',
+              odds: '$odds',
+              stack: '$stack',
+              bet_on: '$bet_on',
+              isBack: '$isBack',
+              selectionName: '$selectionName',
+              marketId: '$marketId',
+              selectionId: '$selectionId',
+              ratioStr: '$ratioStr',
+            },
           },
         },
-      },
-    }
-    const betlist: any = await Bet.aggregate([matchfilter, groupfilter])
-    
-    const bookpromise = betlist.map(async (Item: any) => {
-      let matchPl = {
-        matchName: Item.matchName,
-        betCount: Item.betCount,
-        matchId: Item.matchId,
-        marketId: body.selectionId,
       }
-      let matchWiseMarket: any = {}
-      let completemarket_list: any = []
+      const betlist: any = await Bet.aggregate([matchfilter, groupfilter])
 
-      const filterMarketByMatchPromise = filterMarketByMatch.map(async (ItemMarketListNew: any) => {
-        const filterBetlist = Item.allBets.filter((ItemBetsFilter: any) => {
-          return ItemBetsFilter.marketId == ItemMarketListNew.marketId
-        })
-        if (filterBetlist.length > 0) {
-          completemarket_list.push(ItemMarketListNew.marketId)
+      const bookpromise = betlist.map(async (Item: any) => {
+        let matchPl = {
+          matchName: Item.matchName,
+          betCount: Item.betCount,
+          matchId: Item.matchId,
+          marketId: body.selectionId,
         }
-        const betPromise = filterBetlist.map(async (ItemBet: any) => {
-          const allRatio = ItemBet.ratioStr.allRatio
-          const filterSelfRatio = allRatio.filter(
-            (ItemN: any) => ItemN.parent.toString() == user._id,
-          )[0]
-          if (filterSelfRatio != undefined) {
-            let parentRatio: any = filterSelfRatio.ratio
-            parentRatio =100;
-            let getOdds: any = ItemBet.odds
-            let lossAmt: any = ItemBet.stack * (parentRatio / 100)
-            let profitAmt = (getOdds - 1) * ItemBet.stack * (parentRatio / 100)
-            const filterMarket = filterMarketByMatch.filter((ItemMarket: any) => {
-              return ItemMarket.marketId == ItemBet.marketId
-            })
-            const promiseMarket = filterMarket.map(async (ItemMarketList: any) => {
-              ItemMarketList.runners.map((ItemRunners: any) => {
-                let selectionId: any = ItemRunners.selectionId
-                if (!matchWiseMarket[ItemBet.userId]) {
-                  matchWiseMarket[ItemBet.userId] = {}
-                }
-                if (!matchWiseMarket[ItemMarketList.marketId + '_' + selectionId]) {
-                  matchWiseMarket[ItemMarketList.marketId + '_' + selectionId] = 0
-                }
-                if (selectionId == ItemBet.selectionId) {
-                  if (ItemBet.isBack) {
-                    matchWiseMarket[ItemMarketList.marketId + '_' + selectionId] =
-                      matchWiseMarket[ItemMarketList.marketId + '_' + selectionId] +
-                      profitAmt
-                  } else {
-                    matchWiseMarket[ItemMarketList.marketId + '_' + selectionId] =
-                      matchWiseMarket[ItemMarketList.marketId + '_' + selectionId] -
-                      profitAmt
-                  }
-                } else {
-                  if (ItemBet.isBack) {
-                    matchWiseMarket[ItemMarketList.marketId + '_' + selectionId] =
-                      matchWiseMarket[ItemMarketList.marketId + '_' + selectionId] -
-                      lossAmt
-                  } else {
-                    matchWiseMarket[ItemMarketList.marketId + '_' + selectionId] =
-                      matchWiseMarket[ItemMarketList.marketId + '_' + selectionId] +
-                      lossAmt
-                  }
-                }
-              })
-            })
-            await Promise.all(promiseMarket)
-          }
-        })
-        await Promise.all(betPromise)
-      })
-      await Promise.all(filterMarketByMatchPromise)
-      // const superParentId = userLink[Item._id]
-      let userInfo = { username: '', superParentId: ItemUser._id }
-      // if (superParentId != undefined) {
-      //   const filterSuperUser = finaluserdata.filter(
-      //     (ItemUserN: any) => ItemUserN._id == superParentId,
-      //   )
-      //   console.log(filterSuperUser, "filterSuperUser")
-      //   // if (filterSuperUser.length > 0) {
-      //   // }
-      // }
-      userInfo['username'] = ItemUser.username
+        let matchWiseMarket: any = {}
+        let completemarket_list: any = []
 
-      matchPl = {
-        ...matchPl,
-        ...matchWiseMarket,
-        ...userInfo,
-      }
-      completeBookList.push(matchPl)
-    })
-    await Promise.all(bookpromise)
+        const filterMarketByMatchPromise = filterMarketByMatch.map(async (ItemMarketListNew: any) => {
+          const filterBetlist = Item.allBets.filter((ItemBetsFilter: any) => {
+            return ItemBetsFilter.marketId == ItemMarketListNew.marketId
+          })
+          if (filterBetlist.length > 0) {
+            completemarket_list.push(ItemMarketListNew.marketId)
+          }
+          const betPromise = filterBetlist.map(async (ItemBet: any) => {
+            const allRatio = ItemBet.ratioStr.allRatio
+            const filterSelfRatio = allRatio.filter(
+              (ItemN: any) => ItemN.parent.toString() == user._id,
+            )[0]
+            if (filterSelfRatio != undefined) {
+              let parentRatio: any = filterSelfRatio.ratio
+              parentRatio = 100;
+              let getOdds: any = ItemBet.odds
+              let lossAmt: any = ItemBet.stack * (parentRatio / 100)
+              let profitAmt = (getOdds - 1) * ItemBet.stack * (parentRatio / 100)
+              const filterMarket = filterMarketByMatch.filter((ItemMarket: any) => {
+                return ItemMarket.marketId == ItemBet.marketId
+              })
+              const promiseMarket = filterMarket.map(async (ItemMarketList: any) => {
+                ItemMarketList.runners.map((ItemRunners: any) => {
+                  let selectionId: any = ItemRunners.selectionId
+                  if (!matchWiseMarket[ItemBet.userId]) {
+                    matchWiseMarket[ItemBet.userId] = {}
+                  }
+                  if (!matchWiseMarket[ItemMarketList.marketId + '_' + selectionId]) {
+                    matchWiseMarket[ItemMarketList.marketId + '_' + selectionId] = 0
+                  }
+                  if (selectionId == ItemBet.selectionId) {
+                    if (ItemBet.isBack) {
+                      matchWiseMarket[ItemMarketList.marketId + '_' + selectionId] =
+                        matchWiseMarket[ItemMarketList.marketId + '_' + selectionId] +
+                        profitAmt
+                    } else {
+                      matchWiseMarket[ItemMarketList.marketId + '_' + selectionId] =
+                        matchWiseMarket[ItemMarketList.marketId + '_' + selectionId] -
+                        profitAmt
+                    }
+                  } else {
+                    if (ItemBet.isBack) {
+                      matchWiseMarket[ItemMarketList.marketId + '_' + selectionId] =
+                        matchWiseMarket[ItemMarketList.marketId + '_' + selectionId] -
+                        lossAmt
+                    } else {
+                      matchWiseMarket[ItemMarketList.marketId + '_' + selectionId] =
+                        matchWiseMarket[ItemMarketList.marketId + '_' + selectionId] +
+                        lossAmt
+                    }
+                  }
+                })
+              })
+              await Promise.all(promiseMarket)
+            }
+          })
+          await Promise.all(betPromise)
+        })
+        await Promise.all(filterMarketByMatchPromise)
+        // const superParentId = userLink[Item._id]
+        let userInfo = { username: '', superParentId: ItemUser._id }
+        // if (superParentId != undefined) {
+        //   const filterSuperUser = finaluserdata.filter(
+        //     (ItemUserN: any) => ItemUserN._id == superParentId,
+        //   )
+        //   console.log(filterSuperUser, "filterSuperUser")
+        //   // if (filterSuperUser.length > 0) {
+        //   // }
+        // }
+        userInfo['username'] = ItemUser.username
+
+        matchPl = {
+          ...matchPl,
+          ...matchWiseMarket,
+          ...userInfo,
+        }
+        completeBookList.push(matchPl)
+      })
+      await Promise.all(bookpromise)
       finaluserdata.push(ItemUser)
     })
     await Promise.all(userPromise)
