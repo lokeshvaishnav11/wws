@@ -18,7 +18,7 @@ import { CustomLink } from '../../_layout/elements/custom-link'
 const MatchDetailWrapper = (props: any) => {
   const dispatch = useAppDispatch()
   const betCount = useAppSelector(selectBetCount)
-  const [tavstatus, settvstatus] = React.useState<boolean>(false)
+  const [tavstatus, settvstatus] = React.useState<boolean>(true)
   const { socketUser } = useWebsocketUser()
     const userState = useAppSelector(selectUserData)
   
