@@ -50,6 +50,7 @@ const MyMatkaBetComponent22 = ({ roundid }: any) => {
   
   
   
+  
     // ✅ matching item nikaalo
 
     React.useEffect(() => {
@@ -185,9 +186,11 @@ React.useEffect(() => {
           </td>
 
           <td className='no-wrap text-center'>
-            {moment
-              .utc(bet.betClickTime)
-              .format('DD/MM/YYYY hh:mm:ss A')}
+            {
+     moment(bet.createdAt)
+        .tz("Asia/Kolkata")
+        .format("DD/MM/YYYY hh:mm:ss A")
+   }
           </td>
         </tr>
       ))}

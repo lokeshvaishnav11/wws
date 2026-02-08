@@ -15,7 +15,7 @@ import MyBetComponent from "./components/my-bet.component";
 import MyMatkaBetComponent22 from "./components/my-matka-bet";
 
 const MatkaPlay = () => {
-  const { matchId ,roundid } = useParams(); // 👈 URL se matchId
+  const { matchId, roundid } = useParams(); // 👈 URL se matchId
 
   const userState = useAppSelector(selectUserData);
   const dispatch = useAppDispatch();
@@ -24,12 +24,13 @@ const MatkaPlay = () => {
   const [gameType, setGameType] = React.useState<"single" | "haraf">("single");
 
   const [matkaList, setMatkaList] = React.useState<any>([]);
+  const [mybets, setmybets] = React.useState<any>([])
 
   React.useEffect(() => {
     const fetchMatkaList = async () => {
       try {
         const res = await accountService.matkagamelist();
-        console.log(res?.data?.data, "ffff");
+        // console.log(res?.data?.data, "ffff");
         setMatkaList(res?.data?.data);
       } catch (err) {
         console.error("Matka list error:", err);
@@ -39,10 +40,41 @@ const MatkaPlay = () => {
     fetchMatkaList();
   }, [matchId]);
 
+  React.useEffect(() => {
+    if (!matkaList.length) return;
+
+    const match = matkaList.find((item: any) => item.id == matchId);
+
+    if (!match?.roundid) return;
+
+    accountService
+      .getMatkaBets22(match.roundid)
+      .then((res) => {
+        setmybets(res?.data?.data?.bets || []);
+        console.log(res.data,"cvbnmklvbm,lvbnm,")
+      })
+      
+      .catch((e) => console.error(e));
+     
+  }, [matkaList, matchId]);
+
   // ✅ matching item nikaalo
-const match = matkaList.find(
-  (item: any) => item.id == matchId && item.roundid == roundid
-);
+  const match = matkaList.find(
+    (item: any) => item.id == matchId && item.roundid == roundid
+  );
+
+  const getBetAmount = (num: any, type: "single" | "andar" | "bahar") => {
+    // console.log(num,type,mybets)
+    return mybets
+      .filter(
+        (b: any) =>
+          Number(b.selectionId) == Number(num) &&
+          b.bettype == type
+      )
+      .reduce((total: number, b: any) => {
+        return total + Number(b.betamount || 0);
+      }, 0);
+  };
 
 
   if (!match) {
@@ -191,23 +223,23 @@ const match = matkaList.find(
   //console.log(matkastake, "makrkk");
 
   const openTime = match?.opentime
-  ? moment()
+    ? moment()
       .tz("Asia/Kolkata")
       .hour(match.opentime.hour)
       .minute(match.opentime.minute)
       .second(0)
       .format("DD-MM-YYYY hh:mm A")
-  : "--";
+    : "--";
 
-const closeTime = match?.closetime
-  ? moment()
+  const closeTime = match?.closetime
+    ? moment()
       .tz("Asia/Kolkata")
       .add(match.gamename === "Disawar" ? 1 : 0, "day")
       .hour(match.closetime.hour)
       .minute(match.closetime.minute)
       .second(0)
       .format("DD-MM-YYYY hh:mm A")
-  : "--";
+    : "--";
 
 
   return (
@@ -229,12 +261,12 @@ const closeTime = match?.closetime
             {moment().hour(9).minute(0).second(0).format("DD-MM-YYYY hh:mm A")}
           </p> */}
           <p className="mb-1 pt-1">
-        <b>Open:</b> {openTime}
-      </p>
+            <b>Open:</b> {openTime}
+          </p>
 
-      <p className="mb-1">
-        <b>Close:</b> {closeTime}
-      </p>
+          <p className="mb-1">
+            <b>Close:</b> {closeTime}
+          </p>
         </a>
       </div>
 
@@ -280,7 +312,9 @@ const closeTime = match?.closetime
                   >
                     {num}
                   </button>
-                  <span className="btn w-100">0</span>
+                  <span className="btn w-100">
+                    {getBetAmount(num, "single")}
+                  </span>
                 </div>
               ))}
             </div>
@@ -300,7 +334,10 @@ const closeTime = match?.closetime
                   >
                     {num}
                   </button>
-                  <span className="btn w-100">0</span>
+                  <span className="btn w-100">
+                    {getBetAmount(num, "andar")}
+                  </span>
+
                 </div>
               ))}
             </div>
@@ -316,7 +353,10 @@ const closeTime = match?.closetime
                   >
                     {num}
                   </button>
-                  <span className="btn w-100">0</span>
+                  <span className=" ">
+                    {/* {getBetAmount(num, "bahar") + 10} */} 11
+                  </span>
+
                 </div>
               ))}
             </div>
@@ -332,3 +372,6 @@ const closeTime = match?.closetime
 };
 
 export default MatkaPlay;
+
+
+

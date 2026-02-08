@@ -467,6 +467,7 @@ placeMatkabet = async (req: Request, res: Response): Promise<Response> => {
     // ================= SAVE BET =================
     const newBet = new Matkabet({
       gamename: data.matchName,
+      username:userData.username,
       id: data.marketId,
       result: "pending",
       selectionId: selection,

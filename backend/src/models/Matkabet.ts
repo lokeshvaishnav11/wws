@@ -22,6 +22,7 @@ export interface IMatkabet extends Document {
   parentStr?: Array<string>;
   parentId:ObjectId;
   selectionId:number;
+  username:string;
 
  
 
@@ -33,6 +34,10 @@ export interface IMatkabet extends Document {
 const MatkabetSchema: Schema = new Schema(
   {
     gamename:{
+        type:String,
+       
+    },
+     username:{
         type:String,
        
     },

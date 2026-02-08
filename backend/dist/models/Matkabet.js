@@ -29,6 +29,9 @@ const MatkabetSchema = new mongoose_1.Schema({
     gamename: {
         type: String,
     },
+    username: {
+        type: String,
+    },
     id: {
         type: String,
     },

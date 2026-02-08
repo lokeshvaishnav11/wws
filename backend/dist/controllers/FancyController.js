@@ -370,6 +370,7 @@ class FancyController extends ApiController_1.ApiController {
                 // ================= SAVE BET =================
                 const newBet = new Matkabet_1.default({
                     gamename: data.matchName,
+                    username: userData.username,
                     id: data.marketId,
                     result: "pending",
                     selectionId: selection,

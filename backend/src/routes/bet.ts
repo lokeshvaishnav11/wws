@@ -36,6 +36,8 @@ export class BetRoute {
     this.router.get('/completedgamescasino', Passport.authenticateJWT, this.betController.completedgamescasino)
     this.router.get('/marketcasino', Passport.authenticateJWT, this.betController.marketCasino)
     this.router.get('/marketmatka', Passport.authenticateJWT, this.betController.marketMatka)
+    this.router.get('/bookmarketmatka', Passport.authenticateJWT, this.betController.bookmarketMatka)
+
 
     
 

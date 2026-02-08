@@ -3024,6 +3024,374 @@ export class BetController extends ApiController {
     }
   };
 
+  //  bookmarketMatka = async (req: Request, res: Response): Promise<Response> => {
+
+
+  //   try {
+  //     const user: any = req.user;
+  //     const gid :any = req.query.gid
+  //     // const bets = await Bet.find({bet_on! === "CASINO"})
+  //     console.log(gid,"GHJKl")
+
+  //     // Step 1: Find users whose parentStr contains current user ID and have role "user"
+  //     const usersWithThisAsParent = await User.find({
+  //       parentStr: ObjectId(user._id),
+  //       role: "user" as RoleType,
+  //     });
+
+  //     // Step 2: Extract their _id into an array
+  //     const userIds = usersWithThisAsParent.map((u) => u._id);
+
+
+  //     const bets = await Matkabet.aggregate([
+  //       {
+  //         $match: {
+  //           userId: { $in: userIds },
+  //           bet_on: "MATKA",
+  //           status:"pending",
+  //           roundid:gid
+  //         },
+  //       },
+  //       {
+  //         $lookup: {
+  //           from: "users",
+  //           let: {
+  //             parentIds: { $ifNull: ["$parentstr", []] } // ✅ null-safe
+  //           },
+  //           pipeline: [
+  //             {
+  //               $match: {
+  //                 $expr: {
+  //                   $in: [
+  //                     "$_id",
+  //                     {
+  //                       $map: {
+  //                         input: "$$parentIds",
+  //                         as: "id",
+  //                         in: { $toObjectId: "$$id" },
+  //                       },
+  //                     },
+  //                   ],
+  //                 },
+  //               },
+  //             },
+  //             { $project: { _id: 0, username: 1 } },
+  //           ],
+  //           as: "parentData",
+  //         },
+  //       },
+  //       {
+  //         $addFields: {
+  //           parentData: {
+  //             $map: { input: "$parentData", as: "p", in: "$$p.username" },
+  //           },
+  //         },
+  //       },
+  //       // 👇 Add this to sort newest first
+  //       { $sort: { createdAt: 1 } },
+  //     ]);
+
+
+
+
+
+  //     return this.success(res, {
+  //       status: true,
+
+  //       bets,
+  //     });
+
+
+  //   } catch (e: any) {
+  //     return this.fail(res, e);
+  //   }
+  // };
+
+  getChildId = (parentstr: any[], currentUser: any) => {
+    if (!Array.isArray(parentstr)) return null
+
+    const idx = parentstr.findIndex(
+      (id) => id.toString() === currentUser._id.toString()
+    )
+    if (idx === -1) return null
+    return parentstr[idx + 1] || null
+  }
+
+
+
+
+
+  buildMatkaBook = async (
+    bets: any[],
+    currentUser: any
+  ) => {
+    console.log(currentUser, "CGHJK")
+    const UserData = await User.findById(currentUser._id)
+    const parentShare = Number(UserData.share || 100)
+
+    const initSingleBook = () => {
+      const b: any = {}
+      for (let i = 0; i < 100; i++) {
+        const k = i.toString().padStart(2, "0")
+        b[k] = 0
+      }
+      return b
+    }
+
+    const initDigitBook = () => {
+      const b: any = {}
+      for (let i = 0; i <= 9; i++) b[i] = 0
+      return b
+    }
+
+
+    // 🔥 child shares
+    const childIds = [
+      ...new Set(
+        bets
+          .map(b => this.getChildId(b.parentstr, currentUser))
+          .filter(Boolean)
+          .map(id => id.toString())
+      ),
+    ]
+
+    const childUsers = await User.find(
+      { _id: { $in: childIds } },
+      { share: 1 }
+    ).lean()
+
+    const childShareMap: any = {}
+    childUsers.forEach(u => {
+      childShareMap[u._id.toString()] = Number(u.share || 0)
+    })
+
+    const singleBook = initSingleBook()
+    const andarBook = initDigitBook()
+    const baharBook = initDigitBook()
+
+    for (const bet of bets) {
+      const childId = this.getChildId(bet.parentstr, currentUser)
+      // if (!childId) continue
+
+      const childShare = childShareMap[childId?.toString()] || 0
+      const shareFactor = (parentShare - childShare) / 100
+      if (shareFactor < 0) continue
+
+      const amt = Number(bet.betamount)
+      const odds = Number(bet.odds)
+      const sel = bet?.selectionId?.toString().padStart(2, "0")
+
+      /* ================= SINGLE ================= */
+      if (bet.bettype === "single") {
+        const loss = ((amt * odds) - (amt)) * (shareFactor)
+        const profit = amt * shareFactor
+
+        console.log(loss, profit, shareFactor, parentShare, childShare, "hello world ")
+
+        Object.keys(singleBook).forEach(n => {
+          if (n === sel) {
+            singleBook[n] -= loss
+          } else {
+            singleBook[n] += profit
+          }
+        })
+      }
+
+      /* ================= ANDAR ================= */
+      if (bet.bettype === "andar") {
+        const digit = bet.selectionId
+        const loss = ((amt * odds) - (amt)) * (shareFactor)
+        const profit = amt * shareFactor
+
+        for (let i = 0; i <= 9; i++) {
+          if (i === digit) andarBook[i] -= loss
+          else andarBook[i] += profit
+        }
+      }
+
+      /* ================= BAHAR ================= */
+      if (bet.bettype === "bahar") {
+        const digit = bet.selectionId
+        const loss = ((amt * odds) - (amt)) * (shareFactor)
+        const profit = amt * shareFactor
+
+        for (let i = 0; i <= 9; i++) {
+          if (i === digit) baharBook[i] -= loss
+          else baharBook[i] += profit
+        }
+      }
+    }
+
+    return {
+      single: singleBook,
+      andar: andarBook,
+      bahar: baharBook,
+    }
+  }
+
+
+  // buildMatkaBook = async (
+  //   bets: any[],
+  //   currentUser: any
+  // ) => {
+  //   const parentShare = Number(currentUser.share || 100)
+
+  //   /* ================= INIT BOOKS ================= */
+
+  //   const initSingleBook = () => {
+  //     const b: any = {}
+  //     for (let i = 0; i < 100; i++) {
+  //       const k = i.toString().padStart(2, "0")
+  //       b[k] = 0
+  //     }
+  //     return b
+  //   }
+
+  //   const initDigitBook = () => {
+  //     const b: any = {}
+  //     for (let i = 0; i <= 9; i++) b[i] = 0
+  //     return b
+  //   }
+
+  //   /* ================= CHILD SHARE ================= */
+
+  //   const childIds = [
+  //     ...new Set(
+  //       bets
+  //         .map(b => this.getChildId(b.parentstr, currentUser))
+  //         .filter(Boolean)
+  //         .map(id => id.toString())
+  //     ),
+  //   ]
+
+  //   const childUsers = await User.find(
+  //     { _id: { $in: childIds } },
+  //     { share: 1 }
+  //   ).lean()
+
+  //   const childShareMap: any = {}
+  //   childUsers.forEach(u => {
+  //     childShareMap[u._id.toString()] = Number(u.share || 0)
+  //   })
+
+  //   /* ================= BOOKS ================= */
+
+  //   const singleBook = initSingleBook()
+  //   const andarBook = initDigitBook()
+  //   const baharBook = initDigitBook()
+
+  //   /* ================= PROCESS BETS ================= */
+
+  //   for (const bet of bets) {
+  //     const childId = this.getChildId(bet.parentstr, currentUser)
+  //     if (!childId) continue
+
+  //     const childShare = childShareMap[childId.toString()] || 0
+  //     const shareFactor = (parentShare - childShare) / 100
+  //     if (shareFactor <= 0) continue
+
+  //     const amt = Number(bet.betamount)
+  //     const odds = Number(bet.odds)
+  //     const profit = amt * shareFactor
+  //     const loss = (amt * odds - amt) * shareFactor
+
+  //     /* ================= SINGLE ================= */
+
+  //     if (bet.bettype === "single") {
+  //       const sel = bet.selectionId.toString().padStart(2, "0")
+
+  //       Object.keys(singleBook).forEach(n => {
+  //         if (n === sel) {
+  //           // ❌ winning number
+  //           singleBook[n] -= loss        // odds loss
+  //           singleBook[n] -= profit      // bet amount agent share
+  //         } else {
+  //           // ✅ losing numbers
+  //           singleBook[n] += profit
+  //         }
+  //       })
+  //     }
+
+  //     /* ================= ANDAR ================= */
+
+  //     if (bet.bettype === "andar") {
+  //       const digit = Number(bet.selectionId)
+
+  //       for (let i = 0; i <= 9; i++) {
+  //         if (i === digit) {
+  //           andarBook[i] -= loss
+  //           andarBook[i] -= profit
+  //         } else {
+  //           andarBook[i] += profit
+  //         }
+  //       }
+  //     }
+
+  //     /* ================= BAHAR ================= */
+
+  //     if (bet.bettype === "bahar") {
+  //       const digit = Number(bet.selectionId)
+
+  //       for (let i = 0; i <= 9; i++) {
+  //         if (i === digit) {
+  //           baharBook[i] -= loss
+  //           baharBook[i] -= profit
+  //         } else {
+  //           baharBook[i] += profit
+  //         }
+  //       }
+  //     }
+  //   }
+
+  //   /* ================= RESULT ================= */
+
+  //   return {
+  //     single: singleBook,
+  //     andar: andarBook,
+  //     bahar: baharBook,
+  //   }
+  // }
+
+
+
+
+
+
+
+
+
+
+
+  bookmarketMatka = async (req: Request, res: Response): Promise<Response> => {
+    try {
+      const user: any = req.user
+      const gid: any = req.query.gid
+
+      const usersWithThisAsParent = await User.find({
+        parentStr: ObjectId(user._id),
+        role: "user" as RoleType,
+      })
+
+      const userIds = usersWithThisAsParent.map(u => u._id)
+
+      const bets = await Matkabet.find({
+        userId: { $in: userIds },
+        bet_on: "MATKA",
+        status: "pending",
+        roundid: gid,
+      }).lean()
+
+      const book = await this.buildMatkaBook(bets, user)
+
+      return this.success(res, {
+        status: true,
+        bets,
+        book,
+      })
+    } catch (e: any) {
+      return this.fail(res, e)
+    }
+  }
 
 
 
@@ -3190,7 +3558,7 @@ export class BetController extends ApiController {
 
     for (const Item of filterbets) {
       const childId = getChildId(Item.parentStr)
-     // if (!childId) continue
+      // if (!childId) continue
 
       const childShare = childShareMap[childId?.toString()] || 0
       const shareFactor = (currentShare - childShare) / 100
@@ -3241,7 +3609,7 @@ export class BetController extends ApiController {
     ====================================================== */
     const fancy_profit: any = {}
 
-    
+
 
     /* -------------------------------
        final merge
