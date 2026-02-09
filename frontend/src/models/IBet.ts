@@ -24,7 +24,7 @@ export default interface IBet {
   volume: number
   stack: number
   pnl: number
- profitLoss: number | Decimal128;
+ profitLoss: number
   marketName: string
   isBack: boolean
   eventId: number
