@@ -450,6 +450,7 @@ const NewAccountStatement = () => {
     let totalPnl = 0;
 
     // Extract gameName and date from narration and filter
+    // console.log(currentItems,"current Item,")
     const filteredItems = currentItems?.filter((stmt: any) => {
       if (!stmt?.narration) return false;
       const gameName = stmt.narration.split(" /")[0]?.trim();
@@ -459,52 +460,54 @@ const NewAccountStatement = () => {
       return selectedGroup === gameName + rawDate;
     });
 
-    const rows = filteredItems?.map((stmt: any, index: number) => {
-      closingbalance = closingbalance + stmt.amount;
+    const rows = filteredItems?.map((stmtt: any, index: number) => {
+      console.log("stmt",stmtt?.stmt.allBets[0])
+      closingbalance = closingbalance + stmtt.amount;
 
-      const pnlString = stmt?.credit;
+      const pnlString = stmtt?.credit;
       const pnl = parseFloat(pnlString) || 0;
       totalPnl += pnl;
 
-      if (stmt.narration.length === 0) return null;
+      if (stmtt.narration.length === 0) return null;
 
       //console.log(filteredItems, "filtered itemss");
 
       return (
-        <tr key={`${stmt._id}${index}`}>
+        <tr key={`${stmtt._id}${index}`}>
           <td>
-            {stmt?.stmt?.allBets ? stmt?.stmt?.selectionId : stmt?.narration}
+            {stmtt?.stmt?.allBets ?  stmtt?.stmt.allBets[0].narration : stmtt?.stmt.allBets[0].narration}
           </td>
           <td>
-            {stmt?.stmt?.allBets
-              ? stmt?.stmt?.allBets[0]?.result[0]?.marketName
-              : ""}
+            {stmtt?.stmt.allBets[0]?.result?.marketName
+              ? stmtt?.stmt.allBets[0]?.result?.marketName
+              : stmtt?.stmt.allBets[0]?.result?.selectionId
+}
           </td>
           <td>
-            {stmt?.stmt?.allBets ? stmt?.stmt?.allBets[0]?.result[0]?.odds : ""}
+            {stmtt?.stmt?.allBets ? stmtt?.stmt?.allBets[0]?.result?.odds : ""}
           </td>
           <td>
-            {stmt?.stmt?.allBets
-              ? stmt.stmt.allBets.reduce((sum: number, bet: any) => {
-                  const stack = parseFloat(bet?.result?.[0]?.stack) || 0;
+            {stmtt.stmt?.allBets
+              ? stmtt.stmt.allBets.reduce((sum: number, bet: any) => {
+                  const stack = parseFloat(bet?.result?.stack) || bet?.result?.betamount;
                   return sum + stack;
                 }, 0)
               : ""}
           </td>
 
           <td>
-            {stmt?.stmt?.allBets
-              ? stmt?.narration?.match(/,([^[]+)\[/)?.[1]?.trim()
+            {stmtt?.stmt?.allBets[0]
+              ? stmtt?.stmt.allBets[0].narration?.match(/,([^[]+)\[/)?.[1]?.trim()
               : ""}
           </td>
           <td>
-            {stmt?.stmt?.allBets
-              ? stmt?.narration?.match(/winner:\s*([^,\[\]]+)?/)?.[1]?.trim()
+            {stmtt?.stmt?.allBets[0]
+              ? stmtt?.stmt.allBets[0].narration?.match(/winner:\s*([^,\[\]]+)?/)?.[1]?.trim()
               : ""}
           </td>
-          <td>{stmt?.stmt?.allBets ? stmt?.credit : ""}</td>
+          <td>{stmtt?.stmt?.allBets ? stmtt?.credit : ""}</td>
           <td className="green wnwrap d-none">
-            {stmt?.stmt?.allBets ? stmt.closing : ""}
+            {stmtt?.stmt?.allBets ? stmtt.closing : ""}
           </td>
         </tr>
       );

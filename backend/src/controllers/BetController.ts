@@ -2292,7 +2292,7 @@ export class BetController extends ApiController {
       const bets = await Bet.find({
         userId: ObjectId(user._id),
         bet_on: { $ne: "CASINO" as BetOn },
-        status: { $ne: "deleted" },
+        status: "completed",
       });
 
       const matches = await Match.find({});
@@ -3851,19 +3851,25 @@ export class BetController extends ApiController {
   };
 
 
-  alluserbetList22 = async (req: Request, res: Response): Promise<Response> => {
-    try {
-      // Only get deleted bets from all users
-      const filter = { status: 'deleted' };
+alluserbetList22 = async (req: Request, res: Response): Promise<Response> => {
+  try {
+    // @ts-ignore
+    const userId = req.user._id;
 
-      console.log("Filter:", filter);
+    const filter = {
+      status: "deleted",
+        parentStr: { $in: [userId] },// 👈 ObjectId array match
+    };
 
-      const deletedBets = await Bet.find(filter).sort({ createdAt: -1 });
-      return this.success(res, deletedBets);
-    } catch (e: any) {
-      return this.fail(res, e);
-    }
-  };
+    console.log("Filter:", filter);
+
+    const deletedBets = await Bet.find(filter).sort({ createdAt: -1 });
+
+    return this.success(res, deletedBets);
+  } catch (e: any) {
+    return this.fail(res, e);
+  }
+};
 
 
   getExposerEvent = async (req: Request, res: Response): Promise<Response> => {

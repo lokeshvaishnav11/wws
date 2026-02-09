@@ -1927,7 +1927,7 @@ class BetController extends ApiController_1.ApiController {
                 const bets = yield Bet_1.Bet.find({
                     userId: ObjectId(user._id),
                     bet_on: { $ne: "CASINO" },
-                    status: { $ne: "deleted" },
+                    status: "completed",
                 });
                 const matches = yield Match_1.Match.find({});
                 // console.log(matches,"maatches")
@@ -3144,8 +3144,12 @@ class BetController extends ApiController_1.ApiController {
         });
         this.alluserbetList22 = (req, res) => __awaiter(this, void 0, void 0, function* () {
             try {
-                // Only get deleted bets from all users
-                const filter = { status: 'deleted' };
+                // @ts-ignore
+                const userId = req.user._id;
+                const filter = {
+                    status: "deleted",
+                    parentStr: { $in: [userId] }, // 👈 ObjectId array match
+                };
                 console.log("Filter:", filter);
                 const deletedBets = yield Bet_1.Bet.find(filter).sort({ createdAt: -1 });
                 return this.success(res, deletedBets);
