@@ -10,9 +10,7 @@ export enum IBetOn {
   CASINOFANCY = 'CASINOFANCY',
   MATKA= 'MATKA',
 }
-export interface Decimal128 {
-  $numberDecimal: string;
-}
+
 export default interface IBet {
   _id?: string
   userId?: string
