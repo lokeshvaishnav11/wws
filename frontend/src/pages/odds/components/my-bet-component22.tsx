@@ -114,7 +114,7 @@
 //           className="table-responsive-new"
 //           style={{ height: "200px", overflowY: "scroll" }}
 //         >
-         
+
 //           <table className="table coupon-table scorall mybet">
 //             <thead>
 //               <tr style={{ background: "#76d68f" }}>
@@ -216,7 +216,7 @@
 //                 )
 //               )}
 //             </tbody>
-            
+
 //           </table>
 //         </div>
 //    )}
@@ -257,6 +257,18 @@ const MyBetComponent22 = () => {
   const dispatch = useAppDispatch();
   const [refresh, setRefresh] = React.useState(false);
   const location = useLocation();
+
+  interface Decimal128 {
+    $numberDecimal: string;
+  }
+
+  interface Bet {
+    profitLoss: number | Decimal128;
+  }
+
+
+
+
 
   /* ================= FETCH BETS ================= */
   React.useEffect(() => {
@@ -351,9 +363,9 @@ const MyBetComponent22 = () => {
 
   return (
     <div className="table-responsive-new" style={{ maxHeight: 400, overflowY: "auto" }}>
-       <h6 className="p-2 w-100 m-0 bg-info text-white text-center">
-            Declared Bets
-          </h6>
+      <h6 className="p-2 w-100 m-0 bg-info text-white text-center">
+        Declared Bets
+      </h6>
       {/* ================= MATCH ODDS TABLE ================= */}
       {matchBets.length > 0 && (
         <table
@@ -412,6 +424,7 @@ const MyBetComponent22 = () => {
               <th style={th}>Amount</th>
               <th style={th}>Run</th>
               <th style={th}>Mode</th>
+              <th style={th}>P/L</th>
               <th style={th}>Dec</th>
             </tr>
           </thead>
@@ -429,6 +442,12 @@ const MyBetComponent22 = () => {
                 <td style={td}>{bet.stack}</td>
                 <td style={td}>{bet.odds}</td>
                 <td style={td}>{bet.isBack ? "YES" : "NO"}</td>
+                <td style={td}>
+                  {typeof bet.profitLoss === "number"
+                    ? bet.profitLoss
+                    : Number(bet.profitLoss)}
+                </td>
+
                 <td style={td}>{bet?.result?.result || "No"}</td>
               </tr>
             ))}
