@@ -1,4 +1,234 @@
-import moment from "moment";
+// import moment from "moment";
+// import React from "react";
+// import { useWebsocketUser } from "../../../context/webSocketUser";
+// import IBet from "../../../models/IBet";
+// import { RoleType } from "../../../models/User";
+// import {
+//   selectPlaceBet,
+//   setBetCount,
+//   setbetlist,
+//   setBookMarketList,
+// } from "../../../redux/actions/bet/betSlice";
+// import { selectUserData } from "../../../redux/actions/login/loginSlice";
+// import { selectCurrentMatch } from "../../../redux/actions/sports/sportSlice";
+// import { useAppDispatch, useAppSelector } from "../../../redux/hooks";
+// import { betDateFormat } from "../../../utils/helper";
+// import { isMobile } from "react-device-detect";
+// import { selectCasinoCurrentMatch } from "../../../redux/actions/casino/casinoSlice";
+// import { useLocation } from "react-router-dom";
+// import accountService from "../../../services/account.service";
+
+// const MyBetComponent22 = () => {
+//   const [getMyAllBet, setMyAllBet] = React.useState<IBet[]>([]);
+
+//   const getPlaceBet = useAppSelector(selectPlaceBet);
+//   const getCurrentMatch = useAppSelector(selectCurrentMatch);
+//   const getCasinoCurrentMatch = useAppSelector(selectCasinoCurrentMatch);
+//   const userState = useAppSelector(selectUserData);
+//   const { socketUser } = useWebsocketUser();
+//   const dispatch = useAppDispatch();
+//   const [betRefresh, setRefreshStatus] = React.useState<any>(false);
+//   const location = useLocation();
+//   React.useEffect(() => {
+//     // console.log(getCurrentMatch,"hello world here is Match id")
+//     //console.log(getCasinoCurrentMatch?.match_id," getCasinoCurrentMatch hello world here is Match id")
+
+//     if (
+//       (getCurrentMatch &&
+//         getCurrentMatch.matchId &&
+//         location.pathname.includes("/odds")) ||
+//       (getCasinoCurrentMatch && getCasinoCurrentMatch.match_id)
+//     ) {
+//       const dataMatchId: any =
+//         getCurrentMatch &&
+//         getCurrentMatch.matchId &&
+//         location.pathname.includes("/odds")
+//           ? getCurrentMatch.matchId
+//           : getCasinoCurrentMatch && getCasinoCurrentMatch?.event_data?.match_id
+//           ? getCasinoCurrentMatch?.event_data?.match_id
+//           : 0;
+//       //console.log("hello world match");
+//       accountService
+//         .getBets22(dataMatchId)
+//         .then((bets) => {
+//           //console.log(bets.data, "chech bet dataggfgf");
+//           bets &&
+//             bets.data &&
+//             bets.data.data &&
+//             setMyAllBet(bets.data.data.bets);
+//           // dispatch(setbetlist(bets.data.data.bets))
+//           // dispatch(setBookMarketList(bets.data.data.odds_profit))
+//           // dispatch(setBetCount(bets.data.data.bets.length))
+//         })
+//         .catch((e) => {
+//           console.log(e.stack);
+//         });
+//     }
+//   }, [getCurrentMatch, getCasinoCurrentMatch, betRefresh]);
+
+//   // ✅ Group bets by selectionName
+//   const groupedMyAllBet =
+//     getMyAllBet?.reduce((acc: any, bet: any) => {
+//       const key = bet.selectionName || "Unknown";
+//       if (!acc[key]) acc[key] = [];
+//       acc[key].push(bet);
+//       return acc;
+//     }, {}) || {};
+
+//   React.useEffect(() => {
+//     if (getPlaceBet.bet.marketId) {
+//       //setMyAllBet([{ ...getPlaceBet.bet }, ...getMyAllBet])
+//       setRefreshStatus(betRefresh ? false : true);
+//     }
+//   }, [getPlaceBet.bet]);
+
+//   React.useEffect(() => {
+//     socketUser.on("placedBet", (bet: IBet) => {
+//       ///setMyAllBet([bet, ...getMyAllBet])
+//       setRefreshStatus(betRefresh ? false : true);
+//     });
+//     return () => {
+//       socketUser.off("placedBet");
+//     };
+//   }, [getMyAllBet]);
+
+//   React.useEffect(() => {
+//     socketUser.on("betDelete", ({ betId }) => {
+//       ///setMyAllBet(getMyAllBet.filter((bet: IBet) => bet._id !== betId))
+//       setRefreshStatus(betRefresh ? false : true);
+//       ///dispatch(setBookMarketList({}))
+//     });
+//     return () => {
+//       socketUser.off("betDelete");
+//     };
+//   }, [getMyAllBet]);
+
+//   return (
+//     <>
+//      <h6 className="p-2 w-100 m-0 bg-info text-white text-center">
+//             Declared Bets
+//           </h6>
+//       {getMyAllBet?.length > 0 && ( 
+
+//         <div
+//           className="table-responsive-new"
+//           style={{ height: "200px", overflowY: "scroll" }}
+//         >
+         
+//           <table className="table coupon-table scorall mybet">
+//             <thead>
+//               <tr style={{ background: "#76d68f" }}>
+//                 <th> Sr. </th>
+//                 {userState.user.role !== RoleType.user && <th>Username</th>}
+//                 <th className="text-center"> Narration</th>
+//                 <th> Rate</th>
+//                 <th> Amount</th>
+//                 <th> Run</th>
+//                 <th> Mode</th>
+
+//                 {/* {!isMobile && <th style={{background:"#76d68f"}}> Place Date</th>} */}
+//                 {/* {!isMobile && <th style={{background:"#76d68f"}}> Match Date</th>} */}
+//                 <th className="text-center"> Dec</th>
+//                 <th>Date</th>
+//               </tr>
+//             </thead>
+
+//             <tbody className="scorall">
+//               {Object.keys(groupedMyAllBet).map(
+//                 (runnerName: string, groupIndex: number) => (
+//                   <React.Fragment key={runnerName}>
+//                     {/* Group Header Row */}
+//                     <tr>
+//                       <td
+//                         colSpan={8}
+//                         style={{
+//                           backgroundColor: "rgb(17, 40, 62)",
+//                           color: "white",
+//                           padding: "8px 10px",
+//                           textAlign: "left",
+//                         }}
+//                       >
+//                         {runnerName}
+//                       </td>
+//                     </tr>
+
+//                     {/* Grouped Bets */}
+//                     {groupedMyAllBet[runnerName]?.map(
+//                       (bet: any, index: number) => (
+//                         <tr
+//                           key={bet._id}
+//                           className={
+//                             Number(bet.profitLoss?.$numberDecimal) < 0
+//                               ? "bg-danger text-white"
+//                               : "bg-success"
+//                           }
+//                         >
+//                           <td className="no-wrap">{index + 1}</td>
+//                           {userState.user.role !== RoleType.user && (
+//                             <td>{bet?.userName}</td>
+//                           )}
+
+//                           <td className="no-wrap">
+//                             {bet?.selectionName} /{" "}
+//                             {bet?.marketName === "Fancy" &&
+//                             bet.gtype !== "fancy1"
+//                               ? bet.volume.toFixed(2)
+//                               : (bet.odds * 100 - 100).toFixed(2)}
+//                           </td>
+
+//                           <td className="no-wrap text-center">
+//                             {bet.marketName === "Fancy" &&
+//                             bet.gtype !== "fancy1"
+//                               ? bet.volume.toFixed(2)
+//                               : (bet.odds * 100 - 100).toFixed(2)}
+//                           </td>
+
+//                           <td className="no-wrap">
+//                             {Math.abs(
+//                               Number(bet?.profitLoss?.$numberDecimal)
+//                             ).toFixed(2)}
+//                           </td>
+
+//                           <td className="no-wrap text-center">
+//                             {bet.marketName === "Fancy" &&
+//                             bet.gtype !== "fancy1"
+//                               ? bet.odds
+//                               : "-"}
+//                           </td>
+
+//                           <td className="no-wrap text-center">
+//                             {bet.isBack ? "Yes" : "No"}
+//                           </td>
+
+//                           <td className="no-wrap text-center">
+//                             {bet?.result?.result ? bet?.result?.result : "YES"}
+//                           </td>
+
+//                           <td className="no-wrap">
+//                             {moment
+//                               .utc(bet.betClickTime)
+//                               .format("DD/MM/YYYY hh:mm:ss A")}
+//                           </td>
+//                         </tr>
+//                       )
+//                     )}
+//                   </React.Fragment>
+//                 )
+//               )}
+//             </tbody>
+            
+//           </table>
+//         </div>
+//    )}
+//     </>
+//   );
+// };
+
+// export default MyBetComponent22;
+
+
+
+import moment from "moment-timezone";
 import React from "react";
 import { useWebsocketUser } from "../../../context/webSocketUser";
 import IBet from "../../../models/IBet";
@@ -12,216 +242,206 @@ import {
 import { selectUserData } from "../../../redux/actions/login/loginSlice";
 import { selectCurrentMatch } from "../../../redux/actions/sports/sportSlice";
 import { useAppDispatch, useAppSelector } from "../../../redux/hooks";
-import { betDateFormat } from "../../../utils/helper";
-import { isMobile } from "react-device-detect";
+import betService from "../../../services/bet.service";
 import { selectCasinoCurrentMatch } from "../../../redux/actions/casino/casinoSlice";
 import { useLocation } from "react-router-dom";
 import accountService from "../../../services/account.service";
 
 const MyBetComponent22 = () => {
-  const [getMyAllBet, setMyAllBet] = React.useState<IBet[]>([]);
-
+  const [bets, setBets] = React.useState<IBet[]>([]);
   const getPlaceBet = useAppSelector(selectPlaceBet);
   const getCurrentMatch = useAppSelector(selectCurrentMatch);
   const getCasinoCurrentMatch = useAppSelector(selectCasinoCurrentMatch);
   const userState = useAppSelector(selectUserData);
   const { socketUser } = useWebsocketUser();
   const dispatch = useAppDispatch();
-  const [betRefresh, setRefreshStatus] = React.useState<any>(false);
+  const [refresh, setRefresh] = React.useState(false);
   const location = useLocation();
+
+  /* ================= FETCH BETS ================= */
   React.useEffect(() => {
-    // console.log(getCurrentMatch,"hello world here is Match id")
-    //console.log(getCasinoCurrentMatch?.match_id," getCasinoCurrentMatch hello world here is Match id")
+    const matchId =
+      getCurrentMatch?.matchId && location.pathname.includes("/odds")
+        ? getCurrentMatch.matchId
+        : getCasinoCurrentMatch?.event_data?.match_id;
 
-    if (
-      (getCurrentMatch &&
-        getCurrentMatch.matchId &&
-        location.pathname.includes("/odds")) ||
-      (getCasinoCurrentMatch && getCasinoCurrentMatch.match_id)
-    ) {
-      const dataMatchId: any =
-        getCurrentMatch &&
-        getCurrentMatch.matchId &&
-        location.pathname.includes("/odds")
-          ? getCurrentMatch.matchId
-          : getCasinoCurrentMatch && getCasinoCurrentMatch?.event_data?.match_id
-          ? getCasinoCurrentMatch?.event_data?.match_id
-          : 0;
-      //console.log("hello world match");
-      accountService
-        .getBets22(dataMatchId)
-        .then((bets) => {
-          //console.log(bets.data, "chech bet dataggfgf");
-          bets &&
-            bets.data &&
-            bets.data.data &&
-            setMyAllBet(bets.data.data.bets);
-          // dispatch(setbetlist(bets.data.data.bets))
-          // dispatch(setBookMarketList(bets.data.data.odds_profit))
-          // dispatch(setBetCount(bets.data.data.bets.length))
-        })
-        .catch((e) => {
-          console.log(e.stack);
-        });
-    }
-  }, [getCurrentMatch, getCasinoCurrentMatch, betRefresh]);
+    if (!matchId) return;
 
-  // ✅ Group bets by selectionName
-  const groupedMyAllBet =
-    getMyAllBet?.reduce((acc: any, bet: any) => {
-      const key = bet.selectionName || "Unknown";
-      if (!acc[key]) acc[key] = [];
-      acc[key].push(bet);
-      return acc;
-    }, {}) || {};
+    accountService.getBets22(matchId).then((res) => {
+      const data = res?.data?.data;
+      setBets(data?.bets || []);
+      dispatch(setbetlist(data?.bets || []));
+      dispatch(setBookMarketList(data?.odds_profit || {}));
+      dispatch(setBetCount(data?.bets?.length || 0));
+    });
+  }, [getCurrentMatch, getCasinoCurrentMatch, refresh]);
 
   React.useEffect(() => {
-    if (getPlaceBet.bet.marketId) {
-      //setMyAllBet([{ ...getPlaceBet.bet }, ...getMyAllBet])
-      setRefreshStatus(betRefresh ? false : true);
-    }
+    if (getPlaceBet.bet.marketId) setRefresh((p) => !p);
   }, [getPlaceBet.bet]);
 
   React.useEffect(() => {
-    socketUser.on("placedBet", (bet: IBet) => {
-      ///setMyAllBet([bet, ...getMyAllBet])
-      setRefreshStatus(betRefresh ? false : true);
-    });
-    return () => {
-      socketUser.off("placedBet");
-    };
-  }, [getMyAllBet]);
+    const handler = () => setRefresh((p) => !p);
 
-  React.useEffect(() => {
-    socketUser.on("betDelete", ({ betId }) => {
-      ///setMyAllBet(getMyAllBet.filter((bet: IBet) => bet._id !== betId))
-      setRefreshStatus(betRefresh ? false : true);
-      ///dispatch(setBookMarketList({}))
-    });
+    socketUser.on("placedBet", handler);
+
     return () => {
-      socketUser.off("betDelete");
+      socketUser.off("placedBet", handler);
     };
-  }, [getMyAllBet]);
+  }, []);
+
+
+  /* ================= SPLIT BETS ================= */
+  const matchBets = bets.filter((b: any) => b.bet_on === "MATCH_ODDS");
+  const fancyBets = bets.filter((b: any) => b.bet_on !== "MATCH_ODDS");
+
+  const groupedFancy = fancyBets.reduce((acc: any, bet: IBet) => {
+    const key = bet.selectionName || "Fancy";
+    if (!acc[key]) acc[key] = [];
+    acc[key].push(bet);
+    return acc;
+  }, {});
+
+  /* ================= TABLE UI ================= */
+  const TableHead = () => (
+    <thead>
+      <tr style={{ background: "#76d68f" }}>
+        <th className="p-2">Sr</th>
+        {/* {userState.user.role !== RoleType.user && <th className="p-2">User</th>} */}
+        <th className="p-2">Narration</th>
+        <th className="p-2">Rate</th>
+        <th className="p-2">Amount</th>
+        <th className="p-2">Mode</th>
+        {/* <th className="p-2">Dec</th> */}
+      </tr>
+    </thead>
+  );
+
+  const TableHeadTwo = ({ runnerName }: { runnerName: string }) => (
+    <thead>
+      <tr style={{ background: "#76d68f" }}>
+        <th className="p-2">Sr</th>
+        <th className="p-2">{runnerName}</th>
+        <th className="p-2">Rate</th>
+        <th className="p-2">Amount</th>
+        <th className="p-2">Mode</th>
+        <th className="p-2">Dec</th>
+      </tr>
+    </thead>
+  );
+
+  const th: React.CSSProperties = {
+    padding: "3px",
+    textAlign: "center",
+    border: "1px solid #ddd",
+    fontWeight: 600,
+    wordBreak: "break-word",
+    whiteSpace: "normal",   // ⭐ wrap allow
+  };
+
+  const td: React.CSSProperties = {
+    padding: "3px",
+    textAlign: "center",
+    border: "1px solid #ddd",
+    wordBreak: "break-word",   // ⭐ text break
+    whiteSpace: "normal",      // ⭐ wrap
+  };
+
+
 
   return (
-    <>
-     <h6 className="p-2 w-100 m-0 bg-info text-white text-center">
+    <div className="table-responsive-new" style={{ maxHeight: 400, overflowY: "auto" }}>
+       <h6 className="p-2 w-100 m-0 bg-info text-white text-center">
             Declared Bets
           </h6>
-      {getMyAllBet?.length > 0 && ( 
-
-        <div
-          className="table-responsive-new"
-          style={{ height: "200px", overflowY: "scroll" }}
+      {/* ================= MATCH ODDS TABLE ================= */}
+      {matchBets.length > 0 && (
+        <table
+          className="coupon-table mybet"
+          style={{
+            width: "100%",
+            borderCollapse: "collapse",
+            fontSize: "11px",
+            marginBottom: "8px",
+          }}
         >
-         
-          <table className="table coupon-table scorall mybet">
-            <thead>
-              <tr style={{ background: "#76d68f" }}>
-                <th> Sr. </th>
-                {userState.user.role !== RoleType.user && <th>Username</th>}
-                <th className="text-center"> Narration</th>
-                <th> Rate</th>
-                <th> Amount</th>
-                <th> Run</th>
-                <th> Mode</th>
-
-                {/* {!isMobile && <th style={{background:"#76d68f"}}> Place Date</th>} */}
-                {/* {!isMobile && <th style={{background:"#76d68f"}}> Match Date</th>} */}
-                <th className="text-center"> Dec</th>
-                <th>Date</th>
+          <thead>
+            <tr style={{ background: "#76d68f" }}>
+              <th style={th}>Sr</th>
+              <th style={th}>Team</th>
+              <th style={th}>Rate</th>
+              <th style={th}>Amount</th>
+              <th style={th}>Mode</th>
+              {/* <th style={th}>Dec</th> */}
+            </tr>
+          </thead>
+          <tbody>
+            {matchBets.map((bet, i) => (
+              <tr key={bet._id} className={bet.isBack ? "back" : "lay"}>
+                <td style={td}>{i + 1}</td>
+                <td style={td}>{bet.selectionName}</td>
+                <td style={td}>{(bet.odds * 100 - 100).toFixed()}</td>
+                <td style={td}>{bet.stack}</td>
+                <td style={td}>{bet.isBack ? "LAGAI" : "KHAI"}</td>
+                {/* <td style={td}>{bet?.result?.result || "YES"}</td> */}
               </tr>
-            </thead>
+            ))}
+          </tbody>
+        </table>
+      )}
 
-            <tbody className="scorall">
-              {Object.keys(groupedMyAllBet).map(
-                (runnerName: string, groupIndex: number) => (
-                  <React.Fragment key={runnerName}>
-                    {/* Group Header Row */}
-                    <tr>
-                      <td
-                        colSpan={8}
-                        style={{
-                          backgroundColor: "rgb(17, 40, 62)",
-                          color: "white",
-                          padding: "8px 10px",
-                          textAlign: "left",
-                        }}
-                      >
-                        {runnerName}
-                      </td>
-                    </tr>
+      {/* ================= FANCY TABLE ================= */}
+      {Object.keys(groupedFancy).map((runner) => (
+        <table
+          key={runner}
+          className="coupon-table mybet"
+          style={{
+            width: "100%",
+            tableLayout: "fixed",      // ⭐ MOST IMPORTANT
+            borderCollapse: "collapse",
+            fontSize: "10px",          // chhota font
+            marginBottom: "10px",
+          }}
+        >
 
-                    {/* Grouped Bets */}
-                    {groupedMyAllBet[runnerName]?.map(
-                      (bet: any, index: number) => (
-                        <tr
-                          key={bet._id}
-                          className={
-                            Number(bet.profitLoss?.$numberDecimal) < 0
-                              ? "bg-danger text-white"
-                              : "bg-success"
-                          }
-                        >
-                          <td className="no-wrap">{index + 1}</td>
-                          {userState.user.role !== RoleType.user && (
-                            <td>{bet?.userName}</td>
-                          )}
+          <thead>
+            <tr style={{ background: "#76d68f" }}>
+              <th style={th}>Sr</th>
+              <th style={th}>{runner}</th>
+              <th style={th}>Rate</th>
+              <th style={th}>Amount</th>
+              <th style={th}>Run</th>
+              <th style={th}>Mode</th>
+              <th style={th}>Dec</th>
+            </tr>
+          </thead>
 
-                          <td className="no-wrap">
-                            {bet?.selectionName} /{" "}
-                            {bet?.marketName === "Fancy" &&
-                            bet.gtype !== "fancy1"
-                              ? bet.volume.toFixed(2)
-                              : (bet.odds * 100 - 100).toFixed(2)}
-                          </td>
+          <tbody>
+            {groupedFancy[runner].map((bet: IBet, i: number) => (
+              <tr key={bet._id} className={bet.isBack ? "back" : "lay"}>
+                <td style={td}>{i + 1}</td>
+                <td style={td}>{bet.selectionName}</td>
+                <td style={td}>
+                  {bet.gtype === "fancy1"
+                    ? bet.odds.toFixed(2)
+                    : bet.volume.toFixed(2)}
+                </td>
+                <td style={td}>{bet.stack}</td>
+                <td style={td}>{bet.odds}</td>
+                <td style={td}>{bet.isBack ? "YES" : "NO"}</td>
+                <td style={td}>{bet?.result?.result || "No"}</td>
+              </tr>
+            ))}
+          </tbody>
+        </table>
+      ))}
 
-                          <td className="no-wrap text-center">
-                            {bet.marketName === "Fancy" &&
-                            bet.gtype !== "fancy1"
-                              ? bet.volume.toFixed(2)
-                              : (bet.odds * 100 - 100).toFixed(2)}
-                          </td>
-
-                          <td className="no-wrap">
-                            {Math.abs(
-                              Number(bet?.profitLoss?.$numberDecimal)
-                            ).toFixed(2)}
-                          </td>
-
-                          <td className="no-wrap text-center">
-                            {bet.marketName === "Fancy" &&
-                            bet.gtype !== "fancy1"
-                              ? bet.odds
-                              : "-"}
-                          </td>
-
-                          <td className="no-wrap text-center">
-                            {bet.isBack ? "Yes" : "No"}
-                          </td>
-
-                          <td className="no-wrap text-center">
-                            {bet?.result?.result ? bet?.result?.result : "YES"}
-                          </td>
-
-                          <td className="no-wrap">
-                            {moment
-                              .utc(bet.betClickTime)
-                              .format("DD/MM/YYYY hh:mm:ss A")}
-                          </td>
-                        </tr>
-                      )
-                    )}
-                  </React.Fragment>
-                )
-              )}
-            </tbody>
-            
-          </table>
-        </div>
-   )}
-    </>
+    </div>
   );
 };
 
 export default MyBetComponent22;
+
+
+
+
