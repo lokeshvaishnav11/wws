@@ -10,6 +10,9 @@ export enum IBetOn {
   CASINOFANCY = 'CASINOFANCY',
   MATKA= 'MATKA',
 }
+export interface Decimal128 {
+  $numberDecimal: string;
+}
 export default interface IBet {
   _id?: string
   userId?: string
@@ -21,7 +24,7 @@ export default interface IBet {
   volume: number
   stack: number
   pnl: number
-  profitLoss?: number
+ profitLoss: number | Decimal128;
   marketName: string
   isBack: boolean
   eventId: number

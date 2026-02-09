@@ -445,7 +445,7 @@ const MyBetComponent22 = () => {
                 <td style={td}>
                   {typeof bet.profitLoss === "number"
                     ? bet.profitLoss
-                    : Number(bet.profitLoss)}
+                    : Number(bet.profitLoss.$numberDecimal)}
                 </td>
 
                 <td style={td}>{bet?.result?.result || "No"}</td>
