@@ -424,7 +424,7 @@ const MyBetComponent22 = () => {
               <th style={th}>Amount</th>
               <th style={th}>Run</th>
               <th style={th}>Mode</th>
-              <th style={th}>P/L</th>
+              {/* <th style={th}>P/L</th> */}
               <th style={th}>Dec</th>
             </tr>
           </thead>
@@ -442,11 +442,11 @@ const MyBetComponent22 = () => {
                 <td style={td}>{bet.stack}</td>
                 <td style={td}>{bet.odds}</td>
                 <td style={td}>{bet.isBack ? "YES" : "NO"}</td>
-                <td style={td}>
+                {/* <td style={td}>
                   {typeof bet.profitLoss === "number"
                     ? bet.profitLoss
                     : Number(bet.profitLoss.$numberDecimal)}
-                </td>
+                </td> */}
 
                 <td style={td}>{bet?.result?.result || "No"}</td>
               </tr>
