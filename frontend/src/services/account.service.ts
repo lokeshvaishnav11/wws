@@ -34,6 +34,9 @@ class AccountService {
   comgames(){
     return api.get('completedgames')
   }
+   matkacomgames(){
+    return api.get('matkacompletedgames')
+  }
 
   comgamescasino(){
     return api.get('completedgamescasino')

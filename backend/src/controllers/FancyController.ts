@@ -565,7 +565,7 @@ placeMatkabet = async (req: Request, res: Response): Promise<Response> => {
         await this.cal9xbro(ItemBetList.userId, profitLossAmt, `Matka Bet Result for ${ItemBetList.selectioId}/${result}/${ItemBetList.roundid}`, ItemBetList.roundid, ItemBetList._id, "MATKA")
 
         userIdList.push(ObjectId(ItemBetList.userId));
-        await Matkabet.updateOne({ _id: ItemBetList._id }, { $set: { status: "completed" } });
+        await Matkabet.updateOne({ _id: ItemBetList._id }, { $set: { status: "completed" ,pl:profitLossAmt} });
       });
       await Promise.all(declare_result);
       const unique = [...new Set(userIdList)];

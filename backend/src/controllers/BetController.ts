@@ -16,6 +16,7 @@ import { Fancy } from "../models/Fancy";
 import { any } from "bluebird";
 import { ledger } from "../models/allledager";
 import Matkabet from "../models/Matkabet";
+import { triggerAsyncId } from "node:async_hooks";
 const ObjectId = Types.ObjectId;
 const default_settings: any = { minBet: 100, maxBet: 100, delay: 0 };
 const defaultRatio: any = {
@@ -2470,6 +2471,22 @@ export class BetController extends ApiController {
   };
 
 
+  Matkacompletedgames = async (req: Request, res: Response): Promise<Response> => {
+   // @ts-ignore
+   const Id =req.user._id
+  try {
+    const Matkabets = await Matkabet.find({userId:ObjectId(Id)})
+    console.log(Id,Matkabets,"FGHJK")
+
+      return this.success(res, {
+        status: true,
+        Matkabets
+      });
+  } catch (e) {
+    return this.fail(res, e);
+  }
+  };
+
 
   completedgamescasino = async (req: Request, res: Response): Promise<Response> => {
     // console.log(req.body, req.query, req.user, "reqqqqqbcvvvod");
@@ -2507,7 +2524,7 @@ export class BetController extends ApiController {
         status: { $ne: "deleted" },
       });
 
-      console.log(bets, "bets in completed games casino")
+      // console.log(bets, "bets in completed games casino")
 
       const matches = await Match.find({});
       // console.log(matches,"maatches")

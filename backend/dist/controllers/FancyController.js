@@ -449,7 +449,7 @@ class FancyController extends ApiController_1.ApiController {
                     console.log(profitLossAmt, "matka profit loss amt");
                     yield this.cal9xbro(ItemBetList.userId, profitLossAmt, `Matka Bet Result for ${ItemBetList.selectioId}/${result}/${ItemBetList.roundid}`, ItemBetList.roundid, ItemBetList._id, "MATKA");
                     userIdList.push(ObjectId(ItemBetList.userId));
-                    yield Matkabet_1.default.updateOne({ _id: ItemBetList._id }, { $set: { status: "completed" } });
+                    yield Matkabet_1.default.updateOne({ _id: ItemBetList._id }, { $set: { status: "completed", pl: profitLossAmt } });
                 }));
                 yield Promise.all(declare_result);
                 const unique = [...new Set(userIdList)];

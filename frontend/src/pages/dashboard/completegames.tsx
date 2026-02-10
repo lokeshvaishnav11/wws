@@ -17,6 +17,9 @@ const Completegames = () => {
   const [filteredData, setFilteredData] = React.useState<any>([]);
   const [startDate, setStartDate] = React.useState("");
   const [endDate, setEndDate] = React.useState("");
+  const [matkaData, setMatkaData] = React.useState<any[]>([]);
+const [openMatkaRound, setOpenMatkaRound] = React.useState<string | null>(null);
+
 
 
   React.useEffect(() => {
@@ -42,6 +45,22 @@ const Completegames = () => {
     });
 
   }, []);
+
+  React.useEffect(() => {
+  accountService.matkacomgames().then((res: AxiosResponse) => {
+    const bets = res?.data?.data?.Matkabets || [];
+    setMatkaData(bets);
+  });
+}, []);
+
+
+const groupedMatka = matkaData.reduce((acc: any, bet: any) => {
+  const key = bet.roundid; // 👈 roundid se grouping
+  if (!acc[key]) acc[key] = [];
+  acc[key].push(bet);
+  return acc;
+}, {});
+
 
   const handleFilter = () => {
     if (!startDate || !endDate) return;
@@ -76,6 +95,23 @@ const Completegames = () => {
     acc[key].push(bet);
     return acc;
   }, {});
+
+  const getMatkaPL = (bet: any) => {
+  return Number(
+    bet.pl ??
+    bet.profitloss ??
+    bet.profitLoss ??
+    bet.pnl ??
+    0
+  );
+};
+
+
+//   const totalPL = bets.reduce(
+//   (sum: number, b: any) => sum + getMatkaPL(b),
+//   0
+// );
+
 
   const [expandedMatches, setExpandedMatches] = React.useState<{ [key: string]: boolean }>({});
 
@@ -201,11 +237,11 @@ const Completegames = () => {
                                                   {betsForSelection
                                                     ?.map((b: any, i: number) => (
                                                       <tr key={i} className="text-center">
-                                                        <td className="px-3 py-2">                                                                                {moment.utc(b?.betClickTime).format("MMMM Do, h:mm:ss A")}
+                                                        <td className="px-3 py-2" style ={{height:"50px"}}>                                                                                {moment.utc(b?.betClickTime).format("MMMM Do, h:mm:ss A")}
                                                         </td>
                                                         <td className="px-3 py-2">{b?.selectionId}</td>
                                                         {marketName === "Fancy" ?
-                                                          <td className="pt-2 pb-1 px-3 py-2 ">
+                                                          <td className="pt-2 pb-1 px-3 py-2 " >
                                                             {b?.isBack ? (
                                                               <button
                                                                 className="btn-yes btn btn-sm p-1 ng-scope"
@@ -432,7 +468,7 @@ const Completegames = () => {
                                                                                     </thead>
                                                                                     <tbody>
                                                                                         {displayedBets?.map((b: any, j: number) => (
-                                                                                            <tr key={j} className="text-center align-middle fs-6">
+                                                                                            <tr key={j} className="text-center align-middle fs-6" style ={{height:"50px"}}>
                                                                                                 <td>{b?.userName} ({b?.parentNameStr})</td>
                                                                                                 <td>{b?.selectionName}</td>
                                                                                                 <td>{b?.odds}</td>
@@ -478,7 +514,7 @@ const Completegames = () => {
                                                      </div>
                                                  </div>
      
-     
+                                        
      
      
      
@@ -493,6 +529,99 @@ const Completegames = () => {
                  </div>
 
 
+              <div className="card-content w-100">
+  <div className="coupon-table">
+    {Object.entries(groupedMatka).map(
+      ([roundid, bets]: [string, any[]], i) => {
+        const totalPL = bets.reduce(
+          (sum, b) => sum + getMatkaPL(b),
+          0
+        );
+
+        return (
+          <div key={i} className="container mt-2 p-0">
+            <div className="card single-match text-center my-2">
+              <div
+                style={{ cursor: "pointer" }}
+                onClick={() =>
+                  setOpenMatkaRound(
+                    openMatkaRound === roundid ? null : roundid
+                  )
+                }
+              >
+                <h5 style={{ background: "black", color: "white" }}>
+                  {roundid}
+                </h5>
+
+                <div className="d-flex justify-content-between p-2">
+                  <span>Total Bets: {bets.length}</span>
+                  <span
+                    className={
+                      totalPL >= 0 ? "text-success" : "text-danger"
+                    }
+                  >
+                    {totalPL.toFixed(2)}
+                  </span>
+                </div>
+              </div>
+
+              {/* EXPANDED TABLE */}
+              {openMatkaRound === roundid && (
+                <div
+                  style={{
+                    overflowX: "auto",
+                    maxHeight: "300px",
+                    overflowY: "auto",
+                  }}
+                >
+                  <table className="table table-sm table-bordered text-nowrap">
+                    <thead style={{  color: "white" }}>
+                      <tr >
+                        <th>Selection</th>
+                        <th>Type</th>
+                        <th>Odds</th>
+                        <th>Amount</th>
+                        <th>P/L</th>
+                        <th>Date</th>
+                      </tr>
+                    </thead>
+                    <tbody>
+                      {bets.map((b: any, j: number) => {
+                        const pl = getMatkaPL(b);
+                        return (
+                          <tr key={j} className="text-center" style ={{height:"50px"}}>
+                            <td>{b.selectionId}</td>
+                            <td>{b.bettype}</td>
+                            <td>{b.odds}</td>
+                            <td>{b.betamount}</td>
+                            <td
+                              className={
+                                pl >= 0
+                                  ? "text-success"
+                                  : "text-danger"
+                              }
+                            >
+                              {pl.toFixed(2)}
+                            </td>
+                            <td>
+                              {moment(b.createdAt).format(
+                                "DD/MM/YYYY HH:mm"
+                              )}
+                            </td>
+                          </tr>
+                        );
+                      })}
+                    </tbody>
+                  </table>
+                </div>
+              )}
+            </div>
+          </div>
+        );
+      }
+    )}
+  </div>
+</div>
 
 
 

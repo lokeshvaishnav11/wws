@@ -81,6 +81,10 @@ const MatkabetSchema = new mongoose_1.Schema({
         type: String,
         default: "pending"
     },
+    pl: {
+        type: String,
+        default: 0
+    }
 }, {
     timestamps: true, // Automatically adds createdAt and updatedAt fields
 });

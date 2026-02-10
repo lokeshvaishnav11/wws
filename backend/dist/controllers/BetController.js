@@ -2046,6 +2046,21 @@ class BetController extends ApiController_1.ApiController {
                 return this.fail(res, e);
             }
         });
+        this.Matkacompletedgames = (req, res) => __awaiter(this, void 0, void 0, function* () {
+            // @ts-ignore
+            const Id = req.user._id;
+            try {
+                const Matkabets = yield Matkabet_1.default.find({ userId: ObjectId(Id) });
+                console.log(Id, Matkabets, "FGHJK");
+                return this.success(res, {
+                    status: true,
+                    Matkabets
+                });
+            }
+            catch (e) {
+                return this.fail(res, e);
+            }
+        });
         this.completedgamescasino = (req, res) => __awaiter(this, void 0, void 0, function* () {
             // console.log(req.body, req.query, req.user, "reqqqqqbcvvvod");
             function convertDecimalFields(obj) {
@@ -2074,7 +2089,7 @@ class BetController extends ApiController_1.ApiController {
                     bet_on: "CASINO",
                     status: { $ne: "deleted" },
                 });
-                console.log(bets, "bets in completed games casino");
+                // console.log(bets, "bets in completed games casino")
                 const matches = yield Match_1.Match.find({});
                 // console.log(matches,"maatches")
                 // Step 5: Combine bets into matches

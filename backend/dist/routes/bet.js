@@ -27,6 +27,7 @@ class BetRoute {
         this.router.get('/matchdetail', Passport_1.default.authenticateJWT, this.betController.marketDetails);
         this.router.get('/matchdetail-two', Passport_1.default.authenticateJWT, this.betController.marketDetailstwo);
         this.router.get('/completedgames', Passport_1.default.authenticateJWT, this.betController.completedgames);
+        this.router.get('/matkacompletedgames', Passport_1.default.authenticateJWT, this.betController.Matkacompletedgames);
         this.router.get('/completedgamescasino', Passport_1.default.authenticateJWT, this.betController.completedgamescasino);
         this.router.get('/marketcasino', Passport_1.default.authenticateJWT, this.betController.marketCasino);
         this.router.get('/marketmatka', Passport_1.default.authenticateJWT, this.betController.marketMatka);
