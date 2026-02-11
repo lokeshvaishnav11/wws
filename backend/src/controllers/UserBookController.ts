@@ -93,6 +93,7 @@ export class UserBookController extends ApiController {
         selectionId: parseInt(body.selectionId),
         parentStr: { $in: [user._id] },
         bet_on,
+        status:{$ne:"deleted"}
       }
 
       const betlist: any[] = await Bet.find(

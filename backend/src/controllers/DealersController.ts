@@ -330,12 +330,16 @@ async deleteUser(req: Request, res: Response): Promise<Response> {
                 `${errorMsg.game} Partnership should be less then or equal ${errorMsg.parentRatio}`,
               )
             }
+            console.log(userSetting,parentUser.userSetting,"Lokesh bhaiii")
             updatedUserSetting = this.getUserSetting(userSetting, parentUser.userSetting)
             console.log(updatedUserSetting, "updated user setting")
           }
 
           if (role === RoleType.user) {
             if (!exposerLimit) return this.fail(res, 'Exposer Limit is reuired field')
+              // console.log(userSetting,parentUser.userSetting,"Lokesh")
+            updatedUserSetting = this.getUserSetting(userSetting, parentUser.userSetting)
+           console.log(updatedUserSetting,"Lokesh")
           }
 
           const newUserParentStr: string[] = parentUser?.parentStr
@@ -1392,6 +1396,10 @@ async deleteUser(req: Request, res: Response): Promise<Response> {
 
   getUserSetting(userSettings: any, parentSettings: any) {
     let userSettingData: IUserBetInfo = {}
+
+    if(! userSettings){
+    return parentSettings
+    }
 
     for (let setting in userSettings) {
       const { minBet, maxBet, delay } = userSettings[setting]

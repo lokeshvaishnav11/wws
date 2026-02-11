@@ -346,12 +346,16 @@ class DealersController extends ApiController_1.ApiController {
                     if (errorMsg) {
                         return this.fail(res, `${errorMsg.game} Partnership should be less then or equal ${errorMsg.parentRatio}`);
                     }
+                    console.log(userSetting, parentUser.userSetting, "Lokesh bhaiii");
                     updatedUserSetting = this.getUserSetting(userSetting, parentUser.userSetting);
                     console.log(updatedUserSetting, "updated user setting");
                 }
                 if (role === Role_1.RoleType.user) {
                     if (!exposerLimit)
                         return this.fail(res, 'Exposer Limit is reuired field');
+                    // console.log(userSetting,parentUser.userSetting,"Lokesh")
+                    updatedUserSetting = this.getUserSetting(userSetting, parentUser.userSetting);
+                    console.log(updatedUserSetting, "Lokesh");
                 }
                 const newUserParentStr = (parentUser === null || parentUser === void 0 ? void 0 : parentUser.parentStr)
                     ? [...parentUser === null || parentUser === void 0 ? void 0 : parentUser.parentStr, parentUser._id]
@@ -1267,6 +1271,9 @@ class DealersController extends ApiController_1.ApiController {
     }
     getUserSetting(userSettings, parentSettings) {
         let userSettingData = {};
+        if (!userSettings) {
+            return parentSettings;
+        }
         for (let setting in userSettings) {
             const { minBet, maxBet, delay } = userSettings[setting];
             userSettingData[setting] = {

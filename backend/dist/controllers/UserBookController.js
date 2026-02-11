@@ -101,6 +101,7 @@ class UserBookController extends ApiController_1.ApiController {
                     selectionId: parseInt(body.selectionId),
                     parentStr: { $in: [user._id] },
                     bet_on,
+                    status: { $ne: "deleted" }
                 };
                 const betlist = yield Bet_1.Bet.find(matchfilter, { odds: 1, pnl: 1, loss: 1, isBack: 1, parentStr: 1 }).lean();
                 if (!betlist.length) {
