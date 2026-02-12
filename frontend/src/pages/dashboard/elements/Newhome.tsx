@@ -3,6 +3,11 @@ import React from "react";
 import "./Newhome.css";
 
 const Newhome = () => {
+
+  const handleClick = () => {
+    // setImgSrc("imgs/opps.png");
+    alert("Opsss ! This Game is Comming Soon")
+  };
   return (
     <>
       <div>
@@ -80,8 +85,40 @@ const Newhome = () => {
                   <br /> My Profile{" "}
                 </a>
               </div>
+
+
+              
             
             </div>
+
+
+
+             <div className="row">
+             
+
+
+              
+            
+           
+
+             <div className="col text-center menu-list-item">
+                <div  onClick={handleClick}>
+                  <img src="/imgs/ludo-9xpro.png" />{" "}
+                  <br /> Ludo{" "}
+                   
+                </div>
+              </div>
+
+
+               <div className="col text-center menu-list-item">
+                <div  onClick={handleClick}>
+                  <img src="/imgs/kabaddi-img.png" />{" "}
+                  <br /> Kabbadi{" "}
+               
+                </div>
+              </div>
+
+               </div>
           
           </div>
         </div>

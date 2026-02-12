@@ -475,7 +475,7 @@ const CasinoWrapper = (props: any) => {
   const gameIdMap: Record<any, any> = {
     card32b: "card32eu",
     baccarat2: "baccarat2",
-    dt20: "dt202",
+    dt20: "dt20",
     lucky7B: "lukcy7eu",
     Tp1Day: "teen",
     // race2020: 3036,
