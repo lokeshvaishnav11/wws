@@ -212,11 +212,11 @@ export const AvailableToBackLay = React.memo(({ selections, market, runner }: Pr
     const ipAddress = authService.getIpAddress();
     if (market.oddsType === OddsType.BM && back.size === 0) return;
        const odds = back.price * 100 - 100;
-     if (allowSuspension && odds > 100) {
+     if (allowSuspension && odds > 100 ) {
     return; // ❌ Don't allow bet on suspended odds
     }
 
-    if (back.price > 0 && back.size && userState.user.role === RoleType.user) {
+    if (back.price >= 0 && back.size && userState.user.role === RoleType.user) {
       dispatch(
         betPopup({
           isOpen: true,
