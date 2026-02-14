@@ -15,43 +15,18 @@ const rootElement = document.getElementById('root');
 if (rootElement) {
   const root = createRoot(rootElement);
   root.render(
-    <Suspense
-      fallback={
-        // <div className='suspense-loading' style={{color:"black" , display:"flex" , alignItems:"center" ,fontSize:"10px"}}>
-        //   {/* <img src='/imgs/logo.png' width={200} /> Prevoius Loader */}
-        //   {/* <img src='/imgs/loading.gif' width={200} />  */}
-        //   Loading....
-
-        // </div>
-
-        <div
-  className="suspense-loading"
-  style={{
-    color: "black",
-    display: "flex",
-    justifyContent: "center",
-    alignItems: "center",
-    height: "100vh", // 👈 full viewport height
-    fontSize: "40px",
-    fontWeight: "500",
-    backgroundColor: "#fff", // optional, for clarity
-  }}
->
-  Loading....
-</div>
-
-      }
-    >
+    <Suspense> 
+     
       <Provider store={store}>
-            <DrawerProvider>
-        
-        <WebSocketProvider>
-          <WebSocketUserProvider>
-            <WebSocketCasinoProvider>
-              <App />
-            </WebSocketCasinoProvider>
-          </WebSocketUserProvider>
-        </WebSocketProvider>
+        <DrawerProvider>
+
+          <WebSocketProvider>
+            <WebSocketUserProvider>
+              <WebSocketCasinoProvider>
+                <App />
+              </WebSocketCasinoProvider>
+            </WebSocketUserProvider>
+          </WebSocketProvider>
         </DrawerProvider>
       </Provider>
     </Suspense>
