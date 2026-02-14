@@ -196,6 +196,16 @@ class DealersController extends ApiController_1.ApiController {
                     session.endSession();
                     return this.fail(res, `Super share cannot exceed parent limit (${parent.share}%)`);
                 }
+                // 🔵 FETCH ALL CHILD USERS
+                const children = yield User_1.User.find({ parentId: _id }).session(session);
+                // 🔴 CHILD LIMIT CHECKS
+                for (const child of children) {
+                    if (child.share > share) {
+                        yield session.abortTransaction();
+                        session.endSession();
+                        return this.fail(res, `Cannot reduce share to ${share}%. Child user (${child.username}) already has ${child.share}%`);
+                    }
+                }
                 // Only update share
                 userToUpdate.share = share;
                 userToUpdate.mcom = mcom;

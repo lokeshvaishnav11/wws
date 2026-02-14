@@ -121,6 +121,23 @@ async editComm(req: Request, res: Response): Promise<Response> {
     }
 
 
+    // 🔵 FETCH ALL CHILD USERS
+const children = await User.find({ parentId: _id }).session(session);
+
+// 🔴 CHILD LIMIT CHECKS
+for (const child of children) {
+  if (child.share > share) {
+    await session.abortTransaction();
+    session.endSession();
+    return this.fail(
+      res,
+      `Cannot reduce share to ${share}%. Child user (${child.username}) already has ${child.share}%`
+    );
+  }
+}
+
+
+
 
       // Only update share
       userToUpdate.share = share;
