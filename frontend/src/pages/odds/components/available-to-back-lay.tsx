@@ -216,7 +216,9 @@ export const AvailableToBackLay = React.memo(({ selections, market, runner }: Pr
     return; // ❌ Don't allow bet on suspended odds
     }
 
-    if (back.price >= 1 && back.size && userState.user.role === RoleType.user) {
+    console.log(back,"Lokesh")
+
+    if ((back.price *100 -100) > 1 && back.size && userState.user.role === RoleType.user) {
       dispatch(
         betPopup({
           isOpen: true,
